@@ -1,9 +1,5 @@
 <template>
-  <div class="main-content p-4">
+  <div>
     <RouterView />
   </div>
 </template>
-
-<script setup lang="ts"></script>
-
-<style scoped></style>

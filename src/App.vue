@@ -1,10 +1,10 @@
 <template>
-  <!-- <NavBar /> -->
+  <NavBar class="bg-gray-100" />
   <MainLayout class="bg-gray-100" />
 </template>
 
 <script setup lang="ts">
-// import NavBar from './common/components/NavBar.vue';
+import NavBar from './common/components/NavBar.vue';
 import MainLayout from './common/layouts/MainLayout.vue';
 </script>
 

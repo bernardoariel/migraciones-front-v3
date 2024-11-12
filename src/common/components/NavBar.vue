@@ -1,22 +1,38 @@
 <template>
-  <div class="navbar bg-slate-100">
-    <div class="flex-none">
-      <router-link :to="{ name: 'NuevaSolicitud' }" class="btn btn-ghost text-xl"
-        >Nueva Solicitud</router-link
-      >
-    </div>
+  <div class="navbar">
     <div class="flex-1">
-      <router-link :to="{ name: 'Menores' }" class="btn btn-ghost text-xl">Menores</router-link>
-      <router-link :to="{ name: 'Autorizantes' }" class="btn btn-ghost text-xl"
-        >Autorizantes</router-link
+      <router-link
+        :to="{ name: 'Home' }"
+        class="inline-flex items-center justify-center p-1 rounded-full hover:bg-gray-200 transition duration-200 ease-in-out"
       >
-      <router-link :to="{ name: 'Acompaneantes' }" class="btn btn-ghost text-xl"
-        >Acompañantes</router-link
-      >
-      <router-link :to="{ name: 'Solicitudes' }" class="btn btn-ghost text-xl"
-        >Solicitudes</router-link
-      >
+        <svg
+          width="50"
+          height="50"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+          <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+          <g id="SVGRepo_iconCarrier">
+            <path
+              d="M16 12H8M8 12L11 9M8 12L11 15"
+              stroke="#1C274C"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            ></path>
+            <path
+              d="M7 3.33782C8.47087 2.48697 10.1786 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 10.1786 2.48697 8.47087 3.33782 7"
+              stroke="#1C274C"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            ></path>
+          </g>
+        </svg>
+      </router-link>
     </div>
+
     <div class="flex-none">
       <button class="btn btn-square btn-ghost">
         <svg
