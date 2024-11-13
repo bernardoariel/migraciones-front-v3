@@ -83,10 +83,11 @@ import { useForm } from 'vee-validate';
 import MyInput from '@/common/components/elementos/MyInput.vue';
 import MySelect from '@/common/components/elementos/MySelect.vue';
 import * as yup from 'yup';
+import { apiMigrationsData } from '@/api/apiMigrationsData';
 
 const validationSchema = yup.object({
   documentNumber: yup.string().matches(/^\d+$/).required().min(3),
-  documentType: yup.string().required().oneOf(['DOCUMENTO NACIONAL DE IDENTIDAD', 'PASAPORTE']),
+  documentType: yup.number().required().oneOf([4, 5]),
   lastName: yup.string().required(),
   secondLastName: yup.string(),
   firstName: yup.string().required().min(3),
@@ -103,8 +104,22 @@ const [lastName, lastNameAttrs] = defineField('lastName');
 const [secondLastName, secondLastNameAttrs] = defineField('secondLastName');
 const [firstName, firstNameAttrs] = defineField('firstName');
 const [otherNames, otherNamesAttrs] = defineField('otherNames');
-const onSubmit = handleSubmit((value) => {
-  console.log({ value, meta });
+const onSubmit = handleSubmit(async (value) => {
+  try {
+    const payload = {
+      numero_de_documento: value.documentNumber,
+      type_document_id: value.documentType,
+      apellido: value.lastName,
+      segundo_apellido: value.secondLastName,
+      nombre: value.firstName,
+      otros_nombres: value.otherNames,
+    };
+    const response = await apiMigrationsData.post('/api/v2/persona/new', payload);
+
+    console.log('Respuesta del servidor:', response.data);
+  } catch (error) {
+    console.error('Error al enviar los datos:', error);
+  }
 });
 const handleReset = () => {
   resetForm(); // Llama a resetForm aquí sin pasarle argumentos
