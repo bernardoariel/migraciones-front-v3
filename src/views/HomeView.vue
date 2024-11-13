@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center justify-center min-h-screen">
+  <div class="flex pt-16 justify-center min-h-screen">
     <div class="text-center">
       <h1 class="text-3xl font-semibold mb-4">¿Qué deseas hacer hoy?</h1>
 
