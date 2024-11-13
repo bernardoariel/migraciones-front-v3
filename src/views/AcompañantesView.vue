@@ -3,47 +3,57 @@
     <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full my-auto">
       <h2 class="text-2xl font-semibold mb-6 text-center">Agregando un Acompañante</h2>
 
-      <form @submit.prevent="submitForm" class="space-y-4">
+      <form @submit="onSubmit" class="space-y-4">
         <!-- Número de Documento -->
         <MyInput
+          v-model.number="documentNumber"
+          v-bind="documentNumberAttrs"
+          :error="errors.documentNumber"
           label="Documento"
           placeholder="Ingrese el Documento"
-          v-model="form.documentNumber"
           type="number"
         />
-        <!-- Tipo de Documento -->
 
         <MySelect
+          v-model="documentType"
+          v-bind="documentTypeAttrs"
+          :error="errors.documentType"
           label="Tipo de Documento"
-          :options="['DOCUMENTO NACIONAL DE IDENTIDAD', 'PASAPORTE']"
-          v-model="form.documentType"
-          type="text"
         />
         <!-- Apellido -->
-        <MyInput label="Apellido" placeholder="Ingrese el Apellido" v-model="form.lastName" />
+        <MyInput
+          v-model="lastName"
+          v-bind="lastNameAttrs"
+          :error="errors.lastName"
+          label="Apellido"
+          placeholder="Ingrese el Apellido"
+        />
 
         <!-- Segundo Apellido -->
         <MyInput
+          v-model="secondLastName"
+          v-bind="secondLastNameAttrs"
+          :error="errors.secondLastName"
           label="Segundo Apellido"
           placeholder="Ingrese el Segundo Apellido"
-          v-model="form.secondLastName"
-          type="text"
         />
 
         <!-- Nombre -->
         <MyInput
+          v-model="firstName"
+          v-bind="firstNameAttrs"
+          :error="errors.firstName"
           label="Nombre"
           placeholder="Ingrese el Nombre"
-          v-model="form.firstName"
-          type="text"
         />
 
         <!-- Otros Nombres -->
         <MyInput
+          v-model="otherNames"
+          v-bind="otherNamesAttrs"
+          :error="errors.otherNames"
           label="Otros Nombres"
           placeholder="Ingrese Otros Nombres"
-          v-model="form.otherNames"
-          type="text"
         />
 
         <!-- Buttons -->
@@ -52,6 +62,15 @@
           <button type="submit" class="btn btn-primary px-4 py-2" :disabled="!isFormValid">
             Guardar
           </button>
+          <button type="button" @click="handleReset" class="btn btn-secondary px-4 py-2">
+            Limpiar
+          </button>
+        </div>
+        <div class="grid grid-cols-2 p-2">
+          <div class="bg-blue-100">{{ values }}</div>
+        </div>
+        <div class="grid grid-cols-2 p-2">
+          <div class="bg-red-100">{{ errors }}</div>
         </div>
       </form>
     </div>
@@ -59,31 +78,45 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
+import { useForm } from 'vee-validate';
 import MyInput from '@/common/components/elementos/MyInput.vue';
 import MySelect from '@/common/components/elementos/MySelect.vue';
+import * as yup from 'yup';
 
-interface Acompanante {
-  documentNumber?: string;
-  documentType?: string;
-  lastName?: string;
-  secondLastName?: string;
-  firstName?: string;
-  otherNames?: string;
-}
-const form = ref<Acompanante>({
-  documentNumber: '',
-  documentType: '',
-  lastName: '',
-  secondLastName: '',
-  firstName: '',
-  otherNames: '',
+const validationSchema = yup.object({
+  documentNumber: yup.string().matches(/^\d+$/).required().min(3),
+  documentType: yup.string().required().oneOf(['DOCUMENTO NACIONAL DE IDENTIDAD', 'PASAPORTE']),
+  lastName: yup.string().required(),
+  secondLastName: yup.string(),
+  firstName: yup.string().required().min(3),
+  otherNames: yup.string(),
 });
-const isFormValid = ref(true); // Cambia la validez del formulario según tu lógica
 
-const submitForm = () => {
-  // Aquí maneja la lógica de envío del formulario
+const { values, defineField, errors, handleSubmit, meta, resetForm } = useForm({
+  validationSchema,
+});
+const isFormValid = ref(false);
+const [documentNumber, documentNumberAttrs] = defineField('documentNumber');
+const [documentType, documentTypeAttrs] = defineField('documentType');
+const [lastName, lastNameAttrs] = defineField('lastName');
+const [secondLastName, secondLastNameAttrs] = defineField('secondLastName');
+const [firstName, firstNameAttrs] = defineField('firstName');
+const [otherNames, otherNamesAttrs] = defineField('otherNames');
+const onSubmit = handleSubmit((value) => {
+  console.log({ value, meta });
+});
+const handleReset = () => {
+  resetForm(); // Llama a resetForm aquí sin pasarle argumentos
 };
+watch(
+  () => meta.value,
+  (newMeta) => {
+    // Usar meta.valid para habilitar el botón solo si el formulario es válido
+    isFormValid.value = newMeta.valid;
+  },
+  { deep: true },
+);
 </script>
 
 <style scoped>

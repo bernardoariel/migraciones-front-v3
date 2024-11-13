@@ -1,56 +1,39 @@
 <template>
-  <select
-    class="select select-bordered w-full"
-    v-model="selectedOption"
-    @change="emitSelectedOption"
-  >
-    <option v-for="option in options" :key="option" :value="option">
-      {{ option }}
-    </option>
-  </select>
+  <div>
+    <select
+      :value="modelValue || 'Seleccione una Opción'"
+      @input="$emit('update:modelValue', ($event.target as HTMLInputElement)?.value ?? '')"
+      @blur="$emit('blur')"
+      @change="$emit('change', ($event.target as HTMLInputElement)?.value)"
+      :class="[
+        'select',
+        'select-bordered',
+        'w-full',
+        {
+          'border-red-500': error,
+        },
+      ]"
+      :placeholder="placeholder"
+    >
+      <option selected>Seleccione una Opción</option>
+      <option>DOCUMENTO NACIONAL DE IDENTIDAD</option>
+      <option>PASAPORTE</option>
+    </select>
+    <span class="text-red-400" v-if="error">{{ error }}</span>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits, ref, watch, onMounted } from 'vue';
+interface Props {
+  label?: string;
+  placeholder?: string;
+  modelValue?: string | number;
+  error?: string;
+  modelModifiers?: Record<string, boolean>;
+}
+defineProps<Props>();
 
-const props = defineProps({
-  label: {
-    type: String,
-    default: '',
-  },
-  options: {
-    type: Array as () => string[],
-    required: true,
-  },
-  modelValue: {
-    type: String,
-    default: '',
-  },
-});
-
-const emit = defineEmits<{
-  (e: 'update:modelValue', value: string): void;
-}>();
-
-const selectedOption = ref(props.modelValue);
-
-const emitSelectedOption = () => {
-  emit('update:modelValue', selectedOption.value);
-};
-
-onMounted(() => {
-  if (!props.modelValue && props.options.length > 0) {
-    selectedOption.value = props.options[0];
-    emit('update:modelValue', selectedOption.value);
-  }
-});
-
-watch(
-  () => props.modelValue,
-  (newValue) => {
-    selectedOption.value = newValue;
-  },
-);
+defineEmits(['update:modelValue', 'blur', 'input', 'change']);
 </script>
 
 <style scoped></style>
