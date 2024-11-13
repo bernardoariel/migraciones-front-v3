@@ -19,6 +19,7 @@
           v-bind="documentTypeAttrs"
           :error="errors.documentType"
           label="Tipo de Documento"
+          :options="documentTypes"
         />
         <!-- Apellido -->
         <MyInput
@@ -104,6 +105,23 @@ const [lastName, lastNameAttrs] = defineField('lastName');
 const [secondLastName, secondLastNameAttrs] = defineField('secondLastName');
 const [firstName, firstNameAttrs] = defineField('firstName');
 const [otherNames, otherNamesAttrs] = defineField('otherNames');
+
+const documentTypes = ref([
+  { label: 'CEDULA DE IDENTIDAD', value: 1 },
+  { label: 'CERTIFICADO DE VIAJE', value: 2 },
+  { label: 'DOCUMENTO DE VIAJE', value: 3 },
+  { label: 'DOCUMENTO NACIONAL DE IDENTIDAD', value: 4 },
+  { label: 'LAISSER PASSER', value: 5 },
+  { label: 'LIBRETA CIVICA', value: 6 },
+  { label: 'LIBRETA DE EMBARQUE (SEAMAN BOOK)', value: 7 },
+  { label: 'LIBRETA DE ENROLAMIENTO', value: 8 },
+  { label: 'PASAPORTE', value: 9 },
+  { label: 'PASAPORTE DE SERVICIO', value: 10 },
+  { label: 'PASAPORTE DIPLOMATICO', value: 11 },
+  { label: 'PASAPORTE OFICIAL', value: 12 },
+  { label: 'PASAPORTE PROVISORIO', value: 13 },
+  { label: 'SALVOCONDUCTO', value: 14 },
+]);
 const onSubmit = handleSubmit(async (value) => {
   try {
     const payload = {
