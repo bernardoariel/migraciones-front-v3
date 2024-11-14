@@ -13,7 +13,7 @@
         },
       ]"
     >
-      <option disabled value="">{{label}}</option>
+      <option disabled value="">{{ label }}</option>
       <!-- Renderizamos dinámicamente las opciones -->
       <option v-for="option in options" :key="option.value" :value="option.value">
         {{ option.label }}
@@ -24,14 +24,18 @@
 </template>
 
 <script setup lang="ts">
+interface Option {
+  label: string;
+  value: string | number;
+}
 interface Props {
   label?: string;
   modelValue?: string | null; // Cambiado a `string` para que coincida con el tipo de las opciones
   error?: string;
-  options: { label: string; value: string }[]; // Cambiado el tipo de `value` a `string`
+  options?: Option[];
 }
 
-const props = defineProps<Props>();
+defineProps<Props>();
 const emit = defineEmits(['update:modelValue', 'blur', 'input', 'change']);
 
 function onInput(event: Event) {

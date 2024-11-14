@@ -123,11 +123,13 @@ import { apiMigrationsData } from '@/api/apiMigrationsData';
 const validationSchema = yup.object({
   documentNumber: yup.string().matches(/^\d+$/).required().min(3),
   documentType: yup.number().required().oneOf([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]),
+  documentIssuer: yup.string().required().oneOf(['AR', 'BR', 'CL', 'CO', 'MX', 'PE', 'UY']),
   lastName: yup.string().required(),
   secondLastName: yup.string(),
   firstName: yup.string().required().min(3),
   otherNames: yup.string(),
-  nationality: yup.string().required(),
+  nationality: yup.string().required().oneOf(['AR', 'BR', 'CL', 'CO', 'MX', 'PE', 'UY']),
+  sex: yup.string().required().oneOf(['F', 'M']),
   address: yup.string(),
 });
 
