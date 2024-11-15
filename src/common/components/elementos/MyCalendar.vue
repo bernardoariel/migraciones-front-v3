@@ -1,57 +1,67 @@
 <template>
-    <div class="relative">
-      <!-- Label para el input -->
-      <!-- <label for="calendar" class="input input-bordered flex items-center gap-2">
+  <div class="relative">
+    <!-- Label para el input -->
+    <!-- <label for="calendar" class="input input-bordered flex items-center gap-2">
         <span>{{ label }}</span>
       -->
-  
-      <!-- Input del calendario -->
-      <input
-        type="text"
-        id="calendar"
-        class="input input-bordered w-full max-w-xs mt-2"
-        :placeholder="placeholder"
-        v-model="selectedDate"
-      />
-    <!-- </label> -->
-    </div>
-  </template>
-  
-  <script setup lang="ts">
-  import Litepicker from 'litepicker';
-  import { ref, defineProps, defineEmits, onMounted } from 'vue';
-  
-  
-  interface Props {
-    label: string;
-    placeholder: string;
-  }
 
-  const props = defineProps<Props>();
-  
-  const emit = defineEmits(['update:modelValue']);
-  const selectedDate = ref('');
-  
-  onMounted(() => {
-    new Litepicker({
-      element: document.getElementById('calendar'),
-      singleMode: true,
-      format: 'DD-MM-YY',
-      dropdowns: {
-        minYear: 1900,
-        maxYear: new Date().getFullYear(),
-        months: true,
-        years: true,
-      },
-      onSelect: (date) => {
-        selectedDate.value = date.format('DD-MM-YY'); 
-        emit('update:modelValue', selectedDate.value); 
+    <!-- Input del calendario -->
+    <input
+      type="text"
+      id="calendar"
+      class="input input-bordered w-full max-w-xs mt-2"
+      :placeholder="props.placeholder"
+      v-model="selectedDate"
+    />
+    <!-- </label> -->
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+import Litepicker from 'litepicker';
+import type { ILPConfiguration } from 'litepicker/dist/types/interfaces';
+
+interface Props {
+  label: string;
+  placeholder?: string;
+}
+
+const props = defineProps<Props>();
+interface CustomLitepickerConfig extends ILPConfiguration {
+  onSelect?: (date: Date | null) => void;
+}
+
+const emit = defineEmits(['update:modelValue']);
+const selectedDate = ref('');
+
+onMounted(() => {
+  const config: CustomLitepickerConfig = {
+    element: document.getElementById('calendar') as HTMLElement,
+    singleMode: true,
+    format: 'DD-MM-YYYY',
+    dropdowns: {
+      minYear: 1900,
+      maxYear: new Date().getFullYear(),
+      months: true,
+      years: true,
+    },
+    onSelect: (date: Date | null) => {
+      if (date) {
+        selectedDate.value = date.toLocaleDateString('es-ES', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+        });
+        emit('update:modelValue', selectedDate.value);
       }
-    });
-  });
-  </script>
-  
-  <style scoped>
-  /* Personalización adicional si es necesario */
-  </style>
-  
+    },
+  };
+
+  new Litepicker(config);
+});
+</script>
+
+<style scoped>
+/* Personalización adicional si es necesario */
+</style>
