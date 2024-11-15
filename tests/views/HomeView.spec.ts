@@ -1,13 +1,26 @@
 import { mount } from '@vue/test-utils';
 import HomeView from '@/views/HomeView.vue';
-describe('ComponentName.vue', () => {
+
+describe('HomeView.vue', () => {
   test('debe renderizar correctamente el título', () => {
-    const wrapper = mount(HomeView);
+    const wrapper = mount(HomeView, {
+      global: {
+        stubs: {
+          'router-link': true, // Stub del componente router-link
+        },
+      },
+    });
     expect(wrapper.find('h1').text()).toBe('¿Qué deseas hacer hoy?');
   });
 
   test('debe habilitar el primer botón y deshabilitar los demás en la sección de opciones', () => {
-    const wrapper = mount(HomeView);
+    const wrapper = mount(HomeView, {
+      global: {
+        stubs: {
+          'router-link': true,
+        },
+      },
+    });
     const buttons = wrapper.findAll('.join-item');
 
     expect(buttons[0].attributes('checked')).toBeDefined();
@@ -16,9 +29,18 @@ describe('ComponentName.vue', () => {
   });
 
   test('debe tener los enlaces de navegación configurados correctamente', () => {
-    const wrapper = mount(HomeView);
+    const wrapper = mount(HomeView, {
+      global: {
+        stubs: {
+          'router-link': {
+            props: ['to'],
+            template: '<a :href="to"><slot /></a>',
+          },
+        },
+      },
+    });
+
     const routerLinks = wrapper.findAllComponents({ name: 'RouterLink' });
-    console.log('routerLinks::: ', routerLinks);
 
     const expectedRoutes = [
       { name: 'NuevaSolicitud' },
@@ -32,8 +54,16 @@ describe('ComponentName.vue', () => {
       expect(link.props().to).toEqual(expectedRoutes[index]);
     });
   });
+
   test('los enlaces de router-link deben contener las clases esperadas', () => {
-    const wrapper = mount(HomeView);
+    const wrapper = mount(HomeView, {
+      global: {
+        stubs: {
+          'router-link': true,
+        },
+      },
+    });
+
     const routerLinks = wrapper.findAllComponents({ name: 'RouterLink' });
 
     routerLinks.forEach((link) => {
