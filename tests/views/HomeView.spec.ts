@@ -6,7 +6,7 @@ describe('HomeView.vue', () => {
     const wrapper = mount(HomeView, {
       global: {
         stubs: {
-          'router-link': true, // Stub del componente router-link
+          'router-link': true,
         },
       },
     });
