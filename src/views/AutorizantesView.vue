@@ -74,6 +74,12 @@
           label="Nacionalidad"
         />
 
+        <MyCalendar 
+         v-model="dateOfBirht"
+         placeholder="Fecha de Nacimiento"
+         label="Fecha de Nacimiento"
+        />
+
         <!-- Sexo -->
         <MySelect
           v-model="sex"
@@ -117,6 +123,7 @@ import { ref, watch } from 'vue';
 import { useForm } from 'vee-validate';
 import MyInput from '@/common/components/elementos/MyInput.vue';
 import MySelect from '@/common/components/elementos/MySelect.vue';
+import MyCalendar from '@/common/components/elementos/MyCalendar.vue';
 import * as yup from 'yup';
 import { apiMigrationsData } from '@/api/apiMigrationsData';
 
@@ -147,6 +154,7 @@ const [otherNames, otherNamesAttrs] = defineField('otherNames');
 const [nationality, nationalityAttrs] = defineField('nationality');
 const [sex, sexAttrs] = defineField('sex');
 const [address, addressAttrs] = defineField('address');
+const [dateOfBirht, dateOfBirhtAttrs] = defineField('dateOfBirht');
 
 const countries = ref([
   { label: 'Argentina', value: 'AR' },
