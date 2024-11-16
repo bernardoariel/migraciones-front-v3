@@ -118,7 +118,7 @@ import { useForm } from 'vee-validate';
 import MyInput from '@/common/components/elementos/MyInput.vue';
 import MySelect from '@/common/components/elementos/MySelect.vue';
 import * as yup from 'yup';
-import { apiMigrationsData } from '@/api/apiMigrationsData';
+import { apiClient } from '@/api/apiClient';
 
 const validationSchema = yup.object({
   documentNumber: yup.string().matches(/^\d+$/).required().min(3),
@@ -200,7 +200,7 @@ const onSubmit = handleSubmit(async (value) => {
       nombre: value.firstName,
       otros_nombres: value.otherNames,
     };
-    const response = await apiMigrationsData.post('/api/v2/persona/new', payload);
+    const response = await apiClient.post('/api/v2/persona/new', payload);
 
     console.log('Respuesta del servidor:', response.data);
   } catch (error) {

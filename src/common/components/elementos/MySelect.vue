@@ -30,7 +30,7 @@ interface Option {
 }
 interface Props {
   label?: string;
-  modelValue?: string | null; // Cambiado a `string` para que coincida con el tipo de las opciones
+  modelValue?: string | null;
   error?: string;
   options?: Option[];
 }
@@ -39,7 +39,7 @@ defineProps<Props>();
 const emit = defineEmits(['update:modelValue', 'blur', 'input', 'change']);
 
 function onInput(event: Event) {
-  const value = (event.target as HTMLSelectElement).value; // Usar el valor como string
-  emit('update:modelValue', value); // No convertimos a número
+  const value = (event.target as HTMLSelectElement).value;
+  emit('update:modelValue', value);
 }
 </script>
