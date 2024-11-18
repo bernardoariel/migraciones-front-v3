@@ -83,6 +83,11 @@
           label="Sexo"
         />
 
+        <MyCalendar 
+         v-model="dateOfBirht"
+         placeholder="Fecha de Nacimiento"              
+        />
+
         <!-- Domicilio -->
         <MyInput
           v-model="address"
@@ -117,6 +122,7 @@ import { ref, watch } from 'vue';
 import { useForm } from 'vee-validate';
 import MyInput from '@/common/components/elementos/MyInput.vue';
 import MySelect from '@/common/components/elementos/MySelect.vue';
+import MyCalendar from '@/common/components/elementos/MyCalendar.vue';
 import * as yup from 'yup';
 import useAutorizante from '../composables/useAutorizante';
 import type { Autorizante } from '../interfaces/autorizante.interface';
@@ -150,6 +156,7 @@ const [otherNames, otherNamesAttrs] = defineField('otherNames');
 const [nationality, nationalityAttrs] = defineField('nationality');
 const [sex, sexAttrs] = defineField('sex');
 const [address, addressAttrs] = defineField('address');
+const [dateOfBirht, dateOfBirhtAttrs] = defineField('dateOfBirht');
 
 const countries = ref([
   { label: 'Argentina', value: 'AR' },
