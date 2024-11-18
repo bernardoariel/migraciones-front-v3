@@ -1,7 +1,7 @@
 <template>
   <div class="flex justify-center bg-gray-100 min-h-screen">
     <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full my-auto">
-      <h2 class="text-2xl font-semibold mb-6 text-center">Agregando un Acompañante</h2>
+      <h2 class="text-2xl font-semibold mb-6 text-center">Agregando un Autorizante</h2>
 
       <form @submit="onSubmit" class="space-y-4">
         <!-- Número de Documento -->
@@ -20,6 +20,14 @@
           :error="errors.documentType"
           label="Tipo de Documento"
           :options="documentTypes"
+        />
+
+        <MySelect
+          v-model="documentIssuer"
+          v-bind="documentIssuerAttrs"
+          :error="errors.documentType"
+          label="Emisor del Documento"
+          :options="documentIssuerCountries"
         />
         <!-- Apellido -->
         <MyInput
@@ -57,6 +65,32 @@
           placeholder="Ingrese Otros Nombres"
         />
 
+        <!-- Nacionalidad -->
+        <MySelect
+          v-model="nationality"
+          :options="countries"
+          :error="errors.nationality"
+          v-bind="nationalityAttrs"
+          label="Nacionalidad"
+        />
+
+        <!-- Sexo -->
+        <MySelect
+          v-model="sex"
+          :options="sexType"
+          :error="errors.sex"
+          v-bind="sexAttrs"
+          label="Sexo"
+        />
+
+        <!-- Domicilio -->
+        <MyInput
+          v-model="address"
+          v-bind="addressAttrs"
+          :error="errors.address"
+          label="Domicilio"
+          placeholder="Ingrese el Domicilio"
+        />
         <!-- Buttons -->
         <div class="flex justify-between mt-6">
           <router-link class="btn btn-ghost" :to="{ name: 'Home' }">Cancelar</router-link>
@@ -80,24 +114,26 @@
 
 <script lang="ts" setup>
 import { ref, watch } from 'vue';
-import * as yup from 'yup';
 import { useForm } from 'vee-validate';
-
 import MyInput from '@/common/components/elementos/MyInput.vue';
 import MySelect from '@/common/components/elementos/MySelect.vue';
+import * as yup from 'yup';
+import useAutorizante from '../composables/useAutorizante';
+import type { Autorizante } from '../interfaces/autorizante.interface';
 
-import useAcompaneante from '../composables/useAcompaneante';
-import type { Acompaneante } from '../interfaces/acompaneante.interface';
-
-const { createAcompaneante } = useAcompaneante();
+const { createAutorizante } = useAutorizante();
 
 const validationSchema = yup.object({
   documentNumber: yup.string().matches(/^\d+$/).required().min(3),
   documentType: yup.number().required().oneOf([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]),
+  documentIssuer: yup.string().required().oneOf(['AR', 'BR', 'CL', 'CO', 'MX', 'PE', 'UY']),
   lastName: yup.string().required(),
   secondLastName: yup.string(),
   firstName: yup.string().required().min(3),
   otherNames: yup.string(),
+  nationality: yup.string().required().oneOf(['AR', 'BR', 'CL', 'CO', 'MX', 'PE', 'UY']),
+  sex: yup.string().required().oneOf(['F', 'M']),
+  address: yup.string(),
 });
 
 const { values, defineField, errors, handleSubmit, meta, resetForm } = useForm({
@@ -106,10 +142,34 @@ const { values, defineField, errors, handleSubmit, meta, resetForm } = useForm({
 const isFormValid = ref(false);
 const [documentNumber, documentNumberAttrs] = defineField('documentNumber');
 const [documentType, documentTypeAttrs] = defineField('documentType');
+const [documentIssuer, documentIssuerAttrs] = defineField('documentIssuer');
 const [lastName, lastNameAttrs] = defineField('lastName');
 const [secondLastName, secondLastNameAttrs] = defineField('secondLastName');
 const [firstName, firstNameAttrs] = defineField('firstName');
 const [otherNames, otherNamesAttrs] = defineField('otherNames');
+const [nationality, nationalityAttrs] = defineField('nationality');
+const [sex, sexAttrs] = defineField('sex');
+const [address, addressAttrs] = defineField('address');
+
+const countries = ref([
+  { label: 'Argentina', value: 'AR' },
+  { label: 'Brasil', value: 'BR' },
+  { label: 'Chile', value: 'CL' },
+  { label: 'Colombia', value: 'CO' },
+  { label: 'México', value: 'MX' },
+  { label: 'Perú', value: 'PE' },
+  { label: 'Uruguay', value: 'UY' },
+]);
+
+const documentIssuerCountries = ref([
+  { label: 'Argentina', value: 'AR' },
+  { label: 'Brasil', value: 'BR' },
+  { label: 'Chile', value: 'CL' },
+  { label: 'Colombia', value: 'CO' },
+  { label: 'México', value: 'MX' },
+  { label: 'Perú', value: 'PE' },
+  { label: 'Uruguay', value: 'UY' },
+]);
 
 const documentTypes = ref([
   { label: 'CEDULA DE IDENTIDAD', value: 1 },
@@ -128,22 +188,29 @@ const documentTypes = ref([
   { label: 'SALVOCONDUCTO', value: 14 },
 ]);
 
-const onSubmit = handleSubmit(async (value) => {
-  const payload: Acompaneante = {
-    numero_de_documento: value.documentNumber,
-    type_document_id: value.documentType,
-    apellido: value.lastName,
-    segundo_apellido: value.secondLastName,
-    nombre: value.firstName,
-    otros_nombres: value.otherNames,
-  };
-  await createAcompaneante(payload);
-});
+const sexType = ref([
+  { label: 'Femenino', value: 'F' },
+  { label: 'Masculino', value: 'M' },
+]);
 
+const onSubmit = handleSubmit(async (value) => {
+  try {
+    const payload: Autorizante = {
+      numero_de_documento: value.documentNumber,
+      type_document_id: value.documentType,
+      apellido: value.lastName,
+      segundo_apellido: value.secondLastName,
+      nombre: value.firstName,
+      otros_nombres: value.otherNames,
+    };
+    await createAutorizante(payload);
+  } catch (error) {
+    console.error('Error al enviar los datos:', error);
+  }
+});
 const handleReset = () => {
   resetForm(); // Llama a resetForm aquí sin pasarle argumentos
 };
-
 watch(
   () => meta.value,
   (newMeta) => {
