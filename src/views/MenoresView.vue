@@ -145,21 +145,10 @@ const {
   loadOptions: loadDocumentTypes,
   isLoading: isLoadingDocumentTypes,
 } = useDropdownOptions();
-const {
-  options: documentIssuerCountries,
-  loadOptions: loadDocumentIssuerCountries,
-  isLoading: isLoadingDocumentIssuerCountries,
-} = useDropdownOptions();
-const {
-  options: countries,
-  loadOptions: loadCountries,
-  isLoading: isLoadingCountries,
-} = useDropdownOptions();
-const {
-  options: sexType,
-  loadOptions: loadSexType,
-  isLoading: isLoadingSexType,
-} = useDropdownOptions();
+const { options: documentIssuerCountries, loadOptions: loadDocumentIssuerCountries } =
+  useDropdownOptions();
+const { options: countries, loadOptions: loadCountries } = useDropdownOptions();
+const { options: sexType, loadOptions: loadSexType } = useDropdownOptions();
 
 onMounted(() => {
   loadDocumentTypes('api/tiposdocumentos'); // Load document types dynamically
