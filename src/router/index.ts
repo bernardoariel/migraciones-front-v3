@@ -2,7 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
 import NuevaSolicitud from '../views/NuevaSolicitud.vue';
 import MenoresView from '../views/MenoresView.vue';
-import AcompañantesView from '../views/AcompañantesView.vue';
+import AcompaneantesView from '../views/AcompaneantesView.vue';
+import AcompaneanteView from '../views/AcompaneanteView.vue';
 import AutorizantesView from '../views/AutorizantesView.vue';
 import SolicitudesView from '../views/SolicitudesView.vue';
 
@@ -27,7 +28,17 @@ const router = createRouter({
     {
       path: '/acompaneantes',
       name: 'Acompaneantes',
-      component: AcompañantesView,
+      component: AcompaneantesView,
+    },
+    {
+      path: '/acompaneante/new',
+      name: 'AcompaneanteNew',
+      component: AcompaneanteView,
+    },
+    {
+      path: '/acompaneante/:id',
+      name: 'AcompaneanteId',
+      component: AcompaneanteView,
     },
     {
       path: '/autorizantes',
