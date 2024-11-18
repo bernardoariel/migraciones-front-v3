@@ -5,4 +5,8 @@ export interface Menor {
     segundo_apellido: string;
     nombre: string;
     otros_nombres: string;
+    nationality_id: string;
+    sex_id: string;
+    fecha_de_nacimiento: string;
+    domicilio: string;
   }
