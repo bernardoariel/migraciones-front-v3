@@ -83,9 +83,10 @@
           label="Sexo"
         />
 
-        <MyCalendar 
-         v-model="dateOfBirht"
-         placeholder="Fecha de Nacimiento"              
+        <MyCalendar
+          v-model="dateOfBirht"
+          placeholder="Fecha de Nacimiento"
+          date-value="16-02-2024"
         />
 
         <!-- Domicilio -->
