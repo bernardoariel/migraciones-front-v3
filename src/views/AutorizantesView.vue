@@ -76,8 +76,7 @@
 
         <MyCalendar 
          v-model="dateOfBirht"
-         placeholder="Fecha de Nacimiento"
-         label="Fecha de Nacimiento"
+         placeholder="Fecha de Nacimiento"         
         />
 
         <!-- Sexo -->

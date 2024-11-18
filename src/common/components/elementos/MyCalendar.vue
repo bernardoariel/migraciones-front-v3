@@ -5,7 +5,7 @@
         type="text"
         id="calendar"
         class="input input-bordered w-full max-w-xs mt-2"
-        :placeholder="props.placeholder"
+         :placeholder="props.placeholder"
         v-model="selectedDate"
       />
     </div>
@@ -17,10 +17,10 @@
   import type { ILPConfiguration } from 'litepicker/dist/types/interfaces';
   
   interface Props {
-    label: string;
-    placeholder?: string;  
+    dateValue?: string | null;
+    placeholder?: string
   }
-  
+
   const props = defineProps<Props>();
   interface CustomLitepickerConfig extends ILPConfiguration {
     onSelect?: (date: Date | null) => void;
@@ -41,16 +41,17 @@
         years: true,
       },
       onSelect: (date: Date | null) => {
-        if (date) {         
+        if (date) {
+         
           selectedDate.value = date.toLocaleDateString('es-ES', {
             day: '2-digit',
             month: '2-digit',
             year: 'numeric',
           });
-          emit('update:modelValue', selectedDate.value); 
+          emit('update:modelValue', selectedDate.value); // Emitimos el valor al padre
         } else {
-          selectedDate.value = null;
-          emit('update:modelValue', selectedDate.value); 
+          selectedDate.value = null; // En caso de que no se haya seleccionado fecha
+          emit('update:modelValue', selectedDate.value); // Emitimos null al padre
         }
       },
     };
