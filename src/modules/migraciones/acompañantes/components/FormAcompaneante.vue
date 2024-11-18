@@ -112,7 +112,7 @@ const [secondLastName, secondLastNameAttrs] = defineField('secondLastName');
 const [firstName, firstNameAttrs] = defineField('firstName');
 const [otherNames, otherNamesAttrs] = defineField('otherNames');
 
-const { options: documentTypes, isLoading, error, loadOptions } = useDropdownOptions();
+const { options: documentTypes, loadOptions } = useDropdownOptions();
 onMounted(() => {
   loadOptions('api/tiposdocumentos');
 });

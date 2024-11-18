@@ -11,8 +11,8 @@ export default function useDropdownOptions() {
     try {
       const response = await fetchDropdownOptions(endpoint);
       options.value = response.map((item) => ({
-        label: item.descripcion, // Mapea la descripción como label
-        value: item.id, // Usa el id como value
+        label: item.descripcion,
+        value: item.id,
       }));
       console.log('options.value::: ', options.value);
     } catch (err) {
