@@ -1,5 +1,5 @@
 <template>
-  <div class="navbar">
+  <div class="navbar border-b border-gray-200 shadow-sm bg-white">
     <div class="flex-1">
       <router-link
         :to="{ name: 'Home' }"
