@@ -118,17 +118,20 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { useForm } from 'vee-validate';
 import MyInput from '@/common/components/elementos/MyInput.vue';
 import MySelect from '@/common/components/elementos/MySelect.vue';
 import MyCalendar from '@/common/components/elementos/MyCalendar.vue';
 import * as yup from 'yup';
-import useAutorizante from '../composables/useAutorizante';
 import type { Autorizante } from '../interfaces/autorizante.interface';
+import usePerson from '../../../../common/composables/usePerson';
 
-const { createAutorizante } = useAutorizante();
-
+const { createPerson, fetchAllPersonById, updatePerson } = usePerson();
+interface Props {
+  autorizante: number | null;
+}
+const props = defineProps<Props>();
 const validationSchema = yup.object({
   documentNumber: yup.string().matches(/^\d+$/).required().min(3),
   documentType: yup.number().required().oneOf([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]),
@@ -142,7 +145,7 @@ const validationSchema = yup.object({
   address: yup.string(),
 });
 
-const { values, defineField, errors, handleSubmit, meta, resetForm } = useForm({
+const { values, defineField, errors, handleSubmit, meta, resetForm , setValues } = useForm({
   validationSchema,
 });
 const isFormValid = ref(false);
@@ -215,9 +218,27 @@ const onSubmit = handleSubmit(async (value) => {
       fecha_de_nacimiento: value.dateOfBirht,
       issuer_document_id: value.documentIssuer
     };
-    await createAutorizante(payload);
+    if (props.autorizante) {
+        await updatePerson(props.autorizante, payload);
+        return;
+    }
+  await createPerson(payload);
   } catch (error) {
     console.error('Error al enviar los datos:', error);
+  }
+});
+onMounted(async () => {
+  if (props.autorizante) {
+    const data = await fetchAllPersonById(props.autorizante);
+
+    setValues({
+      documentNumber: data.numero_de_documento,
+      documentType: String(data.type_document_id),
+      lastName: data.apellido,
+      secondLastName: data.segundo_apellido || '',
+      firstName: data.nombre,
+      otherNames: data.otros_nombres || '',
+    });
   }
 });
 const handleReset = () => {
