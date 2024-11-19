@@ -3,7 +3,7 @@ import type { Acompaneante } from '../interfaces/acompaneante.interface';
 
 export const create = async (value: Acompaneante) => {
   try {
-    const response = await apiMigrationsData.post('/api/v2/persona/new', value);
+    const response = await apiMigrationsData.post('/v2/persona/new', value);
     return response.data;
   } catch (error) {
     console.error('Error al enviar los datos:', error);
@@ -14,7 +14,7 @@ export const create = async (value: Acompaneante) => {
 // Obtener todos los acompañantes
 export const getAll = async () => {
   try {
-    const response = await apiMigrationsData.get('/api/personas');
+    const response = await apiMigrationsData.get('/personas');
     return response.data;
   } catch (error) {
     console.error('Error al obtener los datos:', error);
@@ -25,10 +25,20 @@ export const getAll = async () => {
 // Obtener un acompañante por ID
 export const getById = async (id: number) => {
   try {
-    const response = await apiMigrationsData.get(`/api/v2/personaById/${id}`);
+    const response = await apiMigrationsData.get(`/v2/personaById/${id}`);
     return response.data;
   } catch (error) {
     console.error(`Error al obtener el acompañante con ID ${id}:`, error);
+    throw error;
+  }
+};
+
+export const update = async (id: number, value: Acompaneante) => {
+  try {
+    const response = await apiMigrationsData.put(`/v2/persona/update/${id}`, value);
+    return response.data;
+  } catch (error) {
+    console.error(`Error al actualizar el acompañante con ID ${id}:`, error);
     throw error;
   }
 };

@@ -1,5 +1,5 @@
 <template>
-  <FormAcompaneante :acompanenante="acompaneante" />
+  <FormAcompaneante :acompaneante="acompaneante" />
 </template>
 
 <script setup lang="ts">

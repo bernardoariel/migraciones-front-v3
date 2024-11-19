@@ -79,7 +79,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import * as yup from 'yup';
 import { useForm } from 'vee-validate';
 
@@ -90,12 +90,10 @@ import useAcompaneante from '../composables/useAcompaneante';
 import type { Acompaneante } from '../interfaces/acompaneante.interface';
 
 interface Props {
-  acompanenante?: number | null;
+  acompaneante: number | null;
 }
-defineProps<Props>();
-const { createAcompaneante, fetchAllAcompaneantes, fetchAcompaneanteById } = useAcompaneante();
-console.log('fetchAllAcompaneantes::: ', fetchAllAcompaneantes());
-// console.log('fetchAcompaneanteById::: ', fetchAcompaneanteById);
+const props = defineProps<Props>();
+const { createAcompaneante, fetchAcompaneanteById, updateAcompaneante } = useAcompaneante();
 
 const validationSchema = yup.object({
   documentNumber: yup.string().matches(/^\d+$/).required().min(3),
@@ -106,7 +104,7 @@ const validationSchema = yup.object({
   otherNames: yup.string(),
 });
 
-const { values, defineField, errors, handleSubmit, meta, resetForm } = useForm({
+const { values, defineField, errors, handleSubmit, meta, resetForm, setValues } = useForm({
   validationSchema,
 });
 const isFormValid = ref(false);
@@ -143,9 +141,26 @@ const onSubmit = handleSubmit(async (value) => {
     nombre: value.firstName,
     otros_nombres: value.otherNames,
   };
+  if (props.acompaneante) {
+    await updateAcompaneante(props.acompaneante, payload);
+    return;
+  }
   await createAcompaneante(payload);
 });
+onMounted(async () => {
+  if (props.acompaneante) {
+    const data = await fetchAcompaneanteById(props.acompaneante);
 
+    setValues({
+      documentNumber: data.numero_de_documento,
+      documentType: String(data.type_document_id),
+      lastName: data.apellido,
+      secondLastName: data.segundo_apellido || '',
+      firstName: data.nombre,
+      otherNames: data.otros_nombres || '',
+    });
+  }
+});
 const handleReset = () => {
   resetForm(); // Llama a resetForm aquí sin pasarle argumentos
 };
