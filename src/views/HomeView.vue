@@ -53,7 +53,7 @@
           Autorizantes
         </router-link>
         <router-link
-          :to="{ name: 'AcompaneanteNew' }"
+          :to="{ name: 'Acompaneantes' }"
           class="btn bg-gray-200 px-6 py-2 rounded-md text-center"
         >
           Acompañantes
