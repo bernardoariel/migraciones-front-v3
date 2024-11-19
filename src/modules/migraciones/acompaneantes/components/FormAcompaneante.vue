@@ -89,7 +89,13 @@ import MySelect from '@/common/components/elementos/MySelect.vue';
 import useAcompaneante from '../composables/useAcompaneante';
 import type { Acompaneante } from '../interfaces/acompaneante.interface';
 
-const { createAcompaneante } = useAcompaneante();
+interface Props {
+  acompanenante?: number | null;
+}
+defineProps<Props>();
+const { createAcompaneante, fetchAllAcompaneantes, fetchAcompaneanteById } = useAcompaneante();
+console.log('fetchAllAcompaneantes::: ', fetchAllAcompaneantes());
+// console.log('fetchAcompaneanteById::: ', fetchAcompaneanteById);
 
 const validationSchema = yup.object({
   documentNumber: yup.string().matches(/^\d+$/).required().min(3),
