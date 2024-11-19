@@ -148,13 +148,13 @@ const [address, addressAttrs] = defineField('address');
 const [dateOfBirht, dateOfBirhtAttrs] = defineField('dateOfBirht');
 
 const countries = ref([
-  { label: 'Argentina', value: 'AR' },
-  { label: 'Brasil', value: 'BR' },
-  { label: 'Chile', value: 'CL' },
-  { label: 'Colombia', value: 'CO' },
-  { label: 'México', value: 'MX' },
-  { label: 'Perú', value: 'PE' },
-  { label: 'Uruguay', value: 'UY' },
+  { label: 'Argentina', value: '1' },
+  { label: 'Brasil', value: '2' },
+  { label: 'Chile', value: '3' },
+  { label: 'Colombia', value: '4' },
+  { label: 'México', value: '5' },
+  { label: 'Perú', value: '6' },
+  { label: 'Uruguay', value: '7' },
 ]);
 
 const documentTypes = ref([
@@ -175,8 +175,8 @@ const documentTypes = ref([
 ]);
 
 const sexType = ref([
-  { label: 'Femenino', value: 'F' },
-  { label: 'Masculino', value: 'M' },
+  { label: 'Femenino', value: '1' },
+  { label: 'Masculino', value: '2' },
 ]);
 
 const onSubmit = handleSubmit(async (value) => {
@@ -188,9 +188,10 @@ const onSubmit = handleSubmit(async (value) => {
       segundo_apellido: value.secondLastName,
       nombre: value.firstName,
       otros_nombres: value.otherNames,
-      // nacionalidad: value.nationality,
-      // sexo: value.sex,
-      // domicilio: value.address
+      nationality_id: value.nationality,
+      sex_id: value.sex,
+      domicilio: value.address,
+      fecha_de_nacimiento: value.dateOfBirht
     };
     await createMenor(payload);
   } catch (error) {

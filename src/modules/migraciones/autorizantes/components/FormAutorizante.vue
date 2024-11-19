@@ -85,8 +85,7 @@
 
         <MyCalendar
           v-model="dateOfBirht"
-          placeholder="Fecha de Nacimiento"
-          date-value="16-02-2024"
+          placeholder="Fecha de Nacimiento"          
         />
 
         <!-- Domicilio -->
@@ -133,13 +132,13 @@ const { createAutorizante } = useAutorizante();
 const validationSchema = yup.object({
   documentNumber: yup.string().matches(/^\d+$/).required().min(3),
   documentType: yup.number().required().oneOf([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]),
-  documentIssuer: yup.string().required().oneOf(['AR', 'BR', 'CL', 'CO', 'MX', 'PE', 'UY']),
+  documentIssuer: yup.string().required().oneOf(['1', '2', '3', '4', '5', '6', '7']),
   lastName: yup.string().required(),
   secondLastName: yup.string(),
   firstName: yup.string().required().min(3),
   otherNames: yup.string(),
-  nationality: yup.string().required().oneOf(['AR', 'BR', 'CL', 'CO', 'MX', 'PE', 'UY']),
-  sex: yup.string().required().oneOf(['F', 'M']),
+  nationality: yup.string().required().oneOf(['1', '2', '3', '4', '5', '6', '7']),
+  sex: yup.string().required().oneOf(['1', '2']),
   address: yup.string(),
 });
 
@@ -160,23 +159,23 @@ const [address, addressAttrs] = defineField('address');
 const [dateOfBirht, dateOfBirhtAttrs] = defineField('dateOfBirht');
 
 const countries = ref([
-  { label: 'Argentina', value: 'AR' },
-  { label: 'Brasil', value: 'BR' },
-  { label: 'Chile', value: 'CL' },
-  { label: 'Colombia', value: 'CO' },
-  { label: 'México', value: 'MX' },
-  { label: 'Perú', value: 'PE' },
-  { label: 'Uruguay', value: 'UY' },
+  { label: 'Argentina', value: '1' },
+  { label: 'Brasil', value: '2' },
+  { label: 'Chile', value: '3' },
+  { label: 'Colombia', value: '4' },
+  { label: 'México', value: '5' },
+  { label: 'Perú', value: '6' },
+  { label: 'Uruguay', value: '7' },
 ]);
 
 const documentIssuerCountries = ref([
-  { label: 'Argentina', value: 'AR' },
-  { label: 'Brasil', value: 'BR' },
-  { label: 'Chile', value: 'CL' },
-  { label: 'Colombia', value: 'CO' },
-  { label: 'México', value: 'MX' },
-  { label: 'Perú', value: 'PE' },
-  { label: 'Uruguay', value: 'UY' },
+  { label: 'Argentina', value: '1' },
+  { label: 'Brasil', value: '2' },
+  { label: 'Chile', value: '3' },
+  { label: 'Colombia', value: '4' },
+  { label: 'México', value: '5' },
+  { label: 'Perú', value: '6' },
+  { label: 'Uruguay', value: '7' },
 ]);
 
 const documentTypes = ref([
@@ -197,8 +196,8 @@ const documentTypes = ref([
 ]);
 
 const sexType = ref([
-  { label: 'Femenino', value: 'F' },
-  { label: 'Masculino', value: 'M' },
+  { label: 'Femenino', value: '1' },
+  { label: 'Masculino', value: '2' },
 ]);
 
 const onSubmit = handleSubmit(async (value) => {
@@ -210,6 +209,11 @@ const onSubmit = handleSubmit(async (value) => {
       segundo_apellido: value.secondLastName,
       nombre: value.firstName,
       otros_nombres: value.otherNames,
+      nationality_id: value.nationality,
+      sex_id: value.sex,
+      domicilio: value.address,
+      fecha_de_nacimiento: value.dateOfBirht,
+      issuer_document_id: value.documentIssuer
     };
     await createAutorizante(payload);
   } catch (error) {
