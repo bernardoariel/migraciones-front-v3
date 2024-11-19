@@ -1,5 +1,5 @@
 <template>
-  <FormAcompaneante :acompanenante="params.id" />
+  <FormAcompaneante :acompaneante="acompaneante" />
 </template>
 
 <script setup lang="ts">
@@ -7,4 +7,5 @@ import FormAcompaneante from '@/modules/migraciones/acompaneantes/components/For
 import { useRoute } from 'vue-router';
 
 const { params } = useRoute();
+const acompaneante = +params.id ? +params.id : null;
 </script>

@@ -1,7 +1,7 @@
 import { apiMigrationsData } from '@/api/apiMigrationsData';
-import type { Acompaneante } from '../interfaces/acompaneante.interface';
+import type { Person } from '../interfaces/person.interface';
 
-export const create = async (value: Acompaneante) => {
+export const create = async (value: Partial<Person>) => {
   try {
     const response = await apiMigrationsData.post('/v2/persona/new', value);
     return response.data;
@@ -11,7 +11,6 @@ export const create = async (value: Acompaneante) => {
   }
 };
 
-// Obtener todos los acompañantes
 export const getAll = async () => {
   try {
     const response = await apiMigrationsData.get('/personas');
@@ -22,7 +21,6 @@ export const getAll = async () => {
   }
 };
 
-// Obtener un acompañante por ID
 export const getById = async (id: number) => {
   try {
     const response = await apiMigrationsData.get(`/v2/personaById/${id}`);
@@ -33,7 +31,7 @@ export const getById = async (id: number) => {
   }
 };
 
-export const update = async (id: number, value: Acompaneante) => {
+export const update = async (id: number, value: Partial<Person>) => {
   try {
     const response = await apiMigrationsData.put(`/v2/persona/update/${id}`, value);
     return response.data;
