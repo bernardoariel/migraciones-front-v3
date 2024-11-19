@@ -86,14 +86,14 @@ import { useForm } from 'vee-validate';
 import MyInput from '@/common/components/elementos/MyInput.vue';
 import MySelect from '@/common/components/elementos/MySelect.vue';
 
-import useAcompaneante from '../composables/useAcompaneante';
 import type { Acompaneante } from '../interfaces/acompaneante.interface';
+import usePerson from '../../../../common/composables/usePerson';
 
 interface Props {
   acompaneante: number | null;
 }
 const props = defineProps<Props>();
-const { createAcompaneante, fetchAcompaneanteById, updateAcompaneante } = useAcompaneante();
+const { createPerson, fetchAllPersonById, updatePerson } = usePerson();
 
 const validationSchema = yup.object({
   documentNumber: yup.string().matches(/^\d+$/).required().min(3),
@@ -142,14 +142,14 @@ const onSubmit = handleSubmit(async (value) => {
     otros_nombres: value.otherNames,
   };
   if (props.acompaneante) {
-    await updateAcompaneante(props.acompaneante, payload);
+    await updatePerson(props.acompaneante, payload);
     return;
   }
-  await createAcompaneante(payload);
+  await createPerson(payload);
 });
 onMounted(async () => {
   if (props.acompaneante) {
-    const data = await fetchAcompaneanteById(props.acompaneante);
+    const data = await fetchAllPersonById(props.acompaneante);
 
     setValues({
       documentNumber: data.numero_de_documento,
