@@ -23,7 +23,17 @@ const router = createRouter({
     {
       path: '/menores',
       name: 'Menores',
-      component: MenoresView,
+      component: MenoresView,  
+    },
+    {
+      path: '/menores/new',
+      name: 'MenoresNew',
+      component: MenoresView,  
+    },
+    {
+      path: '/menores/:id',
+      name: 'MenoresId',
+      component: MenoresView,  
     },
     {
       path: '/acompaneantes',
@@ -43,7 +53,17 @@ const router = createRouter({
     {
       path: '/autorizantes',
       name: 'Autorizantes',
-      component: AutorizantesView,
+      component: AutorizantesView,     
+    },
+    {
+      path: '/autorizantes/new',
+      name: 'AutorizantesNew',
+      component: AutorizantesView,     
+    },
+    {
+      path: '/autorizantes/:id',
+      name: 'AutorizantesId',
+      component: AutorizantesView,     
     },
     {
       path: '/solicitudes',
