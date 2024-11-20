@@ -37,7 +37,7 @@ import { calculateAge } from '../helpers/calculateAge';
 import type { Person } from '../interfaces/person.interface';
 
 interface Props {
-  person: Person;
+  person: Partial<Person>;
 }
 const props = defineProps<Props>();
 const age = props.person.fecha_de_nacimiento

@@ -1,46 +1,69 @@
-import { create, getAll, getById, update } from '../services/actions';
 import type { Acompaneante } from '../interfaces/acompaneante.interface';
+import { getAll } from '../../../../common/services/persons';
+import { ref, computed } from 'vue';
 
 const useAcompaneante = () => {
-  const createAcompaneante = async (value: Acompaneante) => {
-    try {
-      await create(value);
-    } catch (error) {
-      console.error('Error al crear el acompañante:', error);
-    }
+  const acompaneantes = ref<Acompaneante[]>([]); // Almacena los datos originales
+  const searchQuery = ref(''); // Consulta de búsqueda
+  const categoryFilter = ref(''); // Categoría activa: 'menores', 'autorizantes', 'acompaneantes'
+
+  // Fetch de todos los acompaneantes
+  const fetchAllAcompaneante = async (): Promise<void> => {
+    const data = await getAll();
+    acompaneantes.value = data; // Asigna los datos obtenidos
   };
-  const fetchAllAcompaneante = async () => {
-    try {
-      const data = await getAll();
-      return data;
-    } catch (error) {
-      console.error('Error al obtener los acompañantes:', error);
+
+  // Filtro por categoría
+  const filterByCategory = (category: string): Acompaneante[] => {
+    switch (category) {
+      case 'menores':
+        return acompaneantes.value.filter((person) => {
+          if (!person.fecha_de_nacimiento) return false; // Si no tiene fecha de nacimiento, ignóralo
+          const birthDate = new Date(person.fecha_de_nacimiento);
+          const age = new Date().getFullYear() - birthDate.getFullYear();
+          return age < 18;
+        });
+      case 'autorizantes':
+        return acompaneantes.value.filter((person) => {
+          if (!person.fecha_de_nacimiento) return false;
+          const birthDate = new Date(person.fecha_de_nacimiento);
+          const age = new Date().getFullYear() - birthDate.getFullYear();
+          return age >= 18;
+        });
+      case 'acompaneantes':
+        return acompaneantes.value.filter(
+          (person) => person.sex_id === null && person.domicilio === null,
+        );
+      default:
+        return acompaneantes.value;
     }
   };
 
-  const fetchAcompaneanteById = async (id: number) => {
-    try {
-      const data = await getById(id);
-      return data;
-    } catch (error) {
-      console.error(`Error al obtener el acompañante con ID ${id}:`, error);
-    }
-  };
+  // Computación para filtrar los datos según la búsqueda y categoría
+  const filteredAcompaneantes = computed(() => {
+    const query = searchQuery.value.toLowerCase();
+    const categoryFiltered = filterByCategory(categoryFilter.value);
 
-  const updateAcompaneante = async (id: number, value: Partial<Acompaneante>) => {
-    console.log('value::: ', value);
-    console.log('id::: ', id);
-    try {
-      await update(id, value);
-    } catch (error) {
-      console.error(`Error al actualizar el acompañante con ID ${id}:`, error);
+    if (!query) {
+      // Si no hay búsqueda, retorna solo los filtrados por categoría
+      return categoryFiltered;
     }
-  };
+
+    // Si hay búsqueda, filtra también por el término
+    return categoryFiltered.filter(
+      (person) =>
+        person.nombre.toLowerCase().includes(query) ||
+        person.apellido.toLowerCase().includes(query) ||
+        person.numero_de_documento.toString().includes(query),
+    );
+  });
+
   return {
-    createAcompaneante,
     fetchAllAcompaneante,
-    fetchAcompaneanteById,
-    updateAcompaneante,
+    acompaneantes,
+    filteredAcompaneantes,
+    searchQuery,
+    categoryFilter,
   };
 };
 

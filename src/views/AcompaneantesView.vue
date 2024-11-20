@@ -2,7 +2,27 @@
   <div class="flex flex-col lg:flex-row gap-6 bg-gray-100 min-h-screen p-4">
     <!-- Tabla de Personas -->
     <div class="flex-[2] bg-white p-4 rounded-lg shadow-md max-h-[85vh] overflow-y-hidden">
-      <h2 class="text-xl font-semibold mb-4">Lista de Personas</h2>
+      <div class="flex justify-between items-center">
+        <h2 class="text-xl font-semibold mb-4">Lista de Personas</h2>
+        <ul class="menu menu-horizontal bg-base-200 rounded-box">
+          <li>
+            <a class="ml-2" :class="{ active: activeItem === 1 }" @click="setActiveItem(1)"
+              >Acompañantes</a
+            >
+          </li>
+          <li>
+            <a class="ml-2" :class="{ active: activeItem === 2 }" @click="setActiveItem(2)"
+              >Menores</a
+            >
+          </li>
+          <li>
+            <a class="ml-2" :class="{ active: activeItem === 3 }" @click="setActiveItem(3)"
+              >Autorizantes</a
+            >
+          </li>
+        </ul>
+      </div>
+
       <PersonTable />
     </div>
 
@@ -17,6 +37,14 @@
 <script setup lang="ts">
 import PersonTable from '@/common/components/PersonTable.vue';
 import FormAcompaneante from '@/modules/migraciones/acompaneantes/components/FormAcompaneante.vue';
+import { ref } from 'vue';
+// Estado para manejar el ítem activo
+const activeItem = ref<number | null>(null);
+
+// Función para cambiar el ítem activo
+const setActiveItem = (item: number) => {
+  activeItem.value = item;
+};
 </script>
 
 <style scoped>

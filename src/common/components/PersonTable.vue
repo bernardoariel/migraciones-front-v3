@@ -3,13 +3,7 @@
     <div class="px-2 py-2 flex items-center justify-between">
       <!-- Barra de búsqueda -->
       <label class="input input-bordered flex items-center gap-2 input-primary w-full">
-        <input
-          type="text"
-          class="grow"
-          placeholder="Buscar"
-          v-model="searchQuery"
-          @input="filterPersons"
-        />
+        <input type="text" class="grow" placeholder="Buscar" v-model="searchQuery" />
         <kbd class="kbd kbd-sm">ctrl</kbd>
         <kbd class="kbd kbd-sm">alt</kbd>
         <svg
@@ -26,6 +20,14 @@
         </svg>
       </label>
     </div>
+    <div class="py-4">
+      <select v-model="categoryFilter" class="select select-bordered w-full">
+        <option value="">Todos</option>
+        <option value="menores">Menores</option>
+        <option value="autorizantes">Autorizantes</option>
+        <option value="acompaneantes">Acompañantes</option>
+      </select>
+    </div>
     <!-- Scroll Area -->
     <div class="entry-scrollarea">
       <!-- Spinner -->
@@ -35,9 +37,9 @@
       <!-- Items -->
       <div v-else class="flex flex-col w-full">
         <PersonItems
-          v-for="acompaneante in paginatedPersons"
-          :key="acompaneante.id"
-          :person="acompaneante"
+          v-for="person in paginatedPersons"
+          :key="person.id"
+          :person="person"
           class="w-full"
         />
       </div>
@@ -78,27 +80,33 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import PersonItems from './PersonItems.vue';
-import usePerson from '../composables/usePerson';
-import type { Person } from '../interfaces/person.interface';
 
-const { fetchAllPerson } = usePerson();
-const acompaneantes = ref<Person[]>([]);
-const searchQuery = ref('');
-const filteredPersons = ref<Person[]>([]);
-const loading = ref(true);
+import useAcompaneante from '../../modules/migraciones/acompaneantes/composables/useAcompaneante';
+// Usa el composable
+const {
+  fetchAllAcompaneante, // Método para cargar los datos
+  filteredAcompaneantes, // Datos filtrados automáticamente
+  searchQuery, // Input de búsqueda
+  categoryFilter, // Filtro por categoría
+} = useAcompaneante();
+
+const loading = ref(true); // Controla el estado de carga
 
 // Paginación
 const currentPage = ref(1);
 const itemsPerPage = 10;
 
-const totalPages = computed(() => Math.ceil(filteredPersons.value.length / itemsPerPage));
+// Total de páginas
+const totalPages = computed(() => Math.ceil(filteredAcompaneantes.value.length / itemsPerPage));
 
+// Datos paginados
 const paginatedPersons = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage;
   const end = start + itemsPerPage;
-  return filteredPersons.value.slice(start, end);
+  return filteredAcompaneantes.value.slice(start, end);
 });
 
+// Paginación: Funciones para cambiar de página
 const goToPage = (page: number) => {
   if (page >= 1 && page <= totalPages.value) {
     currentPage.value = page;
@@ -117,25 +125,10 @@ const nextPage = () => {
   }
 };
 
-// Filtrar por búsqueda
-const filterPersons = () => {
-  const query = searchQuery.value.toLowerCase();
-  filteredPersons.value = acompaneantes.value.filter(
-    (person) =>
-      person.nombre.toLowerCase().includes(query) ||
-      person.apellido.toLowerCase().includes(query) ||
-      person.numero_de_documento.toString().includes(query), // Convertimos a string
-  );
-  currentPage.value = 1; // Reinicia a la primera página después de filtrar
-};
-
+// Carga inicial
 onMounted(async () => {
-  const data = await fetchAllPerson();
-  if (data) {
-    acompaneantes.value = data;
-    filteredPersons.value = data; // Inicializa el filtrado
-  }
-  loading.value = false;
+  await fetchAllAcompaneante();
+  loading.value = false; // Finaliza el estado de carga
 });
 </script>
 
