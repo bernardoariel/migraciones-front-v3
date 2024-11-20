@@ -6,8 +6,8 @@
         class="inline-flex items-center justify-center p-1 rounded-full hover:bg-gray-200 transition duration-200 ease-in-out"
       >
         <svg
-          width="50"
-          height="50"
+          width="35"
+          height="35"
           viewBox="0 0 24 24"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
