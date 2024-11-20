@@ -2,7 +2,7 @@
   <div class="entry-list-container">
     <div class="px-2 py-2 flex items-center justify-between">
       <!-- Barra de búsqueda -->
-      <label class="input input-bordered flex items-center gap-2 input-primary">
+      <label class="input input-bordered flex items-center gap-2 input-primary w-full">
         <input
           type="text"
           class="grow"
