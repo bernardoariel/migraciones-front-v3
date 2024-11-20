@@ -1,6 +1,8 @@
 <template>
-  <NavBar class="bg-gray-100" />
-  <MainLayout class="bg-gray-100" />
+  <div class="flex flex-col h-full">
+    <NavBar class="bg-gray-100 flex-none" />
+    <MainLayout class="bg-gray-100 flex-auto" />
+  </div>
 </template>
 
 <script setup lang="ts">

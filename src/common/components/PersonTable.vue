@@ -1,8 +1,15 @@
 <template>
   <div class="entry-list-container">
-    <div class="px-2 pt-2">
+    <div class="px-2 py-2 flex items-center justify-between">
+      <!-- Barra de búsqueda -->
       <label class="input input-bordered flex items-center gap-2 input-primary">
-        <input type="text" class="grow" placeholder="Buscar" />
+        <input
+          type="text"
+          class="grow"
+          placeholder="Buscar"
+          v-model="searchQuery"
+          @input="filterPersons"
+        />
         <kbd class="kbd kbd-sm">ctrl</kbd>
         <kbd class="kbd kbd-sm">alt</kbd>
         <svg
@@ -19,37 +26,137 @@
         </svg>
       </label>
     </div>
-  </div>
-  <div class="entry-scrollarea">
-    <PersonItems v-for="acompaneante in acompaneantes" :key="acompaneante.id" />
+    <!-- Scroll Area -->
+    <div class="entry-scrollarea">
+      <!-- Spinner -->
+      <div v-if="loading" class="flex items-center justify-center h-full">
+        <span class="loading loading-dots loading-lg text-primary"></span>
+      </div>
+      <!-- Items -->
+      <div v-else class="flex flex-col w-full">
+        <PersonItems
+          v-for="acompaneante in paginatedPersons"
+          :key="acompaneante.id"
+          :person="acompaneante"
+          class="w-full"
+        />
+      </div>
+    </div>
+    <!-- Paginación -->
+    <div class="pagination-container">
+      <div class="flex justify-center mt-4 gap-2">
+        <button
+          class="btn btn-sm"
+          :class="{ 'btn-disabled': currentPage === 1 }"
+          @click="prevPage"
+          :disabled="currentPage === 1"
+        >
+          Prev
+        </button>
+        <button
+          v-for="page in totalPages"
+          :key="page"
+          class="btn btn-sm"
+          :class="{ 'btn-active': page === currentPage }"
+          @click="goToPage(page)"
+        >
+          {{ page }}
+        </button>
+        <button
+          class="btn btn-sm"
+          :class="{ 'btn-disabled': currentPage === totalPages }"
+          @click="nextPage"
+          :disabled="currentPage === totalPages"
+        >
+          Next
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import PersonItems from './PersonItems.vue';
 import usePerson from '../composables/usePerson';
-import type { Acompaneante } from '@/modules/migraciones/acompaneantes/interfaces/acompaneante.interface';
-import { onMounted } from 'vue';
+import type { Person } from '../interfaces/person.interface';
+
 const { fetchAllPerson } = usePerson();
-const acompaneantes = ref<Acompaneante[]>([]);
+const acompaneantes = ref<Person[]>([]);
+const searchQuery = ref('');
+const filteredPersons = ref<Person[]>([]);
+const loading = ref(true);
+
+// Paginación
+const currentPage = ref(1);
+const itemsPerPage = 10;
+
+const totalPages = computed(() => Math.ceil(filteredPersons.value.length / itemsPerPage));
+
+const paginatedPersons = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage;
+  const end = start + itemsPerPage;
+  return filteredPersons.value.slice(start, end);
+});
+
+const goToPage = (page: number) => {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page;
+  }
+};
+
+const prevPage = () => {
+  if (currentPage.value > 1) {
+    currentPage.value -= 1;
+  }
+};
+
+const nextPage = () => {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value += 1;
+  }
+};
+
+// Filtrar por búsqueda
+const filterPersons = () => {
+  const query = searchQuery.value.toLowerCase();
+  filteredPersons.value = acompaneantes.value.filter(
+    (person) =>
+      person.nombre.toLowerCase().includes(query) ||
+      person.apellido.toLowerCase().includes(query) ||
+      person.numero_de_documento.toString().includes(query), // Convertimos a string
+  );
+  currentPage.value = 1; // Reinicia a la primera página después de filtrar
+};
+
 onMounted(async () => {
   const data = await fetchAllPerson();
   if (data) {
-    //TODO aca habrá que hacer un filtrado en caso de utilizar para los persons
-
     acompaneantes.value = data;
+    filteredPersons.value = data; // Inicializa el filtrado
   }
+  loading.value = false;
 });
 </script>
 
 <style scoped>
 .entry-list-container {
-  border-right: 1px solid #2c3e50;
-  height: 80px;
+  height: calc(100vh - 64px); /* Altura dinámica según el navbar */
+  overflow-x: hidden; /* Elimina scroll horizontal */
 }
+
 .entry-scrollarea {
-  height: calc(100vh - 115px);
-  overflow: scroll;
+  overflow-y: auto; /* Permite solo scroll vertical */
+  display: flex;
+  flex-direction: column;
+}
+
+.pagination-container {
+  height: 50px; /* Ajusta el espacio para la paginación */
+}
+
+.btn-active {
+  background-color: #4f46e5;
+  color: white;
 }
 </style>

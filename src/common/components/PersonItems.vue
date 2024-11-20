@@ -1,24 +1,46 @@
 <template>
-  <div class="entry-container mb-3 pointer p-2">
-    <!-- titulo -->
-    <div class="entry-title d-flex">
-      <span class="text-success fs-5 fw-bold">22</span>
-      <span class="mx-1 fs-5">est</span>
-      <span class="mx-2 fw-light">dni</span>
-    </div>
+  <div class="entry-container mb-3 pointer p-1 border-b border-gray-400 transition-all">
+    <!-- Título con el botón -->
+    <div class="entry-title flex items-center justify-between gap-2">
+      <!-- Información del usuario -->
+      <div class="flex items-center gap-2">
+        <span class="text-primary font-semibold text-lg">{{ person.numero_de_documento }}</span>
+        <span class="ml-3 text-lg uppercase text-gray-800 font-semibold">
+          {{ person.apellido }} {{ person.segundo_apellido }}
+        </span>
+        <span class="font-light capitalize text-gray-600">
+          ,{{ person.nombre }} {{ person.otros_nombres }}
+        </span>
+      </div>
 
-    <div class="entry-description">Esto es un texto que podemos poner</div>
+      <!-- Botón -->
+      <button class="btn btn-primary btn-sm px-4 py-2">editar</button>
+    </div>
+    <!-- Contenido centrado -->
+    <div class="entry-content flex items-center text-gray-500 text-sm">
+      <div v-if="person.domicilio">
+        {{ person.domicilio }}
+      </div>
+      <div class="ml-10">
+        <span v-if="person.fecha_de_nacimiento">
+          Fecha de Nacimiento: {{ person.fecha_de_nacimiento }}
+        </span>
+        <span v-if="person.fecha_de_nacimiento" class="ml-10">Edad: {{ age }}</span>
+      </div>
+      <div class="end"></div>
+    </div>
   </div>
 </template>
 
-<script setup lang="ts"></script>
-<style scoped>
-.entry-container {
-  border-bottom: 1px solid #2c3e50;
-  transition: 0.2s all ease-in;
+<script setup lang="ts">
+import { calculateAge } from '../helpers/calculateAge';
+import type { Person } from '../interfaces/person.interface';
 
-  .entry-description {
-    font-size: 12px;
-  }
+interface Props {
+  person: Person;
 }
-</style>
+const props = defineProps<Props>();
+const age = props.person.fecha_de_nacimiento
+  ? calculateAge(props.person.fecha_de_nacimiento)
+  : null;
+</script>
