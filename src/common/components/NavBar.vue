@@ -3,11 +3,11 @@
     <div class="flex-1">
       <router-link
         :to="{ name: 'Home' }"
-        class="inline-flex items-center justify-center p-1 rounded-full hover:bg-gray-200 transition duration-200 ease-in-out"
+        class="inline-flex items-center justify-center p-1 rounded-box hover:bg-gray-200 transition duration-200 ease-in-out"
       >
         <svg
-          width="35"
-          height="35"
+          width="30"
+          height="30"
           viewBox="0 0 24 24"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -36,7 +36,7 @@
     <div class="flex-none">
       <div class="text-xl mr-5 uppercase text-gray-500">Ariel Bernardo</div>
       <div class="dropdown dropdown-bottom dropdown-end">
-        <div tabindex="0" role="button" class="btn m-1">
+        <div tabindex="0" role="button" class="btn btn-sm rounded-box m-1">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
