@@ -6,17 +6,17 @@
         <h2 class="text-xl font-semibold mb-4">Lista de Personas</h2>
         <ul class="menu menu-horizontal bg-base-200 rounded-box">
           <li>
-            <a class="ml-2" :class="{ active: activeItem === 1 }" @click="setActiveItem(1)"
+            <a class="ml-1" :class="{ active: activeItem === 1 }" @click="setActiveItem(1)"
               >Acompañantes</a
             >
           </li>
           <li>
-            <a class="ml-2" :class="{ active: activeItem === 2 }" @click="setActiveItem(2)"
+            <a class="ml-1" :class="{ active: activeItem === 2 }" @click="setActiveItem(2)"
               >Menores</a
             >
           </li>
           <li>
-            <a class="ml-2" :class="{ active: activeItem === 3 }" @click="setActiveItem(3)"
+            <a class="ml-1" :class="{ active: activeItem === 3 }" @click="setActiveItem(3)"
               >Autorizantes</a
             >
           </li>
