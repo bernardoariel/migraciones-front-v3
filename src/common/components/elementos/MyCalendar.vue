@@ -6,7 +6,7 @@
       id="calendar"
       class="input input-bordered w-full max-w-xs mt-2"
       :placeholder="props.placeholder"
-      v-model="selectedDate"
+      v-model="modelValue" 
     />
   </div>
 </template>
@@ -17,8 +17,8 @@ import Litepicker from 'litepicker';
 import type { ILPConfiguration } from 'litepicker/dist/types/interfaces';
 
 interface Props {
-  dateValue?: string | null;
-  placeholder?: string;
+  modelValue?: string | null;  // La fecha o null
+  placeholder?: string;        // El placeholder opcional
 }
 
 const props = defineProps<Props>();
@@ -27,7 +27,7 @@ interface CustomLitepickerConfig extends ILPConfiguration {
 }
 
 const emit = defineEmits(['update:modelValue']);
-const selectedDate = ref<string | null>(props.dateValue || null);
+const modelValue = ref<string | null>(props.modelValue || null);
 
 onMounted(() => {
   const config: CustomLitepickerConfig = {
@@ -42,15 +42,15 @@ onMounted(() => {
     },
     onSelect: (date: Date | null) => {
       if (date) {
-        selectedDate.value = date.toLocaleDateString('es-ES', {
+        modelValue.value = date.toLocaleDateString('es-ES', {
           day: '2-digit',
           month: '2-digit',
           year: 'numeric',
         });
-        emit('update:modelValue', selectedDate.value); // Emitimos el valor al padre
+        emit('update:modelValue', modelValue.value); // Emitimos el valor al padre
       } else {
-        selectedDate.value = null; // En caso de que no se haya seleccionado fecha
-        emit('update:modelValue', selectedDate.value); // Emitimos null al padre
+        modelValue.value = null;  // En caso de que no se haya seleccionado fecha
+        emit('update:modelValue', modelValue.value);  // Emitimos null al padre
       }
     },
   };

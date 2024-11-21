@@ -215,7 +215,7 @@ const onSubmit = handleSubmit(async (value) => {
       nationality_id: value.nationality,
       sex_id: value.sex,
       domicilio: value.address,
-      fecha_de_nacimiento: value.dateOfBirht,
+      fecha_de_nacimiento: value.dateOfBirht, 
       issuer_document_id: value.documentIssuer
     };
     if (props.autorizante) {
@@ -238,6 +238,11 @@ onMounted(async () => {
       secondLastName: data.segundo_apellido || '',
       firstName: data.nombre,
       otherNames: data.otros_nombres || '',
+      nationality: data.nationality_id,
+      sex: data.sex_id,
+      address: data.domicilio,
+      fecha_de_nacimiento: data.dateOfBirht,
+      documentIssuer: data.issuer_document_id
     });
   }
 });

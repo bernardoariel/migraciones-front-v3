@@ -75,7 +75,12 @@
           label="Sexo"
         />
 
-        <MyCalendar v-model="dateOfBirht" placeholder="Fecha de Nacimiento" />
+        <MyCalendar 
+          v-model="dateOfBirht"
+          placeholder="Fecha de Nacimiento"
+          :error="errors.dateOfBirht"
+          v-bind="dateOfBirhtAttrs"
+        />
 
         <!-- Domicilio -->
         <MyInput
@@ -180,7 +185,7 @@ const sexType = ref([
   { label: 'Masculino', value: '2' },
 ]);
 
-const onSubmit = handleSubmit(async (value) => {
+const onSubmit = handleSubmit(async (value) => {  
   try {
     const payload: Menor = {
       numero_de_documento: value.documentNumber,
@@ -198,6 +203,7 @@ const onSubmit = handleSubmit(async (value) => {
       await updatePerson(props.menor, payload);
       return;
     }
+    console.log("fecha:",value.dateOfBirht)
     await createPerson(payload);
   } catch (error) {
     console.error('Error al enviar los datos:', error);
@@ -214,9 +220,9 @@ onMounted(async () => {
       secondLastName: data.segundo_apellido || '',
       firstName: data.nombre,
       otherNames: data.otros_nombres || '',    
-      nationality_id: data.nationality,
-      sex_id: data.sex,
-      domicilio: data.address,
+      nationality: data.nationality_id,
+      sex: data.sex_id,
+      address: data.domicilio,
       fecha_de_nacimiento: data.dateOfBirht,
     });
   }
