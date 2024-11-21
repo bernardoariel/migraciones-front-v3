@@ -14,7 +14,7 @@
       </div>
 
       <!-- Botón -->
-      <button class="btn btn-primary btn-sm px-4 py-2" @click="emitEdit">editar</button>
+      <button class="btn btn-primary btn-sm px-4 py-2" @click="emitEdit">{{ nameButton }}</button>
     </div>
     <!-- Contenido centrado -->
     <div class="entry-content flex items-center text-gray-500 text-sm">
@@ -38,6 +38,7 @@ import type { Person } from '../interfaces/person.interface';
 
 interface Props {
   person: Partial<Person>;
+  nameButton: string;
 }
 const props = defineProps<Props>();
 const emit = defineEmits(['edit-person']);

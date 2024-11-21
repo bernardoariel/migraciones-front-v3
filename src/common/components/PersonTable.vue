@@ -35,6 +35,7 @@
           :person="person"
           class="w-full"
           @edit-person="emitEditPerson"
+          :nameButton="titleButton"
         />
       </div>
     </div>
@@ -81,9 +82,12 @@ const { fetchAllAcompaneante, filteredAcompaneantes, searchQuery, categoryFilter
   useAcompaneante();
 interface Props {
   category: 'menores' | 'acompaneantes' | 'autorizantes';
+  titleButton?: string;
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+  titleButton: 'editar',
+});
 const emit = defineEmits(['edit-person']);
 categoryFilter.value = props.category;
 
