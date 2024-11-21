@@ -14,7 +14,7 @@
       </div>
 
       <!-- Botón -->
-      <button class="btn btn-primary btn-sm px-4 py-2">editar</button>
+      <button class="btn btn-primary btn-sm px-4 py-2" @click="emitEdit">editar</button>
     </div>
     <!-- Contenido centrado -->
     <div class="entry-content flex items-center text-gray-500 text-sm">
@@ -40,6 +40,10 @@ interface Props {
   person: Partial<Person>;
 }
 const props = defineProps<Props>();
+const emit = defineEmits(['edit-person']);
+const emitEdit = () => {
+  emit('edit-person', props.person.id);
+};
 const age = props.person.fecha_de_nacimiento
   ? calculateAge(props.person.fecha_de_nacimiento)
   : null;

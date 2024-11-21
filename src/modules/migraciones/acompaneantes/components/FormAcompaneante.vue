@@ -169,6 +169,23 @@ watch(
   },
   { deep: true },
 );
+watch(
+  () => props.acompaneante,
+  async (newProps) => {
+    if (newProps) {
+      const data = await fetchAllPersonById(newProps);
+
+      setValues({
+        documentNumber: data.numero_de_documento,
+        documentType: String(data.type_document_id),
+        lastName: data.apellido,
+        secondLastName: data.segundo_apellido || '',
+        firstName: data.nombre,
+        otherNames: data.otros_nombres || '',
+      });
+    }
+  },
+);
 </script>
 
 <style scoped>

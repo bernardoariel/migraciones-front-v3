@@ -6,30 +6,43 @@
         <h2 class="text-xl font-semibold mb-4">Lista de Personas</h2>
         <ul class="menu menu-horizontal bg-base-200 rounded-box">
           <li>
-            <a class="ml-1" :class="{ active: activeItem === 1 }" @click="setActiveItem(1)"
-              >Acompañantes</a
+            <a
+              class="ml-1"
+              :class="{ active: activeItem === 'acompaneantes' }"
+              @click="setActiveItem('acompaneantes')"
             >
+              Acompañantes
+            </a>
           </li>
           <li>
-            <a class="ml-1" :class="{ active: activeItem === 2 }" @click="setActiveItem(2)"
-              >Menores</a
+            <a
+              class="ml-1"
+              :class="{ active: activeItem === 'menores' }"
+              @click="setActiveItem('menores')"
             >
+              Menores
+            </a>
           </li>
           <li>
-            <a class="ml-1" :class="{ active: activeItem === 3 }" @click="setActiveItem(3)"
-              >Autorizantes</a
+            <a
+              class="ml-1"
+              :class="{ active: activeItem === 'autorizantes' }"
+              @click="setActiveItem('autorizantes')"
             >
+              Autorizantes
+            </a>
           </li>
         </ul>
       </div>
 
-      <PersonTable />
+      <!-- Tabla de Personas -->
+      <PersonTable :category="activeItem" @edit-person="handleEditPerson" />
     </div>
 
     <!-- Formulario de Acompañante -->
     <div class="flex-[3] bg-white p-4 rounded-lg shadow-md max-h-[85vh] overflow-auto">
       <h2 class="text-xl font-semibold mb-4">Formulario de Acompañante</h2>
-      <FormAcompaneante :acompaneante="null" />
+      <FormAcompaneante :acompaneante="selectedPersonId" />
     </div>
   </div>
 </template>
@@ -38,12 +51,14 @@
 import PersonTable from '@/common/components/PersonTable.vue';
 import FormAcompaneante from '@/modules/migraciones/acompaneantes/components/FormAcompaneante.vue';
 import { ref } from 'vue';
-// Estado para manejar el ítem activo
-const activeItem = ref<number | null>(null);
-
-// Función para cambiar el ítem activo
-const setActiveItem = (item: number) => {
+const activeItem = ref<'menores' | 'acompaneantes' | 'autorizantes'>('acompaneantes');
+const selectedPersonId = ref<number | null>(null);
+const setActiveItem = (item: 'menores' | 'acompaneantes' | 'autorizantes') => {
   activeItem.value = item;
+};
+const handleEditPerson = (id: number | string) => {
+  selectedPersonId.value = +id;
+  console.log('selectedPersonId.value::: ', selectedPersonId.value);
 };
 </script>
 

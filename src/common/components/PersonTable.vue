@@ -20,14 +20,7 @@
         </svg>
       </label>
     </div>
-    <div class="py-4">
-      <select v-model="categoryFilter" class="select select-bordered w-full">
-        <option value="">Todos</option>
-        <option value="menores">Menores</option>
-        <option value="autorizantes">Autorizantes</option>
-        <option value="acompaneantes">Acompañantes</option>
-      </select>
-    </div>
+
     <!-- Scroll Area -->
     <div class="entry-scrollarea">
       <!-- Spinner -->
@@ -41,6 +34,7 @@
           :key="person.id"
           :person="person"
           class="w-full"
+          @edit-person="emitEditPerson"
         />
       </div>
     </div>
@@ -78,19 +72,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import PersonItems from './PersonItems.vue';
 
 import useAcompaneante from '../../modules/migraciones/acompaneantes/composables/useAcompaneante';
 // Usa el composable
-const {
-  fetchAllAcompaneante, // Método para cargar los datos
-  filteredAcompaneantes, // Datos filtrados automáticamente
-  searchQuery, // Input de búsqueda
-  categoryFilter, // Filtro por categoría
-} = useAcompaneante();
+const { fetchAllAcompaneante, filteredAcompaneantes, searchQuery, categoryFilter } =
+  useAcompaneante();
+interface Props {
+  category: 'menores' | 'acompaneantes' | 'autorizantes';
+}
 
-const loading = ref(true); // Controla el estado de carga
+const props = defineProps<Props>();
+const emit = defineEmits(['edit-person']);
+categoryFilter.value = props.category;
+
+const loading = ref(true);
 
 // Paginación
 const currentPage = ref(1);
@@ -124,12 +121,20 @@ const nextPage = () => {
     currentPage.value += 1;
   }
 };
-
+const emitEditPerson = (id: string | number) => {
+  emit('edit-person', id);
+};
 // Carga inicial
 onMounted(async () => {
   await fetchAllAcompaneante();
   loading.value = false; // Finaliza el estado de carga
 });
+watch(
+  () => props.category,
+  (newProps) => {
+    categoryFilter.value = newProps;
+  },
+);
 </script>
 
 <style scoped>
