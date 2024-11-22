@@ -4,11 +4,11 @@
     <div class="flex-[2] bg-white p-4 rounded-lg shadow-md max-h-[85vh] overflow-y-hidden">
       <div class="flex justify-between items-center">
         <h2 class="text-xl font-semibold mb-4">Lista de Personas</h2>
-        <ul class="menu menu-horizontal bg-base-200 rounded-box">
+        <ul class="menu menu-horizontal menu-xs bg-base-200 rounded-box">
           <li>
             <a
               class="ml-1"
-              :class="{ active: activeItem === 'acompaneantes' }"
+              :class="{ active: activeCategory === 'acompaneantes' }"
               @click="setActiveItem('acompaneantes')"
             >
               Acompañantes
@@ -17,7 +17,7 @@
           <li>
             <a
               class="ml-1"
-              :class="{ active: activeItem === 'menores' }"
+              :class="{ active: activeCategory === 'menores' }"
               @click="setActiveItem('menores')"
             >
               Menores
@@ -26,7 +26,7 @@
           <li>
             <a
               class="ml-1"
-              :class="{ active: activeItem === 'autorizantes' }"
+              :class="{ active: activeCategory === 'autorizantes' }"
               @click="setActiveItem('autorizantes')"
             >
               Autorizantes
@@ -36,11 +36,7 @@
       </div>
 
       <!-- Tabla de Personas -->
-      <PersonTable
-        :category="activeItem"
-        @edit-person="handleEditPerson"
-        titleButton="seleccionar"
-      />
+      <PersonList />
     </div>
 
     <!-- Formulario de Acompañante -->
@@ -51,24 +47,20 @@
     </div>
 
     <!-- Nueva Card -->
-    <div class="flex-[1] bg-white p-4 rounded-lg shadow-md max-h-[85vh] overflow-auto">
-      <h2 class="text-xl font-semibold mb-4">Información Adicional</h2>
-
+    <div class="flex-[1] max-h-[85vh] overflow-auto">
       <div
         class="w-full mb-2 select-none border-l-4 border-red-400 bg-red-100 p-4 font-medium hover:border-red-500"
       >
         <div class="flex justify-between items-center">
           <div class="avatar-group -space-x-6 rtl:space-x-reverse">
             <div class="avatar placeholder">
-              <div class="bg-neutral text-neutral-content w-12">
+              <div class="bg-neutral text-neutral-content w-8">
                 <span>?</span>
               </div>
             </div>
           </div>
           <div>
-            <button class="btn btn-accent btn-sm" @click="setActiveItem('menores')">
-              + Menores
-            </button>
+            <button class="btn glass btn-xs" @click="setActiveItem('menores')">+ Menores</button>
           </div>
         </div>
       </div>
@@ -78,7 +70,7 @@
         <div class="flex justify-between items-center">
           <div class="avatar-group -space-x-6 rtl:space-x-reverse">
             <div class="avatar">
-              <div class="w-12">
+              <div class="w-8">
                 <img
                   src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
                 />
@@ -86,13 +78,13 @@
             </div>
 
             <div class="avatar placeholder">
-              <div class="bg-neutral text-neutral-content w-12">
+              <div class="bg-neutral text-neutral-content w-8">
                 <span>2</span>
               </div>
             </div>
           </div>
           <div>
-            <button class="btn btn-accent btn-sm" @click="setActiveItem('autorizantes')">
+            <button class="btn glass btn-xs" @click="setActiveItem('autorizantes')">
               + Autorizante
             </button>
           </div>
@@ -104,14 +96,14 @@
         <div class="flex justify-between items-center">
           <div class="avatar-group -space-x-6 rtl:space-x-reverse">
             <div class="avatar">
-              <div class="w-12">
+              <div class="w-8">
                 <img
                   src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
                 />
               </div>
             </div>
             <div class="avatar">
-              <div class="w-12">
+              <div class="w-8">
                 <img
                   src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
                 />
@@ -119,13 +111,13 @@
             </div>
 
             <div class="avatar placeholder">
-              <div class="bg-neutral text-neutral-content w-12">
+              <div class="bg-neutral text-neutral-content w-8">
                 <span>2</span>
               </div>
             </div>
           </div>
           <div>
-            <button class="btn btn-accent btn-sm" @click="setActiveItem('acompaneantes')">
+            <button class="btn glass btn-xs" @click="setActiveItem('acompaneantes')">
               + Acompañanante
             </button>
           </div>
@@ -136,18 +128,25 @@
 </template>
 
 <script setup lang="ts">
-import PersonTable from '@/common/components/PersonTable.vue';
+import { storeToRefs } from 'pinia';
+import PersonList from '@/common/components/PersonList.vue';
+import { usePersonStore } from '@/common/store/personStore';
 
-import { ref } from 'vue';
-const activeItem = ref<'menores' | 'acompaneantes' | 'autorizantes'>('acompaneantes');
-const selectedPersonId = ref<number | null>(null);
+// Conectar el store
+const personStore = usePersonStore();
+const { activeCategory } = storeToRefs(personStore); // Obtener la categoría activa del store
+
+// Función para manejar la selección de categoría
 const setActiveItem = (item: 'menores' | 'acompaneantes' | 'autorizantes') => {
-  activeItem.value = item;
+  personStore.setCategory(item); // Actualizar la categoría activa en el store
 };
-const handleEditPerson = (id: number | string) => {
+
+// Manejo de persona seleccionada
+// const selectedPersonId = ref<number | null>(null);
+/* const handleEditPerson = (id: number | string) => {
   selectedPersonId.value = +id;
   console.log('selectedPersonId.value::: ', selectedPersonId.value);
-};
+}; */
 </script>
 
 <style scoped>

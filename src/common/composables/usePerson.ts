@@ -8,7 +8,7 @@ const usePerson = () => {
       console.error('Error al crear la persona:', error);
     }
   };
-  const fetchAllPerson = async () => {
+  const fetchAllPerson = async (): Promise<Person[]> => {
     try {
       const data = await getAll();
       return data;
