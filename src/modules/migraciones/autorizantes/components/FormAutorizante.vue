@@ -83,10 +83,13 @@
           label="Sexo"
         />
 
-        <MyCalendar
-          v-model="dateOfBirht"
-          placeholder="Fecha de Nacimiento"          
+        <MyCalendar 
+          v-model="fecha_de_nacimiento"
+          placeholder="Fecha de Nacimiento"
+          :error="errors.fecha_de_nacimiento"
+          v-bind="fecha_de_nacimientoAttrs"
         />
+        <span>la fecha es:{{ fecha_de_nacimiento }}</span>
 
         <!-- Domicilio -->
         <MyInput
@@ -143,6 +146,7 @@ const validationSchema = yup.object({
   nationality: yup.string().required().oneOf(['1', '2', '3', '4', '5', '6', '7']),
   sex: yup.string().required().oneOf(['1', '2']),
   address: yup.string(),
+  fecha_de_nacimiento: yup.string().required(),
 });
 
 const { values, defineField, errors, handleSubmit, meta, resetForm , setValues } = useForm({
@@ -159,7 +163,7 @@ const [otherNames, otherNamesAttrs] = defineField('otherNames');
 const [nationality, nationalityAttrs] = defineField('nationality');
 const [sex, sexAttrs] = defineField('sex');
 const [address, addressAttrs] = defineField('address');
-const [dateOfBirht, dateOfBirhtAttrs] = defineField('dateOfBirht');
+const [fecha_de_nacimiento, fecha_de_nacimientoAttrs] = defineField('fecha_de_nacimiento');
 
 const countries = ref([
   { label: 'Argentina', value: '1' },
@@ -215,13 +219,14 @@ const onSubmit = handleSubmit(async (value) => {
       nationality_id: value.nationality,
       sex_id: value.sex,
       domicilio: value.address,
-      fecha_de_nacimiento: value.dateOfBirht, 
+      fecha_de_nacimiento: value.fecha_de_nacimiento, 
       issuer_document_id: value.documentIssuer
     };
     if (props.autorizante) {
         await updatePerson(props.autorizante, payload);
         return;
     }
+    console.log("fecha:", value.fecha_de_nacimiento)
   await createPerson(payload);
   } catch (error) {
     console.error('Error al enviar los datos:', error);
@@ -241,7 +246,7 @@ onMounted(async () => {
       nationality: data.nationality_id,
       sex: data.sex_id,
       address: data.domicilio,
-      fecha_de_nacimiento: data.dateOfBirht,
+      fecha_de_nacimiento: data.fecha_de_nacimiento,
       documentIssuer: data.issuer_document_id
     });
   }
