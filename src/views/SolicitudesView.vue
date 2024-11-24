@@ -132,7 +132,7 @@
 import { storeToRefs } from 'pinia';
 import PersonList from '@/common/components/PersonList.vue';
 import { usePersonStore } from '@/common/store/personStore';
-import { watch, computed } from 'vue';
+import { computed } from 'vue';
 import FormMenor from '@/modules/migraciones/menores/components/FormMenor.vue';
 import FormAutorizante from '@/modules/migraciones/autorizantes/components/FormAutorizante.vue';
 import FormAcompaneante from '@/modules/migraciones/acompaneantes/components/FormAcompaneante.vue';

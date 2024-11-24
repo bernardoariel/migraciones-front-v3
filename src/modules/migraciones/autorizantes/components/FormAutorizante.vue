@@ -83,10 +83,7 @@
           label="Sexo"
         />
 
-        <MyCalendar
-          v-model="dateOfBirht"
-          placeholder="Fecha de Nacimiento"          
-        />
+        <MyCalendar v-model="dateOfBirht" placeholder="Fecha de Nacimiento" />
 
         <!-- Domicilio -->
         <MyInput
@@ -213,7 +210,7 @@ const onSubmit = handleSubmit(async (value) => {
       sex_id: value.sex,
       domicilio: value.address,
       fecha_de_nacimiento: value.dateOfBirht,
-      issuer_document_id: value.documentIssuer
+      issuer_document_id: value.documentIssuer,
     };
     await createAutorizante(payload);
   } catch (error) {

@@ -1,81 +1,83 @@
 <template>
-  <h2 class="text-2xl font-semibold mb-6 text-center">Agregando un Acompañante</h2>
+  <div class="flex flex-col">
+    <div class="text-2xl font-semibold mb-6 text-center">Agregando un Autorizante</div>
 
-  <form @submit="onSubmit" class="space-y-4">
-    <!-- Número de Documento -->
-    <MyInput
-      v-model.number="documentNumber"
-      v-bind="documentNumberAttrs"
-      :error="errors.documentNumber"
-      label="Documento"
-      placeholder="Ingrese el Documento"
-      type="number"
-    />
+    <form @submit="onSubmit" class="space-y-4">
+      <!-- Número de Documento -->
+      <MyInput
+        v-model.number="documentNumber"
+        v-bind="documentNumberAttrs"
+        :error="errors.documentNumber"
+        label="Documento"
+        placeholder="Ingrese el Documento"
+        type="number"
+      />
 
-    <MySelect
-      v-model="documentType"
-      v-bind="documentTypeAttrs"
-      :error="errors.documentType"
-      label="Tipo de Documento"
-      :options="documentTypes"
-    />
-    <!-- Apellido -->
-    <MyInput
-      v-model="lastName"
-      v-bind="lastNameAttrs"
-      :error="errors.lastName"
-      label="Apellido"
-      placeholder="Ingrese el Apellido"
-    />
+      <MySelect
+        v-model="documentType"
+        v-bind="documentTypeAttrs"
+        :error="errors.documentType"
+        label="Tipo de Documento"
+        :options="documentTypes"
+      />
+      <!-- Apellido -->
+      <MyInput
+        v-model="lastName"
+        v-bind="lastNameAttrs"
+        :error="errors.lastName"
+        label="Apellido"
+        placeholder="Ingrese el Apellido"
+      />
 
-    <!-- Segundo Apellido -->
-    <MyInput
-      v-model="secondLastName"
-      v-bind="secondLastNameAttrs"
-      :error="errors.secondLastName"
-      label="Segundo Apellido"
-      placeholder="Ingrese el Segundo Apellido"
-    />
+      <!-- Segundo Apellido -->
+      <MyInput
+        v-model="secondLastName"
+        v-bind="secondLastNameAttrs"
+        :error="errors.secondLastName"
+        label="Segundo Apellido"
+        placeholder="Ingrese el Segundo Apellido"
+      />
 
-    <!-- Nombre -->
-    <MyInput
-      v-model="firstName"
-      v-bind="firstNameAttrs"
-      :error="errors.firstName"
-      label="Nombre"
-      placeholder="Ingrese el Nombre"
-    />
+      <!-- Nombre -->
+      <MyInput
+        v-model="firstName"
+        v-bind="firstNameAttrs"
+        :error="errors.firstName"
+        label="Nombre"
+        placeholder="Ingrese el Nombre"
+      />
 
-    <!-- Otros Nombres -->
-    <MyInput
-      v-model="otherNames"
-      v-bind="otherNamesAttrs"
-      :error="errors.otherNames"
-      label="Otros Nombres"
-      placeholder="Ingrese Otros Nombres"
-    />
+      <!-- Otros Nombres -->
+      <MyInput
+        v-model="otherNames"
+        v-bind="otherNamesAttrs"
+        :error="errors.otherNames"
+        label="Otros Nombres"
+        placeholder="Ingrese Otros Nombres"
+      />
 
-    <!-- Buttons -->
-    <div class="flex justify-between mt-6">
-      <router-link class="btn btn-ghost" :to="{ name: 'Home' }">Cancelar</router-link>
-      <button type="submit" class="btn btn-primary px-4 py-2" :disabled="!isFormValid">
-        Guardar
-      </button>
-      <button type="button" @click="handleReset" class="btn btn-secondary px-4 py-2">
-        Limpiar
-      </button>
-    </div>
-    <div class="grid grid-cols-2 p-2">
+      <!-- Buttons -->
+      <div class="flex justify-between mt-6">
+        <router-link class="btn btn-ghost" :to="{ name: 'Home' }">Cancelar</router-link>
+        <button type="submit" class="btn btn-primary px-4 py-2" :disabled="!isFormValid">
+          Guardar
+        </button>
+        <button type="button" @click="handleReset" class="btn btn-secondary px-4 py-2">
+          Limpiar
+        </button>
+      </div>
+      <!-- <div class="grid grid-cols-2 p-2">
       <div class="bg-blue-100">{{ values }}</div>
     </div>
     <div class="grid grid-cols-2 p-2">
       <div class="bg-red-100">{{ errors }}</div>
-    </div>
-  </form>
+    </div> -->
+    </form>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref, watch, computed } from 'vue';
 import * as yup from 'yup';
 import { useForm } from 'vee-validate';
 
@@ -84,6 +86,8 @@ import MySelect from '@/common/components/elementos/MySelect.vue';
 
 import type { Acompaneante } from '../interfaces/acompaneante.interface';
 import usePerson from '../../../../common/composables/usePerson';
+import { usePersonStore } from '@/common/store/personStore';
+import { storeToRefs } from 'pinia';
 
 interface Props {
   acompaneante: number | null;
@@ -127,7 +131,12 @@ const documentTypes = ref([
   { label: 'PASAPORTE PROVISORIO', value: 13 },
   { label: 'SALVOCONDUCTO', value: 14 },
 ]);
+// Pinia store
+const personStore = usePersonStore();
+const { idPersonSelected } = storeToRefs(personStore);
 
+// Computed para determinar el ID efectivo
+const effectiveId = computed(() => props.acompaneante ?? idPersonSelected.value);
 const onSubmit = handleSubmit(async (value) => {
   const payload: Acompaneante = {
     numero_de_documento: value.documentNumber,
@@ -137,15 +146,15 @@ const onSubmit = handleSubmit(async (value) => {
     nombre: value.firstName,
     otros_nombres: value.otherNames,
   };
-  if (props.acompaneante) {
-    await updatePerson(props.acompaneante, payload);
+  if (effectiveId.value) {
+    await updatePerson(effectiveId.value, payload);
     return;
   }
   await createPerson(payload);
 });
 onMounted(async () => {
-  if (props.acompaneante) {
-    const data = await fetchAllPersonById(props.acompaneante);
+  if (effectiveId.value) {
+    const data = await fetchAllPersonById(effectiveId.value);
 
     setValues({
       documentNumber: data.numero_de_documento,
@@ -169,23 +178,22 @@ watch(
   },
   { deep: true },
 );
-watch(
-  () => props.acompaneante,
-  async (newProps) => {
-    if (newProps) {
-      const data = await fetchAllPersonById(newProps);
+watch(effectiveId, async (newId) => {
+  if (newId) {
+    const data = await fetchAllPersonById(newId);
 
-      setValues({
-        documentNumber: data.numero_de_documento,
-        documentType: String(data.type_document_id),
-        lastName: data.apellido,
-        secondLastName: data.segundo_apellido || '',
-        firstName: data.nombre,
-        otherNames: data.otros_nombres || '',
-      });
-    }
-  },
-);
+    setValues({
+      documentNumber: data.numero_de_documento,
+      documentType: String(data.type_document_id),
+      lastName: data.apellido,
+      secondLastName: data.segundo_apellido || '',
+      firstName: data.nombre,
+      otherNames: data.otros_nombres || '',
+    });
+  } else {
+    resetForm();
+  }
+});
 </script>
 
 <style scoped>
