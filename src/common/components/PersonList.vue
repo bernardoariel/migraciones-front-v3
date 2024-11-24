@@ -29,12 +29,12 @@
       </div>
       <!-- Items -->
       <div v-else class="flex flex-col w-full">
-        <pre>{{ paginatedPersons }}</pre>
         <ItemsPerson
           v-for="person in paginatedPersons"
           :key="person.id"
           :person="person"
           class="w-full"
+          nameButton="Seleccionar"
         />
       </div>
     </div>
@@ -72,14 +72,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import ItemsPerson from './ItemsPerson.vue';
 
 import { usePersonStore } from '../store/personStore';
 import usePerson from '../composables/usePerson';
+import { calculateAge } from '../helpers/calculateAge';
 
-// Define la interfaz de persona
 interface Person {
   id: number;
   name: string;
@@ -95,34 +95,59 @@ const persons = ref<Person[]>([]);
 const searchQuery = ref('');
 const loading = ref(true);
 
-// Paginación
 const currentPage = ref(1);
 const itemsPerPage = 10;
 
-// Filtrar personas por categoría
-const filteredPersons = computed(() => {
-  const filtered = persons.value.filter((person) => person.category === activeCategory.value);
-  console.log('Personas filtradas por categoría:', filtered);
-  return filtered.filter((person) =>
-    person.name.toLowerCase().includes(searchQuery.value.toLowerCase()),
-  );
-});
+const filteredPersons = ref<Person[]>([]);
 
 const totalPages = computed(() => Math.ceil(filteredPersons.value.length / itemsPerPage));
 
 const paginatedPersons = computed<Person[]>(() => {
   const start = (currentPage.value - 1) * itemsPerPage;
   const end = start + itemsPerPage;
+
+  console.log('Paginación actual:', {
+    start,
+    end,
+    currentPage: currentPage.value,
+    totalItems: filteredPersons.value.length,
+  });
+
   return filteredPersons.value.slice(start, end);
 });
 
-// Cargar personas al montar
 onMounted(async () => {
   loading.value = true;
   try {
-    const fetchedPersons = await fetchAllPerson(); // Guarda el resultado en una variable
-    console.log('Datos obtenidos de fetchAllPerson:', fetchedPersons);
-    persons.value = fetchedPersons; // Asigna los datos a `persons`
+    const fetchedPersons = await fetchAllPerson();
+
+    const classifiedPersons = fetchedPersons.map((person) => {
+      const age = person.fecha_de_nacimiento ? calculateAge(person.fecha_de_nacimiento) : null; // Verifica si tiene fecha de nacimiento
+      let category = 'acompaneantes';
+
+      if (age !== null) {
+        if (age < 21) {
+          category = 'menores';
+        } else if (age >= 21) {
+          category = 'autorizantes';
+        }
+      }
+
+      // Construir un nombre más completo
+      const fullName = [person.nombre, person.apellido, person.otros_nombres]
+        .filter(Boolean) // Filtrar valores no válidos (null, undefined, '')
+        .join(' '); // Unir los valores con un espacio
+
+      return {
+        ...person,
+        category,
+        name: fullName || 'Sin nombre', // Usar "Sin nombre" solo si `fullName` está vacío
+      };
+    });
+
+    console.log('Personas clasificadas:', classifiedPersons);
+
+    persons.value = classifiedPersons; // Asignar las personas con la categoría calculada
   } catch (error) {
     console.error('Error cargando personas:', error);
   } finally {
@@ -130,17 +155,42 @@ onMounted(async () => {
   }
 });
 
-// Cambiar ID seleccionado
-/* const selectPerson = (id: number) => {
-  personStore.setIdPerson(id);
-}; */
-
 // Funciones de paginación
 const goToPage = (page: number) => {
   if (page >= 1 && page <= totalPages.value) currentPage.value = page;
 };
 const prevPage = () => currentPage.value > 1 && currentPage.value--;
 const nextPage = () => currentPage.value < totalPages.value && currentPage.value++;
+
+// Watch para filtrar las personas
+watch([persons, activeCategory, searchQuery], ([newPersons, newCategory, newSearchQuery]) => {
+  console.log('Cambio detectado en persons:', newPersons);
+  console.log('Cambio detectado en activeCategory:', newCategory);
+  console.log('Cambio detectado en searchQuery:', newSearchQuery);
+
+  // Revisa las categorías disponibles en los datos
+  console.log(
+    'Categorías disponibles en persons:',
+    newPersons.map((p) => p.category),
+  );
+
+  filteredPersons.value = persons.value
+    .filter((person) => {
+      const matchesCategory = person.category === activeCategory.value;
+      console.log(`Comparando ${person.category} con ${activeCategory.value}: ${matchesCategory}`);
+      return matchesCategory;
+    })
+    .filter((person) => {
+      // Validar que `name` exista antes de aplicar `toLowerCase`
+      if (!person.name) {
+        console.warn('Persona sin nombre detectada:', person);
+        return false; // Excluir personas sin nombre
+      }
+      return person.name.toLowerCase().includes(searchQuery.value.toLowerCase());
+    });
+
+  console.log('Personas filtradas por categoría:', filteredPersons.value);
+});
 </script>
 
 <style scoped>

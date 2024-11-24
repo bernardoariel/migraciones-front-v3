@@ -43,7 +43,8 @@
     <div
       class="flex-[2] bg-white p-4 rounded-lg shadow-md max-h-[85vh] overflow-auto flex justify-center items-center"
     >
-      <h1 class="text-4xl">No existe ninguna persona seleccionada</h1>
+      <h1 v-if="!idPersonSelected" class="text-4xl">No existe ninguna persona seleccionada</h1>
+      <component v-else :is="dynamicComponent" :person-id="idPersonSelected"></component>
     </div>
 
     <!-- Nueva Card -->
@@ -131,22 +132,32 @@
 import { storeToRefs } from 'pinia';
 import PersonList from '@/common/components/PersonList.vue';
 import { usePersonStore } from '@/common/store/personStore';
+import { watch, computed } from 'vue';
+import FormMenor from '@/modules/migraciones/menores/components/FormMenor.vue';
+import FormAutorizante from '@/modules/migraciones/autorizantes/components/FormAutorizante.vue';
+import FormAcompaneante from '@/modules/migraciones/acompaneantes/components/FormAcompaneante.vue';
 
 // Conectar el store
 const personStore = usePersonStore();
-const { activeCategory } = storeToRefs(personStore); // Obtener la categoría activa del store
+const { activeCategory, idPersonSelected } = storeToRefs(personStore); // Obtener la categoría activa del store
 
 // Función para manejar la selección de categoría
 const setActiveItem = (item: 'menores' | 'acompaneantes' | 'autorizantes') => {
   personStore.setCategory(item); // Actualizar la categoría activa en el store
 };
-
-// Manejo de persona seleccionada
-// const selectedPersonId = ref<number | null>(null);
-/* const handleEditPerson = (id: number | string) => {
-  selectedPersonId.value = +id;
-  console.log('selectedPersonId.value::: ', selectedPersonId.value);
-}; */
+// Computed para el componente dinámico
+const dynamicComponent = computed(() => {
+  switch (activeCategory.value) {
+    case 'menores':
+      return FormMenor;
+    case 'autorizantes':
+      return FormAutorizante;
+    case 'acompaneantes':
+      return FormAcompaneante;
+    default:
+      return null;
+  }
+});
 </script>
 
 <style scoped>
