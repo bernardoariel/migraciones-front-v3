@@ -33,6 +33,32 @@
             </a>
           </li>
         </ul>
+        <button class="btn btn-circle">
+          <svg
+            width="30"
+            height="30"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+            <g id="SVGRepo_iconCarrier">
+              <path
+                d="M15 12L12 12M12 12L9 12M12 12L12 9M12 12L12 15"
+                stroke="#1C274C"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              ></path>
+              <path
+                d="M7 3.33782C8.47087 2.48697 10.1786 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 10.1786 2.48697 8.47087 3.33782 7"
+                stroke="#1C274C"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              ></path>
+            </g>
+          </svg>
+        </button>
       </div>
 
       <!-- Tabla de Personas -->
@@ -51,97 +77,21 @@
         :buttons="buttonConfig"
       ></component>
     </div>
-
-    <!-- Nueva Card -->
-    <div class="flex-[1] max-h-[85vh] overflow-auto">
-      <div
-        class="w-full mb-2 select-none border-l-4 border-red-400 bg-red-100 p-4 font-medium hover:border-red-500"
-      >
-        <div class="flex justify-between items-center">
-          <div class="avatar-group -space-x-6 rtl:space-x-reverse">
-            <div class="avatar placeholder">
-              <div class="bg-neutral text-neutral-content w-8">
-                <span>?</span>
-              </div>
-            </div>
-          </div>
-          <div>
-            <button class="btn glass btn-xs" @click="setActiveItem('menores')">+ Menores</button>
-          </div>
-        </div>
-      </div>
-      <div
-        class="w-full mb-2 select-none border-l-4 border-yellow-400 bg-yellow-100 p-4 font-medium hover:border-yellow-500"
-      >
-        <div class="flex justify-between items-center">
-          <div class="avatar-group -space-x-6 rtl:space-x-reverse">
-            <div class="avatar">
-              <div class="w-8">
-                <img
-                  src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-                />
-              </div>
-            </div>
-
-            <div class="avatar placeholder">
-              <div class="bg-neutral text-neutral-content w-8">
-                <span>2</span>
-              </div>
-            </div>
-          </div>
-          <div>
-            <button class="btn glass btn-xs" @click="setActiveItem('autorizantes')">
-              + Autorizante
-            </button>
-          </div>
-        </div>
-      </div>
-      <div
-        class="w-full mb-2 select-none border-l-4 border-blue-400 bg-blue-100 p-4 font-medium hover:border-blue-500"
-      >
-        <div class="flex justify-between items-center">
-          <div class="avatar-group -space-x-6 rtl:space-x-reverse">
-            <div class="avatar">
-              <div class="w-8">
-                <img
-                  src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-                />
-              </div>
-            </div>
-            <div class="avatar">
-              <div class="w-8">
-                <img
-                  src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-                />
-              </div>
-            </div>
-
-            <div class="avatar placeholder">
-              <div class="bg-neutral text-neutral-content w-8">
-                <span>2</span>
-              </div>
-            </div>
-          </div>
-          <div>
-            <button class="btn glass btn-xs" @click="setActiveItem('acompaneantes')">
-              + Acompañante
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { computed, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
-import PersonList from '@/common/components/PersonList.vue';
+
 import { usePersonStore } from '@/common/store/personStore';
-import { computed } from 'vue';
+import PersonList from '@/common/components/PersonList.vue';
 import FormMenor from '@/modules/migraciones/menores/components/FormMenor.vue';
 import FormAutorizante from '@/modules/migraciones/autorizantes/components/FormAutorizante.vue';
 import FormAcompaneante from '@/modules/migraciones/acompaneantes/components/FormAcompaneante.vue';
+import { useRoute } from 'vue-router';
 
+type Persona = 'menores' | 'acompaneantes' | 'autorizantes' | null;
 // Interfaz para los botones
 interface ButtonConfig {
   label: string;
@@ -151,13 +101,15 @@ interface ButtonConfig {
   position?: 'left' | 'right' | 'center';
   action: () => void;
 }
+const { path } = useRoute();
 
 // Conectar el store
 const personStore = usePersonStore();
+
 const { activeCategory, idPersonSelected } = storeToRefs(personStore); // Obtener la categoría activa del store
 
 // Función para manejar la selección de categoría
-const setActiveItem = (item: 'menores' | 'acompaneantes' | 'autorizantes') => {
+const setActiveItem = (item: Persona) => {
   personStore.setCategory(item); // Actualizar la categoría activa en el store
 };
 
@@ -232,6 +184,9 @@ const buttonConfig = computed<ButtonConfig[]>(() => {
     default:
       return [];
   }
+});
+onMounted(() => {
+  setActiveItem(path.slice(1) as Persona);
 });
 </script>
 

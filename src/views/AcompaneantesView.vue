@@ -99,7 +99,7 @@ const buttons: ButtonConfig[] = [
   },
   {
     label: 'Cancelar',
-    type: 'submit',
+    type: 'button',
     class: 'btn btn-ghost',
     action: () => router.replace({ name: 'Home' }),
     position: 'left',

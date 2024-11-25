@@ -6,6 +6,7 @@ import AcompaneantesView from '../views/AcompaneantesView.vue';
 import AcompaneanteView from '../views/AcompaneanteView.vue';
 import AutorizantesView from '../views/AutorizantesView.vue';
 import SolicitudesView from '../views/SolicitudesView.vue';
+import PersonsView from '../views/PersonsView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -16,35 +17,31 @@ const router = createRouter({
       component: HomeView,
     },
     {
-      path: '/nuevasolicitud',
-      name: 'NuevaSolicitud',
-      component: NuevaSolicitud,
-    },
-    {
       path: '/menores',
       name: 'Menores',
-      component: MenoresView,
+      component: PersonsView,
     },
     {
       path: '/acompaneantes',
       name: 'Acompaneantes',
-      component: AcompaneantesView,
-    },
-    {
-      path: '/acompaneante/new',
-      name: 'AcompaneanteNew',
-      component: AcompaneanteView,
-    },
-    {
-      path: '/acompaneante/:id',
-      name: 'AcompaneanteId',
-      component: AcompaneanteView,
+      component: PersonsView,
     },
     {
       path: '/autorizantes',
       name: 'Autorizantes',
       component: AutorizantesView,
     },
+    {
+      path: '/nuevasolicitud',
+      name: 'NuevaSolicitud',
+      component: NuevaSolicitud,
+    },
+    {
+      path: '/acompaneante/:id',
+      name: 'AcompaneanteId',
+      component: AcompaneanteView,
+    },
+
     {
       path: '/solicitudes',
       name: 'Solicitudes',
