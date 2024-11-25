@@ -20,6 +20,7 @@
         label="Tipo de Documento"
         :options="documentTypes"
       />
+
       <!-- Apellido -->
       <MyInput
         v-model="lastName"
@@ -119,6 +120,7 @@
 import { onMounted, ref, watch, computed } from 'vue';
 import * as yup from 'yup';
 import { useForm } from 'vee-validate';
+import { storeToRefs } from 'pinia';
 
 import MyInput from '@/common/components/elementos/MyInput.vue';
 import MySelect from '@/common/components/elementos/MySelect.vue';
@@ -126,19 +128,21 @@ import MySelect from '@/common/components/elementos/MySelect.vue';
 import type { Acompaneante } from '../interfaces/acompaneante.interface';
 import usePerson from '../../../../common/composables/usePerson';
 import { usePersonStore } from '@/common/store/personStore';
-import { storeToRefs } from 'pinia';
+
 const props = defineProps<Props>();
+
 interface ButtonConfig {
   label: string;
-  type?: 'button' | 'submit' | 'reset'; // Restringimos los valores permitidos para evitar errores.
-  action: () => void;
+  type?: 'button' | 'submit' | 'reset';
   class?: string;
   disabled?: boolean;
-  position?: 'left' | 'right' | 'center'; // Agregamos la propiedad position.
+  position?: 'left' | 'right' | 'center';
+  action: () => void;
 }
+
 interface Props {
+  acompaneante?: number | null;
   buttons: ButtonConfig[];
-  acompaneante: number | null;
 }
 
 const { createPerson, fetchAllPersonById, updatePerson } = usePerson();
@@ -152,9 +156,10 @@ const validationSchema = yup.object({
   otherNames: yup.string(),
 });
 
-const { values, defineField, errors, handleSubmit, meta, resetForm, setValues } = useForm({
+const { defineField, errors, handleSubmit, meta, resetForm, setValues } = useForm({
   validationSchema,
 });
+
 const isFormValid = ref(false);
 const [documentNumber, documentNumberAttrs] = defineField('documentNumber');
 const [documentType, documentTypeAttrs] = defineField('documentType');
@@ -183,8 +188,8 @@ const documentTypes = ref([
 const personStore = usePersonStore();
 const { idPersonSelected } = storeToRefs(personStore);
 
-// Computed para determinar el ID efectivo
 const effectiveId = computed(() => props.acompaneante ?? idPersonSelected.value);
+
 const onSubmit = handleSubmit(async (value) => {
   const payload: Acompaneante = {
     numero_de_documento: value.documentNumber,
@@ -214,18 +219,15 @@ onMounted(async () => {
     });
   }
 });
-const handleReset = () => {
-  resetForm(); // Llama a resetForm aquí sin pasarle argumentos
-};
 
 watch(
   () => meta.value,
   (newMeta) => {
-    // Usar meta.valid para habilitar el botón solo si el formulario es válido
     isFormValid.value = newMeta.valid;
   },
   { deep: true },
 );
+
 watch(effectiveId, async (newId) => {
   if (newId) {
     const data = await fetchAllPersonById(newId);
@@ -243,7 +245,3 @@ watch(effectiveId, async (newId) => {
   }
 });
 </script>
-
-<style scoped>
-/* Puedes personalizar más estilos aquí si es necesario */
-</style>

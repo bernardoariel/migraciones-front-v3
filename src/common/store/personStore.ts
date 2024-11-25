@@ -10,17 +10,21 @@ export const usePersonStore = defineStore('personStore', () => {
   const activeCategory = ref<CategoryPerson>('acompaneantes');
   const idPersonSelected = ref<number | null>(null);
 
-  const setPersonId = (id: number) => {
+  const setPersonId = (id: number | number) => {
     idPersonSelected.value = id;
   };
   const setCategory = (newCategory: CategoryPerson) => {
     activeCategory.value = newCategory;
   };
-
+  const resetState = () => {
+    setPersonId(null);
+    setCategory(null);
+  };
   return {
     activeCategory,
     setCategory,
     setPersonId,
     idPersonSelected,
+    resetState,
   };
 });

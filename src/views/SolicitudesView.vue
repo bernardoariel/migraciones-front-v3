@@ -205,7 +205,7 @@ const buttonConfig = computed(() => {
           label: 'Cancelar',
           type: 'button',
           class: 'btn btn-ghost',
-          action: () => console.log('Cancelar'),
+          action: () => personStore.resetState(),
           position: 'left',
         },
         {
