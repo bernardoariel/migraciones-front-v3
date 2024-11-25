@@ -86,11 +86,14 @@ import { useForm } from 'vee-validate';
 import MyInput from '@/common/components/elementos/MyInput.vue';
 import MySelect from '@/common/components/elementos/MySelect.vue';
 
-import useAcompaneante from '../composables/useAcompaneante';
 import type { Acompaneante } from '../interfaces/acompaneante.interface';
 import useDropdownOptions from '../../../../composables/useDropdownOptions';
 
-const { createAcompaneante } = useAcompaneante();
+interface Props {
+  acompaneante: number | null;
+}
+const props = defineProps<Props>();
+const { createPerson, fetchAllPersonById, updatePerson } = usePerson();
 
 const validationSchema = yup.object({
   documentNumber: yup.string().matches(/^\d+$/).required().min(3),
@@ -101,7 +104,7 @@ const validationSchema = yup.object({
   otherNames: yup.string(),
 });
 
-const { values, defineField, errors, handleSubmit, meta, resetForm } = useForm({
+const { values, defineField, errors, handleSubmit, meta, resetForm, setValues } = useForm({
   validationSchema,
 });
 const isFormValid = ref(false);
@@ -125,11 +128,30 @@ const onSubmit = handleSubmit(async (value) => {
     nombre: value.firstName,
     otros_nombres: value.otherNames,
   };
-  await createAcompaneante(payload);
+  if (props.acompaneante) {
+    await updatePerson(props.acompaneante, payload);
+    return;
+  }
+  await createPerson(payload);
+});
+onMounted(async () => {
+  if (props.acompaneante) {
+    const data = await fetchAllPersonById(props.acompaneante);
+
+    setValues({
+      documentNumber: data.numero_de_documento,
+      documentType: String(data.type_document_id),
+      lastName: data.apellido,
+      secondLastName: data.segundo_apellido || '',
+      firstName: data.nombre,
+      otherNames: data.otros_nombres || '',
+    });
+  }
 });
 const handleReset = () => {
   resetForm(); // Llama a resetForm aquí sin pasarle argumentos
 };
+
 watch(
   () => meta.value,
   (newMeta) => {

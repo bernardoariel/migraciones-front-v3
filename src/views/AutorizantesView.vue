@@ -1,117 +1,8 @@
 <template>
-  <div class="flex justify-center bg-gray-100 min-h-screen">
-    <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full my-auto">
-      <h2 class="text-2xl font-semibold mb-6 text-center">Agregando un Autorizante</h2>
-
-      <form @submit="onSubmit" class="space-y-4">
-        <!-- Número de Documento -->
-        <MyInput
-          v-model.number="documentNumber"
-          v-bind="documentNumberAttrs"
-          :error="errors.documentNumber"
-          label="Documento"
-          placeholder="Ingrese el Documento"
-          type="number"
-        />
-
-        <MySelect
-          v-model="documentType"
-          v-bind="documentTypeAttrs"
-          :error="errors.documentType"
-          label="Tipo de Documento"
-          :options="documentTypes"
-        />
-
-        <MySelect
-          v-model="documentIssuer"
-          v-bind="documentIssuerAttrs"
-          :error="errors.documentType"
-          label="Emisor del Documento"
-          :options="documentIssuerCountries"
-        />
-        <!-- Apellido -->
-        <MyInput
-          v-model="lastName"
-          v-bind="lastNameAttrs"
-          :error="errors.lastName"
-          label="Apellido"
-          placeholder="Ingrese el Apellido"
-        />
-
-        <!-- Segundo Apellido -->
-        <MyInput
-          v-model="secondLastName"
-          v-bind="secondLastNameAttrs"
-          :error="errors.secondLastName"
-          label="Segundo Apellido"
-          placeholder="Ingrese el Segundo Apellido"
-        />
-
-        <!-- Nombre -->
-        <MyInput
-          v-model="firstName"
-          v-bind="firstNameAttrs"
-          :error="errors.firstName"
-          label="Nombre"
-          placeholder="Ingrese el Nombre"
-        />
-
-        <!-- Otros Nombres -->
-        <MyInput
-          v-model="otherNames"
-          v-bind="otherNamesAttrs"
-          :error="errors.otherNames"
-          label="Otros Nombres"
-          placeholder="Ingrese Otros Nombres"
-        />
-
-        <!-- Nacionalidad -->
-        <MySelect
-          v-model="nationality"
-          :options="countries"
-          :error="errors.nationality"
-          v-bind="nationalityAttrs"
-          label="Nacionalidad"
-        />
-
-        <!-- Sexo -->
-        <MySelect
-          v-model="sex"
-          :options="sexType"
-          :error="errors.sex"
-          v-bind="sexAttrs"
-          label="Sexo"
-        />
-
-        <!-- Domicilio -->
-        <MyInput
-          v-model="address"
-          v-bind="addressAttrs"
-          :error="errors.address"
-          label="Domicilio"
-          placeholder="Ingrese el Domicilio"
-        />
-        <!-- Buttons -->
-        <div class="flex justify-between mt-6">
-          <router-link class="btn btn-ghost" :to="{ name: 'Home' }">Cancelar</router-link>
-          <button type="submit" class="btn btn-primary px-4 py-2" :disabled="!isFormValid">
-            Guardar
-          </button>
-          <button type="button" @click="handleReset" class="btn btn-secondary px-4 py-2">
-            Limpiar
-          </button>
-        </div>
-        <div class="grid grid-cols-2 p-2">
-          <div class="bg-blue-100">{{ values }}</div>
-        </div>
-        <div class="grid grid-cols-2 p-2">
-          <div class="bg-red-100">{{ errors }}</div>
-        </div>
-      </form>
-    </div>
-  </div>
+  <FormAutorizante />
 </template>
 
+<<<<<<< HEAD
 <script lang="ts" setup>
 import { ref, watch } from 'vue';
 import { useForm } from 'vee-validate';
@@ -218,8 +109,8 @@ watch(
   },
   { deep: true },
 );
+=======
+<script setup lang="ts">
+import FormAutorizante from '@/modules/migraciones/autorizantes/components/FormAutorizante.vue';
+>>>>>>> master
 </script>
-
-<style scoped>
-/* Puedes personalizar más estilos aquí si es necesario */
-</style>

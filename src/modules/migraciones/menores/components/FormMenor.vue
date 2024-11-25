@@ -1,5 +1,4 @@
 <template>
-<<<<<<< HEAD
   <div class="flex justify-center bg-gray-100 min-h-screen">
     <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full my-auto">
       <h2 class="text-2xl font-semibold mb-6 text-center">Agregando un Menor</h2>
@@ -21,7 +20,6 @@
           :error="errors.documentType"
           label="Tipo de Documento"
           :options="documentTypes"
-          :loading="isLoadingDocumentTypes"
         />
         <!-- Apellido -->
         <MyInput
@@ -77,6 +75,11 @@
           label="Sexo"
         />
 
+        <MyCalendar 
+         v-model="dateOfBirht"
+         placeholder="Fecha de Nacimiento"               
+        />
+
         <!-- Domicilio -->
         <MyInput
           v-model="address"
@@ -107,13 +110,16 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import { useForm } from 'vee-validate';
 import MyInput from '@/common/components/elementos/MyInput.vue';
 import MySelect from '@/common/components/elementos/MySelect.vue';
+import MyCalendar from '@/common/components/elementos/MyCalendar.vue';
 import * as yup from 'yup';
-import { apiClient } from '@/api/apiClient';
-import useDropdownOptions from '../composables/useDropdownOptions';
+import useMenor from '../composables/useMenor';
+import type { Menor } from '../interfaces/menor.interface';
+
+const { createMenor } = useMenor();
 
 const validationSchema = yup.object({
   documentNumber: yup.string().matches(/^\d+$/).required().min(3),
@@ -139,40 +145,55 @@ const [otherNames, otherNamesAttrs] = defineField('otherNames');
 const [nationality, nationalityAttrs] = defineField('nationality');
 const [sex, sexAttrs] = defineField('sex');
 const [address, addressAttrs] = defineField('address');
+const [dateOfBirht, dateOfBirhtAttrs] = defineField('dateOfBirht');
 
-// Use the composable for dropdown options
-const {
-  options: documentTypes,
-  loadOptions: loadDocumentTypes,
-  isLoading: isLoadingDocumentTypes,
-} = useDropdownOptions();
-const { options: documentIssuerCountries, loadOptions: loadDocumentIssuerCountries } =
-  useDropdownOptions();
-const { options: countries, loadOptions: loadCountries } = useDropdownOptions();
-const { options: sexType, loadOptions: loadSexType } = useDropdownOptions();
+const countries = ref([
+  { label: 'Argentina', value: '1' },
+  { label: 'Brasil', value: '2' },
+  { label: 'Chile', value: '3' },
+  { label: 'Colombia', value: '4' },
+  { label: 'México', value: '5' },
+  { label: 'Perú', value: '6' },
+  { label: 'Uruguay', value: '7' },
+]);
 
-onMounted(() => {
-  loadDocumentTypes('api/tiposdocumentos'); // Load document types dynamically
-  loadDocumentIssuerCountries('api/emisordocumentos'); // Load document issuer countries dynamically
-  loadCountries('api/nacionalidades'); // Load nationalities dynamically
-  loadSexType('api/sexos'); // Load sexes dynamically
-});
+const documentTypes = ref([
+  { label: 'CEDULA DE IDENTIDAD', value: 1 },
+  { label: 'CERTIFICADO DE VIAJE', value: 2 },
+  { label: 'DOCUMENTO DE VIAJE', value: 3 },
+  { label: 'DOCUMENTO NACIONAL DE IDENTIDAD', value: 4 },
+  { label: 'LAISSER PASSER', value: 5 },
+  { label: 'LIBRETA CIVICA', value: 6 },
+  { label: 'LIBRETA DE EMBARQUE (SEAMAN BOOK)', value: 7 },
+  { label: 'LIBRETA DE ENROLAMIENTO', value: 8 },
+  { label: 'PASAPORTE', value: 9 },
+  { label: 'PASAPORTE DE SERVICIO', value: 10 },
+  { label: 'PASAPORTE DIPLOMATICO', value: 11 },
+  { label: 'PASAPORTE OFICIAL', value: 12 },
+  { label: 'PASAPORTE PROVISORIO', value: 13 },
+  { label: 'SALVOCONDUCTO', value: 14 },
+]);
+
+const sexType = ref([
+  { label: 'Femenino', value: '1' },
+  { label: 'Masculino', value: '2' },
+]);
+
 const onSubmit = handleSubmit(async (value) => {
   try {
-    const payload = {
+    const payload: Menor = {
       numero_de_documento: value.documentNumber,
       type_document_id: value.documentType,
       apellido: value.lastName,
       segundo_apellido: value.secondLastName,
       nombre: value.firstName,
       otros_nombres: value.otherNames,
-      // nacionalidad: value.nationality,
-      // sexo: value.sex,
-      // domicilio: value.address
+      nationality_id: value.nationality,
+      sex_id: value.sex,
+      domicilio: value.address,
+      fecha_de_nacimiento: value.dateOfBirht
     };
-    const response = await apiClient.post('/api/v2/persona/new', payload);
-
-    console.log('Respuesta del servidor:', response.data);
+    await createMenor(payload);
   } catch (error) {
     console.error('Error al enviar los datos:', error);
   }
@@ -188,11 +209,8 @@ watch(
   },
   { deep: true },
 );
-=======
-  <FormMenor />
-</template>
-
-<script setup lang="ts">
-import FormMenor from '@/modules/migraciones/menores/components/FormMenor.vue';
->>>>>>> master
 </script>
+
+<style scoped>
+/* Puedes personalizar más estilos aquí si es necesario */
+</style>
