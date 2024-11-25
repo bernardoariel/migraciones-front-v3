@@ -88,8 +88,7 @@
           placeholder="Fecha de Nacimiento"
           :error="errors.fecha_de_nacimiento"
           v-bind="fecha_de_nacimientoAttrs"
-        />
-        <span>la fecha es:{{ fecha_de_nacimiento }}</span>
+        />       
 
         <!-- Domicilio -->
         <MyInput
