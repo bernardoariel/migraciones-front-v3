@@ -75,9 +75,11 @@
           label="Sexo"
         />
 
-        <MyCalendar 
-         v-model="dateOfBirht"
-         placeholder="Fecha de Nacimiento"               
+        <MyCalendar
+          v-model="dateOfBirht"
+          placeholder="Fecha de Nacimiento"
+          :error="errors.dateOfBirht"
+          v-bind="dateOfBirhtAttrs"
         />
 
         <!-- Domicilio -->
@@ -110,16 +112,20 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { useForm } from 'vee-validate';
 import MyInput from '@/common/components/elementos/MyInput.vue';
 import MySelect from '@/common/components/elementos/MySelect.vue';
 import MyCalendar from '@/common/components/elementos/MyCalendar.vue';
 import * as yup from 'yup';
-import useMenor from '../composables/useMenor';
 import type { Menor } from '../interfaces/menor.interface';
+import usePerson from '../../../../common/composables/usePerson';
 
-const { createMenor } = useMenor();
+const { createPerson, fetchAllPersonById, updatePerson } = usePerson();
+interface Props {
+  menor: number | null;
+}
+const props = defineProps<Props>();
 
 const validationSchema = yup.object({
   documentNumber: yup.string().matches(/^\d+$/).required().min(3),
@@ -132,7 +138,7 @@ const validationSchema = yup.object({
   address: yup.string(),
 });
 
-const { values, defineField, errors, handleSubmit, meta, resetForm } = useForm({
+const { values, defineField, errors, handleSubmit, meta, resetForm, setValues } = useForm({
   validationSchema,
 });
 const isFormValid = ref(false);
@@ -191,11 +197,34 @@ const onSubmit = handleSubmit(async (value) => {
       nationality_id: value.nationality,
       sex_id: value.sex,
       domicilio: value.address,
-      fecha_de_nacimiento: value.dateOfBirht
+      fecha_de_nacimiento: value.dateOfBirht,
     };
-    await createMenor(payload);
+    if (props.menor) {
+      await updatePerson(props.menor, payload);
+      return;
+    }
+    console.log('fecha:', value.dateOfBirht);
+    await createPerson(payload);
   } catch (error) {
     console.error('Error al enviar los datos:', error);
+  }
+});
+onMounted(async () => {
+  if (props.menor) {
+    const data = await fetchAllPersonById(props.menor);
+
+    setValues({
+      documentNumber: data.numero_de_documento,
+      documentType: String(data.type_document_id),
+      lastName: data.apellido,
+      secondLastName: data.segundo_apellido || '',
+      firstName: data.nombre,
+      otherNames: data.otros_nombres || '',
+      nationality: data.nationality_id,
+      sex: data.sex_id,
+      address: data.domicilio,
+      fecha_de_nacimiento: data.dateOfBirht,
+    });
   }
 });
 const handleReset = () => {
