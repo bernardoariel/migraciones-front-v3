@@ -1,142 +1,140 @@
 <template>
-  <div class="flex justify-center bg-gray-100 min-h-screen">
-    <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full my-auto">
-      <h2 class="text-2xl font-semibold mb-6 text-center">Agregando un Menor</h2>
+  <div class="flex flex-col">
+    <div class="text-2xl font-semibold mb-6 text-center">Agregando un Menor</div>
 
-      <form @submit="onSubmit" class="space-y-4">
-        <!-- Número de Documento -->
-        <MyInput
-          v-model.number="documentNumber"
-          v-bind="documentNumberAttrs"
-          :error="errors.documentNumber"
-          label="Documento"
-          placeholder="Ingrese el Documento"
-          type="number"
-        />
+    <form @submit="onSubmit" class="space-y-4">
+      <!-- Número de Documento -->
+      <MyInput
+        v-model.number="documentNumber"
+        v-bind="documentNumberAttrs"
+        :error="errors.documentNumber"
+        label="Documento"
+        placeholder="Ingrese el Documento"
+        type="number"
+      />
 
-        <MySelect
-          v-model="documentType"
-          v-bind="documentTypeAttrs"
-          :error="errors.documentType"
-          label="Tipo de Documento"
-          :options="documentTypes"
-        />
-        <!-- Apellido -->
-        <MyInput
-          v-model="lastName"
-          v-bind="lastNameAttrs"
-          :error="errors.lastName"
-          label="Apellido"
-          placeholder="Ingrese el Apellido"
-        />
+      <MySelect
+        v-model="documentType"
+        v-bind="documentTypeAttrs"
+        :error="errors.documentType"
+        label="Tipo de Documento"
+        :options="documentTypes"
+      />
+      <!-- Apellido -->
+      <MyInput
+        v-model="lastName"
+        v-bind="lastNameAttrs"
+        :error="errors.lastName"
+        label="Apellido"
+        placeholder="Ingrese el Apellido"
+      />
 
-        <!-- Segundo Apellido -->
-        <MyInput
-          v-model="secondLastName"
-          v-bind="secondLastNameAttrs"
-          :error="errors.secondLastName"
-          label="Segundo Apellido"
-          placeholder="Ingrese el Segundo Apellido"
-        />
+      <!-- Segundo Apellido -->
+      <MyInput
+        v-model="secondLastName"
+        v-bind="secondLastNameAttrs"
+        :error="errors.secondLastName"
+        label="Segundo Apellido"
+        placeholder="Ingrese el Segundo Apellido"
+      />
 
-        <!-- Nombre -->
-        <MyInput
-          v-model="firstName"
-          v-bind="firstNameAttrs"
-          :error="errors.firstName"
-          label="Nombre"
-          placeholder="Ingrese el Nombre"
-        />
+      <!-- Nombre -->
+      <MyInput
+        v-model="firstName"
+        v-bind="firstNameAttrs"
+        :error="errors.firstName"
+        label="Nombre"
+        placeholder="Ingrese el Nombre"
+      />
 
-        <!-- Otros Nombres -->
-        <MyInput
-          v-model="otherNames"
-          v-bind="otherNamesAttrs"
-          :error="errors.otherNames"
-          label="Otros Nombres"
-          placeholder="Ingrese Otros Nombres"
-        />
+      <!-- Otros Nombres -->
+      <MyInput
+        v-model="otherNames"
+        v-bind="otherNamesAttrs"
+        :error="errors.otherNames"
+        label="Otros Nombres"
+        placeholder="Ingrese Otros Nombres"
+      />
 
-        <!-- Nacionalidad -->
-        <MySelect
-          v-model="nationality"
-          :options="countries"
-          :error="errors.nationality"
-          v-bind="nationalityAttrs"
-          label="Nacionalidad"
-        />
+      <!-- Nacionalidad -->
+      <MySelect
+        v-model="nationality"
+        :options="countries"
+        :error="errors.nationality"
+        v-bind="nationalityAttrs"
+        label="Nacionalidad"
+      />
 
-        <!-- Sexo -->
-        <MySelect
-          v-model="sex"
-          :options="sexType"
-          :error="errors.sex"
-          v-bind="sexAttrs"
-          label="Sexo"
-        />
+      <!-- Sexo -->
+      <MySelect
+        v-model="sex"
+        :options="sexType"
+        :error="errors.sex"
+        v-bind="sexAttrs"
+        label="Sexo"
+      />
 
-        <!--  <MyCalendar
+      <!--  <MyCalendar
           v-model="dateOfBirht"
           placeholder="Fecha de Nacimiento"
           :error="errors.dateOfBirht"
           v-bind="dateOfBirhtAttrs"
         /> -->
-        <label class="input input-bordered flex items-center gap-2">
-          <span>Fecha de Nacimiento </span>
-          <input
-            type="date"
-            v-model="dateOfBirht"
-            :class="['form-control', errors.dateOfBirht ? 'border-red-500' : '']"
-            placeholder="Fecha de Nacimiento"
-            v-bind="dateOfBirhtAttrs"
-          />
-        </label>
-
-        <!-- Domicilio -->
-        <MyInput
-          v-model="address"
-          v-bind="addressAttrs"
-          :error="errors.address"
-          label="Domicilio"
-          placeholder="Ingrese el Domicilio"
+      <label class="input input-bordered flex items-center gap-2">
+        <span>Fecha de Nacimiento </span>
+        <input
+          type="date"
+          v-model="dateOfBirht"
+          :class="['form-control', errors.dateOfBirht ? 'border-red-500' : '']"
+          placeholder="Fecha de Nacimiento"
+          v-bind="dateOfBirhtAttrs"
         />
-        <!-- Buttons -->
-        <div class="flex justify-between mt-6">
-          <router-link class="btn btn-ghost" :to="{ name: 'Home' }">Cancelar</router-link>
-          <button type="submit" class="btn btn-primary px-4 py-2" :disabled="!isFormValid">
-            Guardar
-          </button>
-          <button type="button" @click="handleReset" class="btn btn-secondary px-4 py-2">
-            Limpiar
-          </button>
-        </div>
-        <div class="grid grid-cols-2 p-2">
-          <div class="bg-blue-100">{{ values }}</div>
-        </div>
-        <div class="grid grid-cols-2 p-2">
-          <div class="bg-red-100">{{ errors }}</div>
-        </div>
-      </form>
-    </div>
+      </label>
+
+      <!-- Domicilio -->
+      <MyInput
+        v-model="address"
+        v-bind="addressAttrs"
+        :error="errors.address"
+        label="Domicilio"
+        placeholder="Ingrese el Domicilio"
+      />
+      <ButtonGroup :buttons="buttons!" />
+    </form>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
+import * as yup from 'yup';
 import { useForm } from 'vee-validate';
+
 import MyInput from '@/common/components/elementos/MyInput.vue';
 import MySelect from '@/common/components/elementos/MySelect.vue';
+import ButtonGroup from '@/common/components/ButtonGroup.vue';
 
-import * as yup from 'yup';
 import type { Menor } from '../interfaces/menor.interface';
 import usePerson from '../../../../common/composables/usePerson';
+import { usePersonStore } from '../../../../common/store/personStore';
+import { storeToRefs } from 'pinia';
 
-const { createPerson, fetchAllPersonById, updatePerson } = usePerson();
+interface ButtonConfig {
+  label: string;
+  type?: 'button' | 'submit' | 'reset';
+  class?: string;
+  disabled?: boolean;
+  position?: 'left' | 'right' | 'center';
+  action: () => void;
+}
+
 interface Props {
-  menor: number | null;
+  menor?: number | null;
+  buttons?: ButtonConfig[];
 }
 const props = defineProps<Props>();
 
+const { createPerson, fetchAllPersonById, updatePerson } = usePerson();
+const isFormValid = ref(false);
 const validationSchema = yup.object({
   documentNumber: yup.string().matches(/^\d+$/).required().min(3),
   documentType: yup.number().required().oneOf([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]),
@@ -148,10 +146,10 @@ const validationSchema = yup.object({
   address: yup.string(),
 });
 
-const { values, defineField, errors, handleSubmit, meta, resetForm, setValues } = useForm({
+const { defineField, errors, handleSubmit, meta, resetForm, setValues } = useForm({
   validationSchema,
 });
-const isFormValid = ref(false);
+
 const [documentNumber, documentNumberAttrs] = defineField('documentNumber');
 const [documentType, documentTypeAttrs] = defineField('documentType');
 const [lastName, lastNameAttrs] = defineField('lastName');
@@ -195,6 +193,10 @@ const sexType = ref([
   { label: 'Masculino', value: '2' },
 ]);
 
+const personStore = usePersonStore();
+const { idPersonSelected } = storeToRefs(personStore);
+const effectiveId = computed(() => props.menor ?? idPersonSelected.value);
+
 const onSubmit = handleSubmit(async (value) => {
   try {
     const payload: Menor = {
@@ -209,19 +211,18 @@ const onSubmit = handleSubmit(async (value) => {
       domicilio: value.address,
       fecha_de_nacimiento: value.dateOfBirht,
     };
-    if (props.menor) {
-      await updatePerson(props.menor, payload);
+    if (effectiveId.value) {
+      await updatePerson(effectiveId.value, payload);
       return;
     }
-    console.log('fecha:', value.dateOfBirht);
     await createPerson(payload);
   } catch (error) {
     console.error('Error al enviar los datos:', error);
   }
 });
 onMounted(async () => {
-  if (props.menor) {
-    const data = await fetchAllPersonById(props.menor);
+  if (effectiveId.value) {
+    const data = await fetchAllPersonById(effectiveId.value);
 
     setValues({
       documentNumber: data.numero_de_documento,
@@ -237,9 +238,7 @@ onMounted(async () => {
     });
   }
 });
-const handleReset = () => {
-  resetForm(); // Llama a resetForm aquí sin pasarle argumentos
-};
+
 watch(
   () => meta.value,
   (newMeta) => {
@@ -248,6 +247,28 @@ watch(
   },
   { deep: true },
 );
+
+watch(effectiveId, async (newId) => {
+  if (newId) {
+    const data = await fetchAllPersonById(newId);
+
+    setValues({
+      documentNumber: data.numero_de_documento,
+      documentType: String(data.type_document_id),
+      lastName: data.apellido,
+      secondLastName: data.segundo_apellido || '',
+      firstName: data.nombre,
+      otherNames: data.otros_nombres || '',
+      nationality: data.nationality_id,
+      sex: data.sex_id,
+      address: data.domicilio,
+      fecha_de_nacimiento: data.dateOfBirht,
+      documentIssuer: data.issuer_document_id,
+    });
+  } else {
+    resetForm();
+  }
+});
 </script>
 
 <style scoped>

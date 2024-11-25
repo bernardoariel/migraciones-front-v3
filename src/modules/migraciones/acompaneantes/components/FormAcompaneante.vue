@@ -75,8 +75,6 @@ import type { Acompaneante } from '../interfaces/acompaneante.interface';
 import usePerson from '../../../../common/composables/usePerson';
 import { usePersonStore } from '@/common/store/personStore';
 
-const props = defineProps<Props>();
-
 interface ButtonConfig {
   label: string;
   type?: 'button' | 'submit' | 'reset';
@@ -90,6 +88,8 @@ interface Props {
   acompaneante?: number | null;
   buttons?: ButtonConfig[];
 }
+
+const props = defineProps<Props>();
 
 const { createPerson, fetchAllPersonById, updatePerson } = usePerson();
 const isFormValid = ref(false);

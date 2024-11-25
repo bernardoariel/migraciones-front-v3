@@ -181,34 +181,34 @@ const buttonConfig = computed<ButtonConfig[]>(() => {
     case 'menores':
       return [
         {
-          label: 'Guardar Menor',
-          type: 'submit',
-          class: 'btn btn-primary',
-          action: () => console.log('Guardar Menor'),
+          label: 'Cancelar',
+          type: 'button',
+          class: 'btn btn-ghost',
+          action: () => personStore.resetState(),
           position: 'left',
         },
         {
-          label: 'Limpiar',
-          type: 'button',
-          class: 'btn btn-secondary',
-          action: () => console.log('Limpiar Menor'),
+          label: 'Agregar Autorizante',
+          type: 'submit',
+          class: 'btn btn-primary',
+          action: () => console.log('Guardar Menor'),
           position: 'right',
         },
       ];
     case 'autorizantes':
       return [
         {
-          label: 'Guardar Autorizante',
-          type: 'submit',
-          class: 'btn btn-primary',
-          action: () => console.log('Guardar Autorizante'),
+          label: 'Cancelar',
+          type: 'button',
+          class: 'btn btn-ghost',
+          action: () => personStore.resetState(),
           position: 'left',
         },
         {
-          label: 'Limpiar',
-          type: 'button',
-          class: 'btn btn-secondary',
-          action: () => console.log('Limpiar Autorizante'),
+          label: 'Agregar Autorizante',
+          type: 'submit',
+          class: 'btn btn-primary',
+          action: () => console.log('Guardar Autorizantes'),
           position: 'right',
         },
       ];
