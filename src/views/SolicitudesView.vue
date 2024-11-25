@@ -44,7 +44,12 @@
       class="flex-[2] bg-white p-4 rounded-lg shadow-md max-h-[85vh] overflow-auto flex justify-center items-center"
     >
       <h1 v-if="!idPersonSelected" class="text-4xl">No existe ninguna persona seleccionada</h1>
-      <component v-else :is="dynamicComponent" :person-id="idPersonSelected"></component>
+      <component
+        v-else
+        :is="dynamicComponent"
+        :person-id="idPersonSelected"
+        :buttons="buttonConfig"
+      ></component>
     </div>
 
     <!-- Nueva Card -->
@@ -156,6 +161,69 @@ const dynamicComponent = computed(() => {
       return FormAcompaneante;
     default:
       return null;
+  }
+});
+const buttonConfig = computed(() => {
+  switch (activeCategory.value) {
+    case 'menores':
+      return [
+        {
+          label: 'Guardar Menor',
+          type: 'submit',
+          class: 'btn btn-primary',
+          action: () => console.log('Guardar Menor'),
+          position: 'left',
+        },
+        {
+          label: 'Limpiar',
+          type: 'button',
+          class: 'btn btn-secondary',
+          action: () => console.log('Limpiar Menor'),
+          position: 'right',
+        },
+      ];
+    case 'autorizantes':
+      return [
+        {
+          label: 'Guardar Autorizante',
+          type: 'submit',
+          class: 'btn btn-primary',
+          action: () => console.log('Guardar Autorizante'),
+          position: 'left',
+        },
+        {
+          label: 'Limpiar',
+          type: 'button',
+          class: 'btn btn-secondary',
+          action: () => console.log('Limpiar Autorizante'),
+          position: 'right',
+        },
+      ];
+    case 'acompaneantes':
+      return [
+        {
+          label: 'Cancelar',
+          type: 'button',
+          class: 'btn btn-ghost',
+          action: () => console.log('Cancelar'),
+          position: 'left',
+        },
+        {
+          label: 'Agregar Acompañante',
+          type: 'submit',
+          class: 'btn btn-primary',
+          action: () => console.log('Guardar Acompañante'),
+          position: 'right',
+        },
+        /* {
+          label: 'Limpiar',
+          type: 'button',
+          class: 'btn btn-secondary',
+          action: () => console.log('Limpiar Acompañante'),
+        }, */
+      ];
+    default:
+      return [];
   }
 });
 </script>

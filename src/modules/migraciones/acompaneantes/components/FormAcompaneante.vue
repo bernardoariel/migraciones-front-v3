@@ -56,15 +56,54 @@
         placeholder="Ingrese Otros Nombres"
       />
 
-      <!-- Buttons -->
       <div class="flex justify-between mt-6">
-        <router-link class="btn btn-ghost" :to="{ name: 'Home' }">Cancelar</router-link>
-        <button type="submit" class="btn btn-primary px-4 py-2" :disabled="!isFormValid">
-          Guardar
-        </button>
-        <button type="button" @click="handleReset" class="btn btn-secondary px-4 py-2">
-          Limpiar
-        </button>
+        <!-- Botones alineados a la izquierda -->
+        <div class="flex space-x-2" v-if="buttons.some((button) => button.position === 'left')">
+          <button
+            v-for="(button, index) in buttons.filter((button) => button.position === 'left')"
+            :key="'left-' + index"
+            :type="button.type"
+            :class="button.class"
+            :disabled="button.disabled || false"
+            @click="button.action"
+          >
+            {{ button.label }}
+          </button>
+        </div>
+
+        <!-- Botones alineados al centro -->
+        <div
+          class="flex space-x-2 mx-auto"
+          v-if="buttons.some((button) => button.position === 'center')"
+        >
+          <button
+            v-for="(button, index) in buttons.filter((button) => button.position === 'center')"
+            :key="'center-' + index"
+            :type="button.type"
+            :class="button.class"
+            :disabled="button.disabled || false"
+            @click="button.action"
+          >
+            {{ button.label }}
+          </button>
+        </div>
+
+        <!-- Botones alineados a la derecha -->
+        <div
+          class="flex space-x-2 ml-auto"
+          v-if="buttons.some((button) => button.position === 'right')"
+        >
+          <button
+            v-for="(button, index) in buttons.filter((button) => button.position === 'right')"
+            :key="'right-' + index"
+            :type="button.type"
+            :class="button.class"
+            :disabled="button.disabled || false"
+            @click="button.action"
+          >
+            {{ button.label }}
+          </button>
+        </div>
       </div>
       <!-- <div class="grid grid-cols-2 p-2">
       <div class="bg-blue-100">{{ values }}</div>
@@ -88,11 +127,20 @@ import type { Acompaneante } from '../interfaces/acompaneante.interface';
 import usePerson from '../../../../common/composables/usePerson';
 import { usePersonStore } from '@/common/store/personStore';
 import { storeToRefs } from 'pinia';
-
+const props = defineProps<Props>();
+interface ButtonConfig {
+  label: string;
+  type?: 'button' | 'submit' | 'reset'; // Restringimos los valores permitidos para evitar errores.
+  action: () => void;
+  class?: string;
+  disabled?: boolean;
+  position?: 'left' | 'right' | 'center'; // Agregamos la propiedad position.
+}
 interface Props {
+  buttons: ButtonConfig[];
   acompaneante: number | null;
 }
-const props = defineProps<Props>();
+
 const { createPerson, fetchAllPersonById, updatePerson } = usePerson();
 
 const validationSchema = yup.object({
