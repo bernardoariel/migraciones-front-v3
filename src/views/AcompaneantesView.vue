@@ -41,30 +41,74 @@
 
     <!-- Formulario de Acompañante -->
     <div class="flex-[3] bg-white p-4 rounded-lg shadow-md max-h-[85vh] overflow-auto">
-      <h2 class="text-xl font-semibold mb-4">Formulario de Acompañante</h2>
-      <FormAcompaneante :acompaneante="selectedPersonId" />
+      <FormAcompaneante ref="formRef" :acompaneante="selectedPersonId" :buttons="buttons" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+
 import PersonTable from '@/common/components/PersonTable.vue';
 import FormAcompaneante from '@/modules/migraciones/acompaneantes/components/FormAcompaneante.vue';
-import { ref } from 'vue';
+
+const router = useRouter();
 const activeItem = ref<'menores' | 'acompaneantes' | 'autorizantes'>('acompaneantes');
 const selectedPersonId = ref<number | null>(null);
+
+const formRef = ref();
 const setActiveItem = (item: 'menores' | 'acompaneantes' | 'autorizantes') => {
   activeItem.value = item;
 };
 const handleEditPerson = (id: number | string) => {
   selectedPersonId.value = +id;
-  console.log('selectedPersonId.value::: ', selectedPersonId.value);
 };
+interface ButtonConfig {
+  label: string;
+  type?: 'button' | 'submit' | 'reset';
+  class?: string;
+  disabled?: boolean;
+  position?: 'left' | 'right' | 'center';
+  action: () => void;
+}
+const buttons: ButtonConfig[] = [
+  {
+    label: 'Limpiar',
+    type: 'button',
+    class: 'btn btn-secondary',
+    action: () => {
+      if (formRef.value) {
+        formRef.value.resetForm();
+        console.log('Formulario limpiado');
+      }
+    },
+    position: 'right',
+  },
+  {
+    label: 'Guardar Autorizante',
+    type: 'submit',
+    class: 'btn btn-primary',
+    action: () => {
+      if (formRef.value) {
+        formRef.value.onSubmit();
+        console.log('Formulario limpiado');
+      }
+    },
+    position: 'right',
+  },
+  {
+    label: 'Cancelar',
+    type: 'submit',
+    class: 'btn btn-ghost',
+    action: () => router.replace({ name: 'Home' }),
+    position: 'left',
+  },
+];
 </script>
 
 <style scoped>
-/* Si necesitas ajustar el comportamiento exacto del alto */
 .min-h-screen {
-  height: 100vh; /* Mantiene el contenedor ocupando toda la pantalla */
+  height: 100vh;
 }
 </style>

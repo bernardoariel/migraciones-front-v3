@@ -134,21 +134,29 @@ const personStore = usePersonStore();
 const { idPersonSelected } = storeToRefs(personStore);
 
 const effectiveId = computed(() => props.acompaneante ?? idPersonSelected.value);
+const isSubmitting = ref(false);
 
 const onSubmit = handleSubmit(async (value) => {
-  const payload: Acompaneante = {
-    numero_de_documento: value.documentNumber,
-    type_document_id: value.documentType,
-    apellido: value.lastName,
-    segundo_apellido: value.secondLastName,
-    nombre: value.firstName,
-    otros_nombres: value.otherNames,
-  };
-  if (effectiveId.value) {
-    await updatePerson(effectiveId.value, payload);
-    return;
+  if (isSubmitting.value) return;
+  isSubmitting.value = true;
+  try {
+    const payload: Acompaneante = {
+      numero_de_documento: value.documentNumber,
+      type_document_id: value.documentType,
+      apellido: value.lastName,
+      segundo_apellido: value.secondLastName,
+      nombre: value.firstName,
+      otros_nombres: value.otherNames,
+    };
+
+    if (effectiveId.value) {
+      await updatePerson(effectiveId.value, payload);
+    } else {
+      await createPerson(payload);
+    }
+  } finally {
+    isSubmitting.value = false;
   }
-  await createPerson(payload);
 });
 
 onMounted(async () => {
@@ -190,4 +198,5 @@ watch(effectiveId, async (newId) => {
     resetForm();
   }
 });
+defineExpose({ resetForm, onSubmit });
 </script>
