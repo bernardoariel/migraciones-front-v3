@@ -9,7 +9,7 @@
             <a
               class="ml-1"
               :class="{ active: activeCategory === 'acompaneantes' }"
-              @click="setActiveItem('acompaneantes')"
+              @click="personStore.setCategory('acompaneantes')"
             >
               Acompañantes
             </a>
@@ -18,7 +18,7 @@
             <a
               class="ml-1"
               :class="{ active: activeCategory === 'menores' }"
-              @click="setActiveItem('menores')"
+              @click="personStore.setCategory('menores')"
             >
               Menores
             </a>
@@ -27,7 +27,7 @@
             <a
               class="ml-1"
               :class="{ active: activeCategory === 'autorizantes' }"
-              @click="setActiveItem('autorizantes')"
+              @click="personStore.setCategory('autorizantes')"
             >
               Autorizantes
             </a>
@@ -81,7 +81,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
+import { computed, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 
 import { usePersonStore } from '@/common/store/personStore';
@@ -91,8 +91,8 @@ import FormAutorizante from '@/modules/migraciones/autorizantes/components/FormA
 import FormAcompaneante from '@/modules/migraciones/acompaneantes/components/FormAcompaneante.vue';
 import { useRoute } from 'vue-router';
 
-type Persona = 'menores' | 'acompaneantes' | 'autorizantes' | null;
-// Interfaz para los botones
+type ActiveCategory = 'menores' | 'autorizantes' | 'acompaneantes';
+
 interface ButtonConfig {
   label: string;
   type?: 'button' | 'submit' | 'reset';
@@ -101,97 +101,90 @@ interface ButtonConfig {
   position?: 'left' | 'right' | 'center';
   action: () => void;
 }
-const { path } = useRoute();
 
-// Conectar el store
+const route = useRoute();
 const personStore = usePersonStore();
+const { activeCategory, idPersonSelected } = storeToRefs(personStore);
 
-const { activeCategory, idPersonSelected } = storeToRefs(personStore); // Obtener la categoría activa del store
-
-// Función para manejar la selección de categoría
-const setActiveItem = (item: Persona) => {
-  personStore.setCategory(item); // Actualizar la categoría activa en el store
+// Configuración de botones por categoría
+const buttonConfigurations: Record<string, ButtonConfig[]> = {
+  menores: [
+    {
+      label: 'Cancelar',
+      type: 'button',
+      class: 'btn btn-ghost',
+      action: () => personStore.resetState(),
+      position: 'left',
+    },
+    {
+      label: 'Agregar Menor',
+      type: 'submit',
+      class: 'btn btn-primary',
+      action: () => console.log('Guardar Menor'),
+      position: 'right',
+    },
+  ],
+  autorizantes: [
+    {
+      label: 'Cancelar',
+      type: 'button',
+      class: 'btn btn-ghost',
+      action: () => personStore.resetState(),
+      position: 'left',
+    },
+    {
+      label: 'Agregar Autorizante',
+      type: 'submit',
+      class: 'btn btn-primary',
+      action: () => console.log('Guardar Autorizante'),
+      position: 'right',
+    },
+  ],
+  acompaneantes: [
+    {
+      label: 'Cancelar',
+      type: 'button',
+      class: 'btn btn-ghost',
+      action: () => personStore.resetState(),
+      position: 'left',
+    },
+    {
+      label: 'Agregar Acompañante',
+      type: 'submit',
+      class: 'btn btn-primary',
+      action: () => console.log('Guardar Acompañante'),
+      position: 'right',
+    },
+  ],
 };
 
-// Computed para el componente dinámico
+const componentMap: Record<ActiveCategory, any> = {
+  menores: FormMenor,
+  autorizantes: FormAutorizante,
+  acompaneantes: FormAcompaneante,
+};
+
 const dynamicComponent = computed(() => {
-  switch (activeCategory.value) {
-    case 'menores':
-      return FormMenor;
-    case 'autorizantes':
-      return FormAutorizante;
-    case 'acompaneantes':
-      return FormAcompaneante;
-    default:
-      return null;
-  }
+  const category = activeCategory.value as ActiveCategory;
+  return componentMap[category] || null;
 });
 
-// Configuración de botones según la categoría
-const buttonConfig = computed<ButtonConfig[]>(() => {
-  switch (activeCategory.value) {
-    case 'menores':
-      return [
-        {
-          label: 'Cancelar',
-          type: 'button',
-          class: 'btn btn-ghost',
-          action: () => personStore.resetState(),
-          position: 'left',
-        },
-        {
-          label: 'Agregar Autorizante',
-          type: 'submit',
-          class: 'btn btn-primary',
-          action: () => console.log('Guardar Menor'),
-          position: 'right',
-        },
-      ];
-    case 'autorizantes':
-      return [
-        {
-          label: 'Cancelar',
-          type: 'button',
-          class: 'btn btn-ghost',
-          action: () => personStore.resetState(),
-          position: 'left',
-        },
-        {
-          label: 'Agregar Autorizante',
-          type: 'submit',
-          class: 'btn btn-primary',
-          action: () => console.log('Guardar Autorizantes'),
-          position: 'right',
-        },
-      ];
-    case 'acompaneantes':
-      return [
-        {
-          label: 'Cancelar',
-          type: 'button',
-          class: 'btn btn-ghost',
-          action: () => personStore.resetState(),
-          position: 'left',
-        },
-        {
-          label: 'Agregar Acompañante',
-          type: 'submit',
-          class: 'btn btn-primary',
-          action: () => console.log('Guardar Acompañante'),
-          position: 'right',
-        },
-      ];
-    default:
-      return [];
-  }
+const buttonConfig = computed(() => {
+  return buttonConfigurations[activeCategory.value || ''] || [];
 });
-onMounted(() => {
-  setActiveItem(path.slice(1) as Persona);
-});
+
+// Actualiza la categoría activa según la ruta
+const setActiveCategoryFromPath = () => {
+  const category = route.path.slice(1) as ActiveCategory;
+  personStore.setCategory(category);
+};
+
+// Sincroniza la ruta con la categoría activa
+watch(
+  () => route.path,
+  () => {
+    setActiveCategoryFromPath();
+  },
+  { immediate: true },
+);
 </script>
-
-<style scoped>
-.min-h-screen {
-  height: 100vh;
-}
-</style>

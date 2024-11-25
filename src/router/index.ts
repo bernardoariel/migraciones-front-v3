@@ -1,11 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
-import NuevaSolicitud from '../views/NuevaSolicitud.vue';
-import MenoresView from '../views/MenoresView.vue';
-import AcompaneantesView from '../views/AcompaneantesView.vue';
-import AcompaneanteView from '../views/AcompaneanteView.vue';
-import AutorizantesView from '../views/AutorizantesView.vue';
+
 import SolicitudesView from '../views/SolicitudesView.vue';
+import NuevaSolicitud from '../views/NuevaSolicitud.vue';
 import PersonsView from '../views/PersonsView.vue';
 
 const router = createRouter({
@@ -29,17 +26,12 @@ const router = createRouter({
     {
       path: '/autorizantes',
       name: 'Autorizantes',
-      component: AutorizantesView,
+      component: PersonsView,
     },
     {
       path: '/nuevasolicitud',
       name: 'NuevaSolicitud',
       component: NuevaSolicitud,
-    },
-    {
-      path: '/acompaneante/:id',
-      name: 'AcompaneanteId',
-      component: AcompaneanteView,
     },
 
     {
