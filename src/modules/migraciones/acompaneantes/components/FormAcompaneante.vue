@@ -2,8 +2,7 @@
   <div class="flex flex-col">
     <div class="text-2xl font-semibold mb-6 text-center">Agregando un Autorizante</div>
 
-    <form @submit="onSubmit" class="space-y-4">
-      <!-- Número de Documento -->
+    <form @submit.prevent="onSubmit" class="space-y-4">
       <MyInput
         v-model.number="documentNumber"
         v-bind="documentNumberAttrs"
@@ -57,61 +56,7 @@
         placeholder="Ingrese Otros Nombres"
       />
 
-      <div class="flex justify-between mt-6">
-        <!-- Botones alineados a la izquierda -->
-        <div class="flex space-x-2" v-if="buttons.some((button) => button.position === 'left')">
-          <button
-            v-for="(button, index) in buttons.filter((button) => button.position === 'left')"
-            :key="'left-' + index"
-            :type="button.type"
-            :class="button.class"
-            :disabled="button.disabled || false"
-            @click="button.action"
-          >
-            {{ button.label }}
-          </button>
-        </div>
-
-        <!-- Botones alineados al centro -->
-        <div
-          class="flex space-x-2 mx-auto"
-          v-if="buttons.some((button) => button.position === 'center')"
-        >
-          <button
-            v-for="(button, index) in buttons.filter((button) => button.position === 'center')"
-            :key="'center-' + index"
-            :type="button.type"
-            :class="button.class"
-            :disabled="button.disabled || false"
-            @click="button.action"
-          >
-            {{ button.label }}
-          </button>
-        </div>
-
-        <!-- Botones alineados a la derecha -->
-        <div
-          class="flex space-x-2 ml-auto"
-          v-if="buttons.some((button) => button.position === 'right')"
-        >
-          <button
-            v-for="(button, index) in buttons.filter((button) => button.position === 'right')"
-            :key="'right-' + index"
-            :type="button.type"
-            :class="button.class"
-            :disabled="button.disabled || false"
-            @click="button.action"
-          >
-            {{ button.label }}
-          </button>
-        </div>
-      </div>
-      <!-- <div class="grid grid-cols-2 p-2">
-      <div class="bg-blue-100">{{ values }}</div>
-    </div>
-    <div class="grid grid-cols-2 p-2">
-      <div class="bg-red-100">{{ errors }}</div>
-    </div> -->
+      <ButtonGroup :buttons="buttons!" />
     </form>
   </div>
 </template>
@@ -122,6 +67,7 @@ import * as yup from 'yup';
 import { useForm } from 'vee-validate';
 import { storeToRefs } from 'pinia';
 
+import ButtonGroup from '@/common/components/ButtonGroup.vue';
 import MyInput from '@/common/components/elementos/MyInput.vue';
 import MySelect from '@/common/components/elementos/MySelect.vue';
 
@@ -142,11 +88,11 @@ interface ButtonConfig {
 
 interface Props {
   acompaneante?: number | null;
-  buttons: ButtonConfig[];
+  buttons?: ButtonConfig[];
 }
 
 const { createPerson, fetchAllPersonById, updatePerson } = usePerson();
-
+const isFormValid = ref(false);
 const validationSchema = yup.object({
   documentNumber: yup.string().matches(/^\d+$/).required().min(3),
   documentType: yup.number().required().oneOf([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]),
@@ -160,7 +106,6 @@ const { defineField, errors, handleSubmit, meta, resetForm, setValues } = useFor
   validationSchema,
 });
 
-const isFormValid = ref(false);
 const [documentNumber, documentNumberAttrs] = defineField('documentNumber');
 const [documentType, documentTypeAttrs] = defineField('documentType');
 const [lastName, lastNameAttrs] = defineField('lastName');
@@ -184,7 +129,7 @@ const documentTypes = ref([
   { label: 'PASAPORTE PROVISORIO', value: 13 },
   { label: 'SALVOCONDUCTO', value: 14 },
 ]);
-// Pinia store
+
 const personStore = usePersonStore();
 const { idPersonSelected } = storeToRefs(personStore);
 
@@ -205,6 +150,7 @@ const onSubmit = handleSubmit(async (value) => {
   }
   await createPerson(payload);
 });
+
 onMounted(async () => {
   if (effectiveId.value) {
     const data = await fetchAllPersonById(effectiveId.value);

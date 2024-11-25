@@ -82,8 +82,16 @@
           v-bind="sexAttrs"
           label="Sexo"
         />
-
-        <MyCalendar v-model="dateOfBirht" placeholder="Fecha de Nacimiento" />
+        <label class="input input-bordered flex items-center gap-2">
+          <span>Fecha de Nacimiento </span>
+          <input
+            type="date"
+            v-model="dateOfBirht"
+            :class="['form-control', errors.dateOfBirht ? 'border-red-500' : '']"
+            placeholder="Fecha de Nacimiento"
+            v-bind="dateOfBirhtAttrs"
+          />
+        </label>
 
         <!-- Domicilio -->
         <MyInput
@@ -119,7 +127,7 @@ import { onMounted, ref, watch } from 'vue';
 import { useForm } from 'vee-validate';
 import MyInput from '@/common/components/elementos/MyInput.vue';
 import MySelect from '@/common/components/elementos/MySelect.vue';
-import MyCalendar from '@/common/components/elementos/MyCalendar.vue';
+
 import * as yup from 'yup';
 import type { Autorizante } from '../interfaces/autorizante.interface';
 import usePerson from '../../../../common/composables/usePerson';
@@ -257,5 +265,12 @@ watch(
 </script>
 
 <style scoped>
-/* Puedes personalizar más estilos aquí si es necesario */
+/* input[type='date']::-webkit-calendar-picker-indicator {
+  display: none;
+}
+
+
+input[type='date'] {
+  -moz-appearance: textfield;
+} */
 </style>

@@ -39,7 +39,7 @@
       <PersonList />
     </div>
 
-    <!-- Formulario de Acompañante -->
+    <!-- Formulario dinámico -->
     <div
       class="flex-[2] bg-white p-4 rounded-lg shadow-md max-h-[85vh] overflow-auto flex justify-center items-center"
     >
@@ -47,7 +47,7 @@
       <component
         v-else
         :is="dynamicComponent"
-        :person-id="idPersonSelected"
+        :personId="idPersonSelected"
         :buttons="buttonConfig"
       ></component>
     </div>
@@ -124,7 +124,7 @@
           </div>
           <div>
             <button class="btn glass btn-xs" @click="setActiveItem('acompaneantes')">
-              + Acompañanante
+              + Acompañante
             </button>
           </div>
         </div>
@@ -137,10 +137,20 @@
 import { storeToRefs } from 'pinia';
 import PersonList from '@/common/components/PersonList.vue';
 import { usePersonStore } from '@/common/store/personStore';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import FormMenor from '@/modules/migraciones/menores/components/FormMenor.vue';
 import FormAutorizante from '@/modules/migraciones/autorizantes/components/FormAutorizante.vue';
 import FormAcompaneante from '@/modules/migraciones/acompaneantes/components/FormAcompaneante.vue';
+
+// Interfaz para los botones
+interface ButtonConfig {
+  label: string;
+  type?: 'button' | 'submit' | 'reset';
+  class?: string;
+  disabled?: boolean;
+  position?: 'left' | 'right' | 'center';
+  action: () => void;
+}
 
 // Conectar el store
 const personStore = usePersonStore();
@@ -150,6 +160,7 @@ const { activeCategory, idPersonSelected } = storeToRefs(personStore); // Obtene
 const setActiveItem = (item: 'menores' | 'acompaneantes' | 'autorizantes') => {
   personStore.setCategory(item); // Actualizar la categoría activa en el store
 };
+
 // Computed para el componente dinámico
 const dynamicComponent = computed(() => {
   switch (activeCategory.value) {
@@ -163,7 +174,9 @@ const dynamicComponent = computed(() => {
       return null;
   }
 });
-const buttonConfig = computed(() => {
+
+// Configuración de botones según la categoría
+const buttonConfig = computed<ButtonConfig[]>(() => {
   switch (activeCategory.value) {
     case 'menores':
       return [
@@ -215,12 +228,6 @@ const buttonConfig = computed(() => {
           action: () => console.log('Guardar Acompañante'),
           position: 'right',
         },
-        /* {
-          label: 'Limpiar',
-          type: 'button',
-          class: 'btn btn-secondary',
-          action: () => console.log('Limpiar Acompañante'),
-        }, */
       ];
     default:
       return [];
@@ -229,7 +236,6 @@ const buttonConfig = computed(() => {
 </script>
 
 <style scoped>
-/* Ajusta estilos si es necesario */
 .min-h-screen {
   height: 100vh;
 }
