@@ -121,11 +121,9 @@ import MyInput from '@/common/components/elementos/MyInput.vue';
 import MySelect from '@/common/components/elementos/MySelect.vue';
 import MyCalendar from '@/common/components/elementos/MyCalendar.vue';
 import * as yup from 'yup';
-import useAutorizante from '../composables/useAutorizante';
 import type { Autorizante } from '../interfaces/autorizante.interface';
-import usePerson from '@/common/composables/usePerson';
+import usePerson from '../../../../common/composables/usePerson';
 
-const { createAutorizante } = useAutorizante();
 const { createPerson, fetchAllPersonById, updatePerson } = usePerson();
 interface Props {
   autorizante: number | null;
@@ -142,7 +140,6 @@ const validationSchema = yup.object({
   nationality: yup.string().required().oneOf(['1', '2', '3', '4', '5', '6', '7']),
   sex: yup.string().required().oneOf(['1', '2']),
   address: yup.string(),
-  fecha_de_nacimiento: yup.string().required(),
 });
 
 const { values, defineField, errors, handleSubmit, meta, resetForm, setValues } = useForm({
@@ -159,7 +156,7 @@ const [otherNames, otherNamesAttrs] = defineField('otherNames');
 const [nationality, nationalityAttrs] = defineField('nationality');
 const [sex, sexAttrs] = defineField('sex');
 const [address, addressAttrs] = defineField('address');
-const [fecha_de_nacimiento, fecha_de_nacimientoAttrs] = defineField('fecha_de_nacimiento');
+const [dateOfBirht, dateOfBirhtAttrs] = defineField('dateOfBirht');
 
 const countries = ref([
   { label: 'Argentina', value: '1' },
@@ -215,14 +212,13 @@ const onSubmit = handleSubmit(async (value) => {
       nationality_id: value.nationality,
       sex_id: value.sex,
       domicilio: value.address,
-      fecha_de_nacimiento: value.fecha_de_nacimiento,
+      fecha_de_nacimiento: value.dateOfBirht,
       issuer_document_id: value.documentIssuer,
     };
     if (props.autorizante) {
       await updatePerson(props.autorizante, payload);
       return;
     }
-    console.log('fecha:', value.fecha_de_nacimiento);
     await createPerson(payload);
   } catch (error) {
     console.error('Error al enviar los datos:', error);
@@ -231,6 +227,7 @@ const onSubmit = handleSubmit(async (value) => {
 onMounted(async () => {
   if (props.autorizante) {
     const data = await fetchAllPersonById(props.autorizante);
+
     setValues({
       documentNumber: data.numero_de_documento,
       documentType: String(data.type_document_id),
@@ -241,7 +238,7 @@ onMounted(async () => {
       nationality: data.nationality_id,
       sex: data.sex_id,
       address: data.domicilio,
-      fecha_de_nacimiento: data.fecha_de_nacimiento,
+      fecha_de_nacimiento: data.dateOfBirht,
       documentIssuer: data.issuer_document_id,
     });
   }
