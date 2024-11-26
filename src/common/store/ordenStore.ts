@@ -1,4 +1,5 @@
 import { ref, computed } from 'vue';
+import { defineStore } from 'pinia';
 import type { Autorizante } from '../../modules/migraciones/autorizantes/interfaces/autorizante.interface';
 import type { Acompaneante } from '../../modules/migraciones/acompaneantes/interfaces/acompaneante.interface';
 import type { Menor } from '../../modules/migraciones/menores/interfaces/menor.interface';
