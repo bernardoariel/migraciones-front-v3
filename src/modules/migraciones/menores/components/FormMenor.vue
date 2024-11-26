@@ -18,7 +18,7 @@
         v-bind="documentTypeAttrs"
         :error="errors.documentType"
         label="Tipo de Documento"
-        :options="documentTypes"
+        :options="documentTypeOptions"
       />
       <!-- Apellido -->
       <MyInput
@@ -59,7 +59,7 @@
       <!-- Nacionalidad -->
       <MySelect
         v-model="nationality"
-        :options="countries"
+        :options="nationalityOptions"
         :error="errors.nationality"
         v-bind="nationalityAttrs"
         label="Nacionalidad"
@@ -112,11 +112,14 @@ import { useForm } from 'vee-validate';
 import MyInput from '@/common/components/elementos/MyInput.vue';
 import MySelect from '@/common/components/elementos/MySelect.vue';
 import ButtonGroup from '@/common/components/ButtonGroup.vue';
+import useDropdownOptions from '@/common/composables/useDropdownOptions';
 
 import type { Menor } from '../interfaces/menor.interface';
 import usePerson from '../../../../common/composables/usePerson';
 import { usePersonStore } from '../../../../common/store/personStore';
 import { storeToRefs } from 'pinia';
+const { documentTypeOptions, nationalityOptions, loadOptions } = useDropdownOptions()
+
 
 interface ButtonConfig {
   label: string;
@@ -161,32 +164,6 @@ const [sex, sexAttrs] = defineField('sex');
 const [address, addressAttrs] = defineField('address');
 const [dateOfBirht, dateOfBirhtAttrs] = defineField('dateOfBirht');
 
-const countries = ref([
-  { label: 'Argentina', value: '1' },
-  { label: 'Brasil', value: '2' },
-  { label: 'Chile', value: '3' },
-  { label: 'Colombia', value: '4' },
-  { label: 'México', value: '5' },
-  { label: 'Perú', value: '6' },
-  { label: 'Uruguay', value: '7' },
-]);
-
-const documentTypes = ref([
-  { label: 'CEDULA DE IDENTIDAD', value: 1 },
-  { label: 'CERTIFICADO DE VIAJE', value: 2 },
-  { label: 'DOCUMENTO DE VIAJE', value: 3 },
-  { label: 'DOCUMENTO NACIONAL DE IDENTIDAD', value: 4 },
-  { label: 'LAISSER PASSER', value: 5 },
-  { label: 'LIBRETA CIVICA', value: 6 },
-  { label: 'LIBRETA DE EMBARQUE (SEAMAN BOOK)', value: 7 },
-  { label: 'LIBRETA DE ENROLAMIENTO', value: 8 },
-  { label: 'PASAPORTE', value: 9 },
-  { label: 'PASAPORTE DE SERVICIO', value: 10 },
-  { label: 'PASAPORTE DIPLOMATICO', value: 11 },
-  { label: 'PASAPORTE OFICIAL', value: 12 },
-  { label: 'PASAPORTE PROVISORIO', value: 13 },
-  { label: 'SALVOCONDUCTO', value: 14 },
-]);
 
 const sexType = ref([
   { label: 'Femenino', value: '1' },
@@ -237,6 +214,8 @@ onMounted(async () => {
       fecha_de_nacimiento: data.dateOfBirht,
     });
   }
+  loadOptions('nacionalidades', 'nombre');  
+  loadOptions('tiposdocumentos', 'descripcion');  
 });
 
 watch(
