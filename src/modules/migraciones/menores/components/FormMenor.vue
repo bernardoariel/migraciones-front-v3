@@ -234,10 +234,10 @@ onMounted(async () => {
       secondLastName: data.segundo_apellido || '',
       firstName: data.nombre,
       otherNames: data.otros_nombres || '',
-      nationality: data.nationality_id,
-      sex: data.sex_id,
+      nationality: String(data.nationality_id),
+      sex: String(data.sex_id),
       address: data.domicilio,
-      fecha_de_nacimiento: data.dateOfBirht,
+      dateOfBirht: data.dateOfBirht,
     });
   }
 });
@@ -254,7 +254,7 @@ watch(
 watch(effectiveId, async (newId) => {
   if (newId) {
     const data = await fetchAllPersonById(newId);
-
+    console.log('data::: ', data);
     setValues({
       documentNumber: data.numero_de_documento,
       documentType: String(data.type_document_id),
@@ -262,16 +262,17 @@ watch(effectiveId, async (newId) => {
       secondLastName: data.segundo_apellido || '',
       firstName: data.nombre,
       otherNames: data.otros_nombres || '',
-      nationality: data.nationality_id,
-      sex: data.sex_id,
+      nationality: String(data.nationality_id),
+      sex: String(data.sex_id),
       address: data.domicilio,
-      fecha_de_nacimiento: data.dateOfBirht,
-      documentIssuer: data.issuer_document_id,
+      dateOfBirht: data.fecha_de_nacimiento,
+      documentIssuer: String(data.issuer_document_id),
     });
   } else {
     resetForm();
   }
 });
+defineExpose({ resetForm, onSubmit });
 </script>
 
 <style scoped>

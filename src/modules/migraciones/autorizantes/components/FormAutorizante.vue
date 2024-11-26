@@ -250,11 +250,11 @@ onMounted(async () => {
       secondLastName: data.segundo_apellido || '',
       firstName: data.nombre,
       otherNames: data.otros_nombres || '',
-      nationality: data.nationality_id,
-      sex: data.sex_id,
+      nationality: String(data.nationality_id),
+      sex: String(data.sex_id),
       address: data.domicilio,
-      fecha_de_nacimiento: data.dateOfBirht,
-      documentIssuer: data.issuer_document_id,
+      dateOfBirht: data.dateOfBirht,
+      documentIssuer: String(data.issuer_document_id),
     });
   }
 });
@@ -278,25 +278,17 @@ watch(effectiveId, async (newId) => {
       secondLastName: data.segundo_apellido || '',
       firstName: data.nombre,
       otherNames: data.otros_nombres || '',
-      nationality: data.nationality_id,
-      sex: data.sex_id,
+      nationality: String(data.nationality_id),
+      sex: String(data.sex_id),
       address: data.domicilio,
-      fecha_de_nacimiento: data.dateOfBirht,
-      documentIssuer: data.issuer_document_id,
+      dateOfBirht: data.fecha_de_nacimiento,
+      documentIssuer: String(data.issuer_document_id),
     });
   } else {
     resetForm();
   }
 });
+defineExpose({ resetForm, onSubmit });
 </script>
 
-<style scoped>
-/* input[type='date']::-webkit-calendar-picker-indicator {
-  display: none;
-}
-
-
-input[type='date'] {
-  -moz-appearance: textfield;
-} */
-</style>
+<style scoped></style>
