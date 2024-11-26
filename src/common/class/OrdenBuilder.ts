@@ -22,7 +22,7 @@ export class OrdenBuilder {
     return this;
   }
 
-  addAcompanenante(acompaneante: Acompaneante) {
+  addAcompaneante(acompaneante: Acompaneante) {
     this.orden.acompaneante = acompaneante;
     return this;
   }

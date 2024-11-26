@@ -104,8 +104,9 @@ interface ButtonConfig {
 
 const route = useRoute();
 const personStore = usePersonStore();
-const { activeCategory, idPersonSelected } = storeToRefs(personStore);
-
+const { getActiveCategory, getIdPersonSelected } = storeToRefs(personStore);
+const idPersonSelected = getIdPersonSelected;
+const activeCategory = getActiveCategory;
 // Configuración de botones por categoría
 const buttonConfigurations: Record<string, ButtonConfig[]> = {
   menores: [

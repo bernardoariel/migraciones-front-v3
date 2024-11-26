@@ -131,8 +131,8 @@ const documentTypes = ref([
 ]);
 
 const personStore = usePersonStore();
-const { idPersonSelected } = storeToRefs(personStore);
-
+const { getIdPersonSelected } = storeToRefs(personStore);
+const idPersonSelected = getIdPersonSelected;
 const effectiveId = computed(() => props.acompaneante ?? idPersonSelected.value);
 const isSubmitting = ref(false);
 

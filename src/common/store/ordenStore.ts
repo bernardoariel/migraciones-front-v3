@@ -4,6 +4,7 @@ import type { Autorizante } from '../../modules/migraciones/autorizantes/interfa
 import type { Acompaneante } from '../../modules/migraciones/acompaneantes/interfaces/acompaneante.interface';
 import type { Menor } from '../../modules/migraciones/menores/interfaces/menor.interface';
 import { OrdenBuilder } from '../class/OrdenBuilder';
+import { getById } from '../services/persons';
 
 export const useOrdenStore = defineStore('ordenStore', () => {
   const menor = ref<Menor | null>(null);
@@ -23,7 +24,9 @@ export const useOrdenStore = defineStore('ordenStore', () => {
   };
 
   const addAcompaneante = (newAcompaneante: Acompaneante) => {
+    console.log('newAcompaneante::: ', newAcompaneante);
     acompaneantes.value.push(newAcompaneante);
+    console.log('acompaneantes.value::: ', acompaneantes.value);
     builder.addAcompaneante(newAcompaneante);
   };
 
@@ -46,6 +49,40 @@ export const useOrdenStore = defineStore('ordenStore', () => {
   const isValidOrden = computed(() => {
     return menor.value !== null && autorizantes.value.length > 0;
   });
+  // Nueva función getPerson
+  const getPerson = async (category: string, id: number | null) => {
+    console.log('id::: ', id);
+    console.log('category::: ', category);
+    if (!id) {
+      console.error('ID de la persona no seleccionado.');
+      return;
+    }
+
+    try {
+      switch (category) {
+        case 'menores': {
+          const menor = await getById(id); // Implementa esta función para obtener datos
+          if (menor) setMenor(menor);
+          break;
+        }
+        case 'autorizantes': {
+          const autorizante = await getById(id); // Implementa esta función para obtener datos
+          if (autorizante) addAutorizante(autorizante);
+          break;
+        }
+        case 'acompaneantes': {
+          const acompaneante = await getById(id); // Implementa esta función para obtener datos
+          if (acompaneante) addAcompaneante(acompaneante);
+          break;
+        }
+        default: {
+          console.error('Categoría no válida.');
+        }
+      }
+    } catch (error) {
+      console.error('Error al obtener la persona:', error);
+    }
+  };
 
   return {
     menor,
@@ -57,5 +94,6 @@ export const useOrdenStore = defineStore('ordenStore', () => {
     resetOrden,
     buildOrden,
     isValidOrden,
+    getPerson,
   };
 });

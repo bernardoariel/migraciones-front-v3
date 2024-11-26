@@ -1,15 +1,14 @@
-// stores/personStore.ts
+import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
 
-// Define el tipo de las categorías
 type CategoryPerson = 'menores' | 'acompaneantes' | 'autorizantes' | null;
 
 export const usePersonStore = defineStore('personStore', () => {
-  // Estado de la categoría activa
   const activeCategory = ref<CategoryPerson>('acompaneantes');
   const idPersonSelected = ref<number | null>(null);
 
+  const getActiveCategory = computed(() => activeCategory.value);
+  const getIdPersonSelected = computed(() => idPersonSelected.value);
   const setPersonId = (id: number | number) => {
     idPersonSelected.value = id;
   };
@@ -21,10 +20,10 @@ export const usePersonStore = defineStore('personStore', () => {
     setCategory(null);
   };
   return {
-    activeCategory,
+    getActiveCategory,
+    getIdPersonSelected,
     setCategory,
     setPersonId,
-    idPersonSelected,
     resetState,
   };
 });

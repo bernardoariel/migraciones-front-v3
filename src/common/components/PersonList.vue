@@ -87,8 +87,8 @@ interface Person {
 }
 
 const personStore = usePersonStore();
-const { activeCategory } = storeToRefs(personStore);
-
+const { getActiveCategory } = storeToRefs(personStore);
+const activeCategory = getActiveCategory;
 const { fetchAllPerson } = usePerson();
 
 const persons = ref<Person[]>([]);

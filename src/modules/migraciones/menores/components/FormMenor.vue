@@ -194,7 +194,8 @@ const sexType = ref([
 ]);
 
 const personStore = usePersonStore();
-const { idPersonSelected } = storeToRefs(personStore);
+const { getIdPersonSelected } = storeToRefs(personStore);
+const idPersonSelected = getIdPersonSelected;
 const effectiveId = computed(() => props.menor ?? idPersonSelected.value);
 
 const onSubmit = handleSubmit(async (value) => {

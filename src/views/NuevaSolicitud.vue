@@ -141,6 +141,7 @@ import { computed } from 'vue';
 import FormMenor from '@/modules/migraciones/menores/components/FormMenor.vue';
 import FormAutorizante from '@/modules/migraciones/autorizantes/components/FormAutorizante.vue';
 import FormAcompaneante from '@/modules/migraciones/acompaneantes/components/FormAcompaneante.vue';
+import { useOrdenStore } from '@/common/store/ordenStore';
 
 // Interfaz para los botones
 interface ButtonConfig {
@@ -152,13 +153,14 @@ interface ButtonConfig {
   action: () => void;
 }
 
-// Conectar el store
 const personStore = usePersonStore();
-const { activeCategory, idPersonSelected } = storeToRefs(personStore); // Obtener la categoría activa del store
+const { getActiveCategory, getIdPersonSelected } = storeToRefs(personStore);
+const activeCategory = getActiveCategory;
+const idPersonSelected = getIdPersonSelected;
 
-// Función para manejar la selección de categoría
+const ordenStore = useOrdenStore();
 const setActiveItem = (item: 'menores' | 'acompaneantes' | 'autorizantes') => {
-  personStore.setCategory(item); // Actualizar la categoría activa en el store
+  personStore.setCategory(item);
 };
 
 // Computed para el componente dinámico
@@ -191,7 +193,7 @@ const buttonConfig = computed<ButtonConfig[]>(() => {
           label: 'Agregar Autorizante',
           type: 'submit',
           class: 'btn btn-primary',
-          action: () => console.log('Guardar Menor'),
+          action: () => ordenStore.getPerson(activeCategory.value!, idPersonSelected.value),
           position: 'right',
         },
       ];
@@ -208,7 +210,7 @@ const buttonConfig = computed<ButtonConfig[]>(() => {
           label: 'Agregar Autorizante',
           type: 'submit',
           class: 'btn btn-primary',
-          action: () => console.log('Guardar Autorizantes'),
+          action: () => ordenStore.getPerson(activeCategory.value!, idPersonSelected.value),
           position: 'right',
         },
       ];
@@ -225,7 +227,7 @@ const buttonConfig = computed<ButtonConfig[]>(() => {
           label: 'Agregar Acompañante',
           type: 'submit',
           class: 'btn btn-primary',
-          action: () => console.log('Guardar Acompañante'),
+          action: () => ordenStore.getPerson(activeCategory.value!, idPersonSelected.value),
           position: 'right',
         },
       ];
