@@ -1,7 +1,8 @@
 <template>
   <div class="navbar border-b border-gray-200 shadow-sm bg-white">
-    <div class="flex-1">
+    <div class="flex-1 align-center">
       <router-link
+        v-if="isButtonVisible"
         :to="{ name: 'Home' }"
         class="inline-flex items-center justify-center p-1 rounded-box hover:bg-gray-200 transition duration-200 ease-in-out"
       >
@@ -31,6 +32,9 @@
           </g>
         </svg>
       </router-link>
+      <div class="text-3xl ml-5 font-semibold">
+        MIGRACIONES - <span class="font-medium">{{ title }}</span>
+      </div>
     </div>
 
     <div class="flex-none">
@@ -64,7 +68,19 @@
 </template>
 
 <script setup lang="ts">
-import Icon3Puntos from '../icons/Icon3Puntos.vue';
+import { useRoute } from 'vue-router';
+import { watch, ref } from 'vue';
+const router = useRoute();
+
+const title = ref('');
+const isButtonVisible = ref<boolean>(false);
+watch(
+  () => router.meta.title,
+  (newValue) => {
+    newValue === 'Home' ? (isButtonVisible.value = false) : (isButtonVisible.value = true);
+    title.value = (newValue as string) || '';
+  },
+);
 </script>
 
 <style scoped></style>

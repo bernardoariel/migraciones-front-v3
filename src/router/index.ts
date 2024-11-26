@@ -11,32 +11,38 @@ const router = createRouter({
     {
       path: '/',
       name: 'Home',
+      meta: { title: 'Home' },
       component: HomeView,
     },
     {
       path: '/menores',
       name: 'Menores',
+      meta: { title: 'Personas' },
       component: PersonsView,
     },
     {
       path: '/acompaneantes',
       name: 'Acompaneantes',
+      meta: { title: 'Personas' },
       component: PersonsView,
     },
     {
       path: '/autorizantes',
       name: 'Autorizantes',
+      meta: { title: 'Personas' },
       component: PersonsView,
     },
     {
       path: '/nuevasolicitud',
       name: 'NuevaSolicitud',
+      meta: { title: 'Nueva Solicitud' },
       component: NuevaSolicitud,
     },
 
     {
       path: '/solicitudes',
       name: 'Solicitudes',
+      meta: { title: 'Solicitudes' },
       component: SolicitudesView,
     },
   ],
