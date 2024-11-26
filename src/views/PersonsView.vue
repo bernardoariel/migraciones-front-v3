@@ -110,57 +110,61 @@ const personStore = usePersonStore();
 const { getActiveCategory, getIdPersonSelected } = storeToRefs(personStore);
 const idPersonSelected = getIdPersonSelected;
 const activeCategory = getActiveCategory;
-// Configuración de botones por categoría
-const buttonConfigurations: Record<string, ButtonConfig[]> = {
-  menores: [
-    {
-      label: 'Cancelar',
-      type: 'button',
-      class: 'btn btn-ghost',
-      action: () => personStore.resetState(),
-      position: 'left',
-    },
-    {
-      label: 'Agregar Menor',
-      type: 'submit',
-      class: 'btn btn-primary',
-      action: () => console.log('Guardar Menor'),
-      position: 'right',
-    },
-  ],
-  autorizantes: [
-    {
-      label: 'Cancelar',
-      type: 'button',
-      class: 'btn btn-ghost',
-      action: () => personStore.resetState(),
-      position: 'left',
-    },
-    {
-      label: 'Agregar Autorizante',
-      type: 'submit',
-      class: 'btn btn-primary',
-      action: () => console.log('Guardar Autorizante'),
-      position: 'right',
-    },
-  ],
-  acompaneantes: [
-    {
-      label: 'Cancelar',
-      type: 'button',
-      class: 'btn btn-ghost',
-      action: () => personStore.resetState(),
-      position: 'left',
-    },
-    {
-      label: 'Agregar Acompañante',
-      type: 'submit',
-      class: 'btn btn-primary',
-      action: () => childRef.value?.onSubmit(),
-      position: 'right',
-    },
-  ],
+
+const buttonConfig = ref<ButtonConfig[]>([]);
+const updateButtonConfigurations = (): Record<string, ButtonConfig[]> => {
+  return {
+    menores: [
+      {
+        label: 'Cancelar',
+        type: 'button',
+        class: 'btn btn-ghost',
+        action: () => personStore.resetState(),
+        position: 'left',
+      },
+      {
+        label: idPersonSelected.value ? 'Modificar Menor' : 'Agregar Menor',
+        type: 'submit',
+        class: 'btn btn-primary',
+        action: () => console.log('Guardar Menor'),
+        position: 'right',
+      },
+    ],
+    autorizantes: [
+      {
+        label: 'Cancelar',
+        type: 'button',
+        class: 'btn btn-ghost',
+        action: () => personStore.resetState(),
+        position: 'left',
+      },
+      {
+        label: idPersonSelected.value ? 'Modificar Autorizante' : 'Agregar Autorizante',
+        type: 'submit',
+        class: 'btn btn-primary',
+        action: () => console.log('Guardar Autorizante'),
+        position: 'right',
+      },
+    ],
+    acompaneantes: [
+      {
+        label: 'Cancelar',
+        type: 'button',
+        class: 'btn btn-ghost',
+        action: () => personStore.resetState(),
+        position: 'left',
+      },
+      {
+        label: idPersonSelected.value ? 'Modificar Acompañante' : 'Agregar Acompañante',
+        type: 'submit',
+        class: 'btn btn-primary',
+        action: () => childRef.value?.onSubmit(),
+        position: 'right',
+      },
+    ],
+  };
 };
+
 const childRef = ref();
 const componentMap: Record<ActiveCategory, any> = {
   menores: FormMenor,
@@ -171,10 +175,6 @@ const componentMap: Record<ActiveCategory, any> = {
 const dynamicComponent = computed(() => {
   const category = activeCategory.value as ActiveCategory;
   return componentMap[category] || null;
-});
-
-const buttonConfig = computed(() => {
-  return buttonConfigurations[activeCategory.value || ''] || [];
 });
 
 // Actualiza la categoría activa según la ruta
@@ -188,6 +188,15 @@ watch(
   () => route.path,
   () => {
     setActiveCategoryFromPath();
+  },
+  { immediate: true },
+);
+
+watch(
+  [activeCategory, idPersonSelected],
+  () => {
+    const configs = updateButtonConfigurations();
+    buttonConfig.value = configs[activeCategory.value || ''] || [];
   },
   { immediate: true },
 );
