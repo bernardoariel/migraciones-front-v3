@@ -9,7 +9,7 @@
             <a
               class="ml-1"
               :class="{ active: activeCategory === 'acompaneantes' }"
-              @click="setActiveItem('acompaneantes')"
+              @click="personStore.resetState('acompaneantes')"
             >
               Acompañantes
             </a>
@@ -18,7 +18,7 @@
             <a
               class="ml-1"
               :class="{ active: activeCategory === 'menores' }"
-              @click="setActiveItem('menores')"
+              @click="personStore.resetState('menores')"
             >
               Menores
             </a>
@@ -27,7 +27,7 @@
             <a
               class="ml-1"
               :class="{ active: activeCategory === 'autorizantes' }"
-              @click="setActiveItem('autorizantes')"
+              @click="personStore.resetState('autorizantes')"
             >
               Autorizantes
             </a>
@@ -69,12 +69,15 @@
     <div
       class="flex-[2] bg-white p-4 rounded-lg shadow-md max-h-[85vh] overflow-auto flex justify-center items-center"
     >
-      <h1 v-if="!idPersonSelected" class="text-4xl">No existe ninguna persona seleccionada</h1>
+      <h1 v-if="!idPersonSelected && !activeCategory" class="text-4xl">
+        No existe ninguna persona seleccionada
+      </h1>
       <component
         v-else
         :is="dynamicComponent"
         :personId="idPersonSelected"
         :buttons="buttonConfig"
+        :ref="childRef"
       ></component>
     </div>
 
@@ -92,7 +95,9 @@
             </div>
           </div>
           <div>
-            <button class="btn glass btn-xs" @click="setActiveItem('menores')">+ Menores</button>
+            <button class="btn glass btn-xs" @click="personStore.resetState('menores')">
+              + Menores
+            </button>
           </div>
         </div>
       </div>
@@ -116,7 +121,7 @@
             </div>
           </div>
           <div>
-            <button class="btn glass btn-xs" @click="setActiveItem('autorizantes')">
+            <button class="btn glass btn-xs" @click="personStore.resetState('autorizantes')">
               + Autorizante
             </button>
           </div>
@@ -149,7 +154,7 @@
             </div>
           </div>
           <div>
-            <button class="btn glass btn-xs" @click="setActiveItem('acompaneantes')">
+            <button class="btn glass btn-xs" @click="personStore.resetState('acompaneantes')">
               + Acompañante
             </button>
           </div>
@@ -163,12 +168,14 @@
 import { storeToRefs } from 'pinia';
 import PersonList from '@/common/components/PersonList.vue';
 import { usePersonStore } from '@/common/store/personStore';
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import FormMenor from '@/modules/migraciones/menores/components/FormMenor.vue';
 import FormAutorizante from '@/modules/migraciones/autorizantes/components/FormAutorizante.vue';
 import FormAcompaneante from '@/modules/migraciones/acompaneantes/components/FormAcompaneante.vue';
 import { useOrdenStore } from '@/common/store/ordenStore';
 
+type ActiveCategory = 'menores' | 'autorizantes' | 'acompaneantes';
+const childRef = ref();
 // Interfaz para los botones
 interface ButtonConfig {
   label: string;
@@ -185,82 +192,79 @@ const activeCategory = getActiveCategory;
 const idPersonSelected = getIdPersonSelected;
 
 const ordenStore = useOrdenStore();
-const setActiveItem = (item: 'menores' | 'acompaneantes' | 'autorizantes') => {
-  personStore.setCategory(item);
+const buttonConfig = ref<ButtonConfig[]>([]);
+const updateButtonConfigurations = (): Record<string, ButtonConfig[]> => {
+  return {
+    menores: [
+      {
+        label: 'Cancelar',
+        type: 'button',
+        class: 'btn btn-ghost',
+        action: () => personStore.resetState(),
+        position: 'left',
+      },
+      {
+        label: idPersonSelected.value ? 'Seleccionar Menor' : 'Agregar Menor',
+        type: 'submit',
+        class: idPersonSelected.value ? 'btn btn-secondary' : 'btn btn-primary',
+        action: () => ordenStore.getPerson(activeCategory.value!, idPersonSelected.value),
+        position: 'right',
+      },
+    ],
+    autorizantes: [
+      {
+        label: 'Cancelar',
+        type: 'button',
+        class: 'btn btn-ghost',
+        action: () => personStore.resetState(),
+        position: 'left',
+      },
+      {
+        label: idPersonSelected.value ? 'Seleccionar Autorizante' : 'Agregar Autorizante',
+        type: 'submit',
+        class: idPersonSelected.value ? 'btn btn-secondary' : 'btn btn-primary',
+        action: () => ordenStore.getPerson(activeCategory.value!, idPersonSelected.value),
+        position: 'right',
+      },
+    ],
+    acompaneantes: [
+      {
+        label: 'Cancelar',
+        type: 'button',
+        class: 'btn btn-ghost',
+        action: () => personStore.resetState(),
+        position: 'left',
+      },
+      {
+        label: idPersonSelected.value ? 'Seleccionar Acompañante' : 'Agregar Acompañante',
+        type: 'submit',
+        class: idPersonSelected.value ? 'btn btn-secondary' : 'btn btn-primary',
+        action: () => ordenStore.getPerson(activeCategory.value!, idPersonSelected.value),
+        position: 'right',
+      },
+    ],
+  };
 };
 
 // Computed para el componente dinámico
+const componentMap: Record<ActiveCategory, any> = {
+  menores: FormMenor,
+  autorizantes: FormAutorizante,
+  acompaneantes: FormAcompaneante,
+};
 const dynamicComponent = computed(() => {
-  switch (activeCategory.value) {
-    case 'menores':
-      return FormMenor;
-    case 'autorizantes':
-      return FormAutorizante;
-    case 'acompaneantes':
-      return FormAcompaneante;
-    default:
-      return null;
-  }
+  const category = activeCategory.value as ActiveCategory;
+  return componentMap[category] || null;
 });
 
-// Configuración de botones según la categoría
-const buttonConfig = computed<ButtonConfig[]>(() => {
-  switch (activeCategory.value) {
-    case 'menores':
-      return [
-        {
-          label: 'Cancelar',
-          type: 'button',
-          class: 'btn btn-ghost',
-          action: () => personStore.resetState(),
-          position: 'left',
-        },
-        {
-          label: 'Agregar Autorizante',
-          type: 'submit',
-          class: 'btn btn-primary',
-          action: () => ordenStore.getPerson(activeCategory.value!, idPersonSelected.value),
-          position: 'right',
-        },
-      ];
-    case 'autorizantes':
-      return [
-        {
-          label: 'Cancelar',
-          type: 'button',
-          class: 'btn btn-ghost',
-          action: () => personStore.resetState(),
-          position: 'left',
-        },
-        {
-          label: 'Agregar Autorizante',
-          type: 'submit',
-          class: 'btn btn-primary',
-          action: () => ordenStore.getPerson(activeCategory.value!, idPersonSelected.value),
-          position: 'right',
-        },
-      ];
-    case 'acompaneantes':
-      return [
-        {
-          label: 'Cancelar',
-          type: 'button',
-          class: 'btn btn-ghost',
-          action: () => personStore.resetState(),
-          position: 'left',
-        },
-        {
-          label: 'Agregar Acompañante',
-          type: 'submit',
-          class: 'btn btn-primary',
-          action: () => ordenStore.getPerson(activeCategory.value!, idPersonSelected.value),
-          position: 'right',
-        },
-      ];
-    default:
-      return [];
-  }
-});
+watch(
+  [activeCategory, idPersonSelected],
+  () => {
+    const configs = updateButtonConfigurations();
+    buttonConfig.value = configs[activeCategory.value || ''] || [];
+  },
+  { immediate: true },
+);
 </script>
 
 <style scoped>
