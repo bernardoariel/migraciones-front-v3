@@ -1,6 +1,8 @@
 <template>
   <div class="flex flex-col">
-    <div class="text-2xl font-semibold mb-6 text-center">Agregando un Autorizante</div>
+    <div class="text-2xl font-semibold mb-6 text-center">
+      {{ !idPersonSelected ? 'Agregando ' : 'Editando' }} un {{ nombreForm }}
+    </div>
 
     <form @submit.prevent="onSubmit" class="space-y-4">
       <MyInput
@@ -90,7 +92,7 @@ interface Props {
 }
 
 const props = defineProps<Props>();
-
+const nombreForm = ref('Acompañante');
 const { createPerson, fetchAllPersonById, updatePerson } = usePerson();
 const isFormValid = ref(false);
 const validationSchema = yup.object({

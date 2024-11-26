@@ -9,16 +9,17 @@ export const usePersonStore = defineStore('personStore', () => {
 
   const getActiveCategory = computed(() => activeCategory.value);
   const getIdPersonSelected = computed(() => idPersonSelected.value);
-  const setPersonId = (id: number | number) => {
+  const setPersonId = (id: number | null) => {
     idPersonSelected.value = id;
   };
   const setCategory = (newCategory: CategoryPerson) => {
     activeCategory.value = newCategory;
   };
-  const resetState = () => {
+  const resetState = (category: null | string = null) => {
     setPersonId(null);
-    setCategory(null);
+    setCategory(category as CategoryPerson);
   };
+
   return {
     getActiveCategory,
     getIdPersonSelected,

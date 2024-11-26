@@ -9,7 +9,7 @@
             <a
               class="ml-1"
               :class="{ active: activeCategory === 'acompaneantes' }"
-              @click="personStore.setCategory('acompaneantes')"
+              @click="personStore.resetState('acompaneantes')"
             >
               Acompañantes
             </a>
@@ -18,7 +18,7 @@
             <a
               class="ml-1"
               :class="{ active: activeCategory === 'menores' }"
-              @click="personStore.setCategory('menores')"
+              @click="personStore.resetState('menores')"
             >
               Menores
             </a>
@@ -27,13 +27,13 @@
             <a
               class="ml-1"
               :class="{ active: activeCategory === 'autorizantes' }"
-              @click="personStore.setCategory('autorizantes')"
+              @click="personStore.resetState('autorizantes')"
             >
               Autorizantes
             </a>
           </li>
         </ul>
-        <button class="btn btn-circle">
+        <button class="btn btn-circle" @click="personStore.setPersonId(null)">
           <svg
             width="30"
             height="30"
@@ -69,19 +69,22 @@
     <div
       class="flex-[2] bg-white p-4 rounded-lg shadow-md max-h-[85vh] overflow-auto flex justify-center items-center"
     >
-      <h1 v-if="!idPersonSelected" class="text-4xl">No existe ninguna persona seleccionada</h1>
+      <h1 v-if="!idPersonSelected && !activeCategory" class="text-4xl">
+        No existe ninguna persona seleccionada
+      </h1>
       <component
         v-else
         :is="dynamicComponent"
         :personId="idPersonSelected"
         :buttons="buttonConfig"
+        :ref="childRef"
       ></component>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 
 import { usePersonStore } from '@/common/store/personStore';
@@ -153,12 +156,12 @@ const buttonConfigurations: Record<string, ButtonConfig[]> = {
       label: 'Agregar Acompañante',
       type: 'submit',
       class: 'btn btn-primary',
-      action: () => console.log('Guardar Acompañante'),
+      action: () => childRef.value?.onSubmit(),
       position: 'right',
     },
   ],
 };
-
+const childRef = ref();
 const componentMap: Record<ActiveCategory, any> = {
   menores: FormMenor,
   autorizantes: FormAutorizante,

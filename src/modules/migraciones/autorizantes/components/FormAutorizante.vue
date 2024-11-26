@@ -1,6 +1,8 @@
 <template>
   <div class="flex flex-col">
-    <div class="text-2xl font-semibold mb-6 text-center">Agregando un Autorizante</div>
+    <div class="text-2xl font-semibold mb-6 text-center">
+      {{ !idPersonSelected ? 'Agregando ' : 'Editando' }} un {{ nombreForm }}
+    </div>
 
     <form @submit="onSubmit" class="space-y-4">
       <!-- Número de Documento -->
@@ -134,7 +136,7 @@ interface Props {
   buttons?: ButtonConfig[];
 }
 const props = defineProps<Props>();
-
+const nombreForm = ref('Autorizante');
 const { createPerson, fetchAllPersonById, updatePerson } = usePerson();
 const isFormValid = ref(false);
 const validationSchema = yup.object({
