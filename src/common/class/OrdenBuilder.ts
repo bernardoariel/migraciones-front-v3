@@ -1,6 +1,6 @@
-import { Orden } from '../interfaces/orden.interface';
-import { Menor } from '../../modules/migraciones/menores/interfaces/menor.interface';
-import { Acompaneante } from '../../modules/migraciones/acompaneantes/interfaces/acompaneante.interface';
+import type { Orden } from '../interfaces/orden.interface';
+import type { Menor } from '../../modules/migraciones/menores/interfaces/menor.interface';
+import type { Acompaneante } from '../../modules/migraciones/acompaneantes/interfaces/acompaneante.interface';
 export class OrdenBuilder {
   private orden: Orden;
 

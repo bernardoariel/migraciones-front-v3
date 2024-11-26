@@ -1,10 +1,9 @@
 import { ref, computed } from 'vue';
 import type { Autorizante } from '../../modules/migraciones/autorizantes/interfaces/autorizante.interface';
 import type { Acompaneante } from '../../modules/migraciones/acompaneantes/interfaces/acompaneante.interface';
-import { OrdenBuilder } from '../class/OrdenBuilder';
 import type { Menor } from '../../modules/migraciones/menores/interfaces/menor.interface';
-import { Autorizante } from '../../modules/migraciones/autorizantes/interfaces/autorizante.interface';
-import { Acompaneante } from '../../modules/migraciones/acompaneantes/interfaces/acompaneante.interface';
+import { OrdenBuilder } from '../class/OrdenBuilder';
+
 export const useOrdenStore = defineStore('ordenStore', () => {
   const menor = ref<Menor | null>(null);
   const autorizantes = ref<Autorizante[]>([]);
