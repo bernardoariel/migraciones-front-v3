@@ -1,7 +1,10 @@
 <template>
   <div class="flex pt-16 justify-center min-h-screen">
     <div class="text-center">
-      <h1 class="text-3xl font-semibold mb-4">¿Qué deseas hacer hoy?</h1>
+      <h1 class="text-3xl font-semibold mb-4">
+        {{ displayedText }}
+        <span v-if="showCursor" class="cursor">|</span>
+      </h1>
 
       <div class="join flex justify-center mb-6">
         <input
@@ -63,6 +66,15 @@
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { onMounted } from 'vue';
+import { useTypingEffect } from '../common/utils/useTypingEffect';
+
+const { displayedText, showCursor, startTyping } = useTypingEffect('¿Qué deseas hacer hoy?', 100);
+
+onMounted(() => {
+  startTyping();
+});
+</script>
 
 <style scoped></style>
