@@ -4,8 +4,8 @@
       <!-- Barra de búsqueda -->
       <label class="input input-bordered flex items-center gap-2 input-primary w-full">
         <input type="text" class="grow" placeholder="Buscar" v-model="searchQuery" />
-        <kbd class="kbd kbd-sm">ctrl</kbd>
-        <kbd class="kbd kbd-sm">alt</kbd>
+        <!--     <kbd class="kbd kbd-sm">ctrl</kbd>
+        <kbd class="kbd kbd-sm">alt</kbd> -->
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 16 16"
@@ -24,7 +24,7 @@
     <!-- Scroll Area -->
     <div class="entry-scrollarea">
       <!-- Spinner -->
-      <div v-if="loading" class="flex items-center justify-center h-full">
+      <div v-if="isLoading" class="flex items-center justify-center h-full">
         <span class="loading loading-dots loading-lg text-primary"></span>
       </div>
       <!-- Items -->
@@ -36,134 +36,81 @@
           class="w-full"
           nameButton="Seleccionar"
         />
+        <!-- <ItemsPerson
+          v-for="person in paginatedPersons"
+          :key="person.id"
+          :person="person"
+          class="w-full"
+          nameButton="Seleccionar"
+        /> -->
       </div>
     </div>
     <!-- Paginación -->
     <div class="pagination-container">
-      <div class="flex justify-center mt-4 gap-2">
-        <button
-          class="btn btn-sm"
-          :class="{ 'btn-disabled': currentPage === 1 }"
-          @click="prevPage"
-          :disabled="currentPage === 1"
-        >
-          Prev
-        </button>
-        <button
-          v-for="page in totalPages"
-          :key="page"
-          class="btn btn-sm"
-          :class="{ 'btn-active': page === currentPage }"
-          @click="goToPage(page)"
-        >
-          {{ page }}
-        </button>
-        <button
-          class="btn btn-sm"
-          :class="{ 'btn-disabled': currentPage === totalPages }"
-          @click="nextPage"
-          :disabled="currentPage === totalPages"
-        >
-          Next
-        </button>
+      <div class="pagination-container flex justify-center mt-4">
+        <div class="join">
+          <input
+            v-for="page in totalPages"
+            :key="page"
+            class="join-item btn btn-square"
+            type="radio"
+            name="pagination"
+            :aria-label="String(page)"
+            :checked="page === currentPage"
+            @change="goToPage(page)"
+          />
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue';
-import { storeToRefs } from 'pinia';
+import { ref, computed } from 'vue';
+// import { storeToRefs } from 'pinia';
 import ItemsPerson from './ItemsPerson.vue';
 
-import { usePersonStore } from '../store/personStore';
-import usePerson from '../composables/usePerson';
-import { calculateAge } from '../helpers/calculateAge';
+// import { usePersonStore } from '../store/personStore';
+/* import usePerson from '../composables/usePerson';
+import { calculateAge } from '../helpers/calculateAge'; */
+import usePersons from '../composables/usePersons';
 
-interface Person {
+/* interface Person {
   id: number;
   name: string;
   category: 'menores' | 'acompaneantes' | 'autorizantes';
-}
+} */
 
-const personStore = usePersonStore();
-const { getActiveCategory } = storeToRefs(personStore);
-const activeCategory = getActiveCategory;
-const { fetchAllPerson } = usePerson();
+/* const personStore = usePersonStore();
+const { getActiveCategory } = storeToRefs(personStore); */
+// const activeCategory = getActiveCategory;
 
-const persons = ref<Person[]>([]);
+const { isLoading, persons, currentPage, totalPages } = usePersons();
+console.log('persons::: ', persons.value);
+
 const searchQuery = ref('');
-const loading = ref(true);
 
-const currentPage = ref(1);
-const itemsPerPage = 10;
+/* const itemsPerPage = 10;
 
-const filteredPersons = ref<Person[]>([]);
-
-const totalPages = computed(() => Math.ceil(filteredPersons.value.length / itemsPerPage));
-
-const paginatedPersons = computed<Person[]>(() => {
-  const start = (currentPage.value - 1) * itemsPerPage;
-  const end = start + itemsPerPage;
-
-  console.log('Paginación actual:', {
-    start,
-    end,
-    currentPage: currentPage.value,
-    totalItems: filteredPersons.value.length,
+const filteredPersons = computed(() => {
+  return paginatedPersons.value.filter((person) => {
+    if (!person.nombre) return false;
+    return person.nombre.toLowerCase().includes(searchQuery.value.toLowerCase());
   });
-
-  return filteredPersons.value.slice(start, end);
+}); */
+const paginatedPersons = computed(() => {
+  const start = (currentPage.value - 1) * 10;
+  const end = start + 10;
+  return persons.value.slice(start, end);
 });
 
-onMounted(async () => {
-  loading.value = true;
-  try {
-    const fetchedPersons = await fetchAllPerson();
-
-    const classifiedPersons = fetchedPersons.map((person) => {
-      const age = person.fecha_de_nacimiento ? calculateAge(person.fecha_de_nacimiento) : null; // Verifica si tiene fecha de nacimiento
-      let category = 'acompaneantes';
-
-      if (age !== null) {
-        if (age < 21) {
-          category = 'menores';
-        } else if (age >= 21) {
-          category = 'autorizantes';
-        }
-      }
-
-      // Construir un nombre más completo
-      const fullName = [person.nombre, person.apellido, person.otros_nombres]
-        .filter(Boolean) // Filtrar valores no válidos (null, undefined, '')
-        .join(' '); // Unir los valores con un espacio
-
-      return {
-        ...person,
-        category,
-        name: fullName || 'Sin nombre', // Usar "Sin nombre" solo si `fullName` está vacío
-      };
-    });
-
-    console.log('Personas clasificadas:', classifiedPersons);
-
-    persons.value = classifiedPersons; // Asignar las personas con la categoría calculada
-  } catch (error) {
-    console.error('Error cargando personas:', error);
-  } finally {
-    loading.value = false;
-  }
-});
-
-// Funciones de paginación
 const goToPage = (page: number) => {
-  if (page >= 1 && page <= totalPages.value) currentPage.value = page;
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page; // Actualiza la página actual
+  }
 };
-const prevPage = () => currentPage.value > 1 && currentPage.value--;
-const nextPage = () => currentPage.value < totalPages.value && currentPage.value++;
-
 // Watch para filtrar las personas
-watch([persons, activeCategory, searchQuery], ([newPersons, newCategory, newSearchQuery]) => {
+/* watch([persons, activeCategory, searchQuery], ([newPersons, newCategory, newSearchQuery]) => {
   console.log('Cambio detectado en persons:', newPersons);
   console.log('Cambio detectado en activeCategory:', newCategory);
   console.log('Cambio detectado en searchQuery:', newSearchQuery);
@@ -190,7 +137,7 @@ watch([persons, activeCategory, searchQuery], ([newPersons, newCategory, newSear
     });
 
   console.log('Personas filtradas por categoría:', filteredPersons.value);
-});
+}); */
 </script>
 
 <style scoped>
