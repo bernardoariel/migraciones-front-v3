@@ -5,12 +5,13 @@ import type { Acompaneante } from '../../modules/migraciones/acompaneantes/inter
 import type { Menor } from '../../modules/migraciones/menores/interfaces/menor.interface';
 import { OrdenBuilder } from '../class/OrdenBuilder';
 import { getById } from '../services/persons';
+import { usePersonStore } from './personStore';
 
 export const useOrdenStore = defineStore('ordenStore', () => {
   const menor = ref<Menor | null>(null);
   const autorizantes = ref<Autorizante[]>([]);
   const acompaneantes = ref<Acompaneante[]>([]);
-
+  const store = usePersonStore();
   const builder = new OrdenBuilder();
 
   const setMenor = (newMenor: Menor) => {
@@ -51,34 +52,38 @@ export const useOrdenStore = defineStore('ordenStore', () => {
   });
   // Nueva función getPerson
   const getPerson = async (category: string, id: number | null) => {
-    console.log('id::: ', id);
-    console.log('category::: ', category);
+    console.log('i!d::: ', id);
     if (!id) {
       console.error('ID de la persona no seleccionado.');
       return;
     }
 
     try {
+      const person = await getById(id); // Verifica si `getById` lanza errores
+      if (!person) {
+        throw new Error(`No se encontró la persona con ID ${id}`);
+      }
+
       switch (category) {
         case 'menores': {
-          const menor = await getById(id); // Implementa esta función para obtener datos
-          if (menor) setMenor(menor);
+          setMenor(person as Menor);
           break;
         }
         case 'autorizantes': {
-          const autorizante = await getById(id); // Implementa esta función para obtener datos
-          if (autorizante) addAutorizante(autorizante);
+          addAutorizante(person as Autorizante);
           break;
         }
         case 'acompaneantes': {
-          const acompaneante = await getById(id); // Implementa esta función para obtener datos
-          if (acompaneante) addAcompaneante(acompaneante);
+          addAcompaneante(person as Acompaneante);
           break;
         }
         default: {
-          console.error('Categoría no válida.');
+          throw new Error('Categoría no válida.');
         }
       }
+
+      // Resetear estado del otro store
+      store.resetState();
     } catch (error) {
       console.error('Error al obtener la persona:', error);
     }

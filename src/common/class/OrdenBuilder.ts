@@ -4,7 +4,7 @@ import type { Acompaneante } from '../../modules/migraciones/acompaneantes/inter
 export class OrdenBuilder {
   private orden: Orden;
 
-  constuctor() {
+  constructor() {
     this.orden = {
       menor: null,
       autorizantes: [],

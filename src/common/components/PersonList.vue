@@ -1,11 +1,9 @@
 <template>
   <div class="entry-list-container">
     <div class="px-2 py-2 flex items-center justify-between">
-      <!-- Barra de búsqueda -->
       <label class="input input-bordered flex items-center gap-2 input-primary w-full">
         <input type="text" class="grow" placeholder="Buscar" v-model="searchQuery" />
-        <!--     <kbd class="kbd kbd-sm">ctrl</kbd>
-        <kbd class="kbd kbd-sm">alt</kbd> -->
+
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 16 16"
@@ -21,13 +19,11 @@
       </label>
     </div>
 
-    <!-- Scroll Area -->
     <div class="entry-scrollarea">
-      <!-- Spinner -->
       <div v-if="isLoading" class="flex items-center justify-center h-full">
         <span class="loading loading-dots loading-lg text-primary"></span>
       </div>
-      <!-- Items -->
+
       <div v-else class="flex flex-col w-full">
         <ItemsPerson
           v-for="person in paginatedPersons"
@@ -36,108 +32,67 @@
           class="w-full"
           nameButton="Seleccionar"
         />
-        <!-- <ItemsPerson
-          v-for="person in paginatedPersons"
-          :key="person.id"
-          :person="person"
-          class="w-full"
-          nameButton="Seleccionar"
-        /> -->
       </div>
     </div>
-    <!-- Paginación -->
-    <div class="pagination-container">
-      <div class="pagination-container flex justify-center mt-4">
-        <div class="join">
-          <input
-            v-for="page in totalPages"
-            :key="page"
-            class="join-item btn btn-square"
-            type="radio"
-            name="pagination"
-            :aria-label="String(page)"
-            :checked="page === currentPage"
-            @change="goToPage(page)"
-          />
-        </div>
-      </div>
-    </div>
+    <PaginationComponent
+      v-if="paginatedPersons.length >= 10"
+      :totalPages="totalPagesByCategory[getActiveCategory!]"
+      :currentPage="currentPage"
+      :goToPage="(page: number) => (currentPage = page)"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-// import { storeToRefs } from 'pinia';
-import ItemsPerson from './ItemsPerson.vue';
-
-// import { usePersonStore } from '../store/personStore';
-/* import usePerson from '../composables/usePerson';
-import { calculateAge } from '../helpers/calculateAge'; */
+import { ref, computed, onMounted } from 'vue';
+import { storeToRefs } from 'pinia';
+import { usePersonStore } from '../store/personStore';
 import usePersons from '../composables/usePersons';
+import ItemsPerson from './ItemsPerson.vue';
+import PaginationComponent from './PaginationComponent.vue';
 
-/* interface Person {
-  id: number;
-  name: string;
-  category: 'menores' | 'acompaneantes' | 'autorizantes';
-} */
+const personStore = usePersonStore();
+const { getActiveCategory } = storeToRefs(personStore);
 
-/* const personStore = usePersonStore();
-const { getActiveCategory } = storeToRefs(personStore); */
-// const activeCategory = getActiveCategory;
+onMounted(() => {
+  personStore.setCategory('menores');
+});
 
-const { isLoading, persons, currentPage, totalPages } = usePersons();
-console.log('persons::: ', persons.value);
+const { isLoading, currentPage, totalPagesByCategory, acompaneantes, menores, autorizantes } =
+  usePersons();
 
+const filteredPersonsByCategory = computed(() => {
+  const categoryPersons = (() => {
+    switch (getActiveCategory.value) {
+      case 'acompaneantes':
+        return acompaneantes.value;
+      case 'menores':
+        return menores.value;
+      case 'autorizantes':
+        return autorizantes.value;
+      default:
+        return [];
+    }
+  })();
+
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase();
+    return categoryPersons.filter((person) => {
+      const fullName = `${person.nombre || ''} ${person.apellido || ''}`.toLowerCase();
+      const documento = String(person.numero_de_documento || '').toLowerCase();
+      return fullName.includes(query) || documento.includes(query);
+    });
+  }
+
+  return categoryPersons;
+});
 const searchQuery = ref('');
 
-/* const itemsPerPage = 10;
-
-const filteredPersons = computed(() => {
-  return paginatedPersons.value.filter((person) => {
-    if (!person.nombre) return false;
-    return person.nombre.toLowerCase().includes(searchQuery.value.toLowerCase());
-  });
-}); */
 const paginatedPersons = computed(() => {
   const start = (currentPage.value - 1) * 10;
   const end = start + 10;
-  return persons.value.slice(start, end);
+  return filteredPersonsByCategory.value.slice(start, end);
 });
-
-const goToPage = (page: number) => {
-  if (page >= 1 && page <= totalPages.value) {
-    currentPage.value = page; // Actualiza la página actual
-  }
-};
-// Watch para filtrar las personas
-/* watch([persons, activeCategory, searchQuery], ([newPersons, newCategory, newSearchQuery]) => {
-  console.log('Cambio detectado en persons:', newPersons);
-  console.log('Cambio detectado en activeCategory:', newCategory);
-  console.log('Cambio detectado en searchQuery:', newSearchQuery);
-
-  // Revisa las categorías disponibles en los datos
-  console.log(
-    'Categorías disponibles en persons:',
-    newPersons.map((p) => p.category),
-  );
-
-  filteredPersons.value = persons.value
-    .filter((person) => {
-      const matchesCategory = person.category === activeCategory.value;
-      console.log(`Comparando ${person.category} con ${activeCategory.value}: ${matchesCategory}`);
-      return matchesCategory;
-    })
-    .filter((person) => {
-      // Validar que `name` exista antes de aplicar `toLowerCase`
-      if (!person.name) {
-        console.warn('Persona sin nombre detectada:', person);
-        return false; // Excluir personas sin nombre
-      }
-      return person.name.toLowerCase().includes(searchQuery.value.toLowerCase());
-    });
-
-  console.log('Personas filtradas por categoría:', filteredPersons.value);
-}); */
 </script>
 
 <style scoped>
