@@ -1,11 +1,9 @@
 <template>
   <div class="entry-list-container">
     <div class="px-2 py-2 flex items-center justify-between">
-      <!-- Barra de búsqueda -->
       <label class="input input-bordered flex items-center gap-2 input-primary w-full">
         <input type="text" class="grow" placeholder="Buscar" v-model="searchQuery" />
-        <kbd class="kbd kbd-sm">ctrl</kbd>
-        <kbd class="kbd kbd-sm">alt</kbd>
+
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 16 16"
@@ -21,13 +19,11 @@
       </label>
     </div>
 
-    <!-- Scroll Area -->
     <div class="entry-scrollarea">
-      <!-- Spinner -->
-      <div v-if="loading" class="flex items-center justify-center h-full">
+      <div v-if="isLoading" class="flex items-center justify-center h-full">
         <span class="loading loading-dots loading-lg text-primary"></span>
       </div>
-      <!-- Items -->
+
       <div v-else class="flex flex-col w-full">
         <ItemsPerson
           v-for="person in paginatedPersons"
@@ -38,158 +34,64 @@
         />
       </div>
     </div>
-    <!-- Paginación -->
-    <div class="pagination-container">
-      <div class="flex justify-center mt-4 gap-2">
-        <button
-          class="btn btn-sm"
-          :class="{ 'btn-disabled': currentPage === 1 }"
-          @click="prevPage"
-          :disabled="currentPage === 1"
-        >
-          Prev
-        </button>
-        <button
-          v-for="page in totalPages"
-          :key="page"
-          class="btn btn-sm"
-          :class="{ 'btn-active': page === currentPage }"
-          @click="goToPage(page)"
-        >
-          {{ page }}
-        </button>
-        <button
-          class="btn btn-sm"
-          :class="{ 'btn-disabled': currentPage === totalPages }"
-          @click="nextPage"
-          :disabled="currentPage === totalPages"
-        >
-          Next
-        </button>
-      </div>
-    </div>
+    <PaginationComponent
+      v-if="paginatedPersons.length >= 10"
+      :totalPages="totalPagesByCategory[getActiveCategory!]"
+      :currentPage="currentPage"
+      :goToPage="(page: number) => (currentPage = page)"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
-import ItemsPerson from './ItemsPerson.vue';
-
 import { usePersonStore } from '../store/personStore';
-import usePerson from '../composables/usePerson';
-import { calculateAge } from '../helpers/calculateAge';
-
-interface Person {
-  id: number;
-  name: string;
-  category: 'menores' | 'acompaneantes' | 'autorizantes';
-}
+import usePersons from '../composables/usePersons';
+import ItemsPerson from './ItemsPerson.vue';
+import PaginationComponent from './PaginationComponent.vue';
 
 const personStore = usePersonStore();
 const { getActiveCategory } = storeToRefs(personStore);
-const activeCategory = getActiveCategory;
-const { fetchAllPerson } = usePerson();
 
-const persons = ref<Person[]>([]);
-const searchQuery = ref('');
-const loading = ref(true);
-
-const currentPage = ref(1);
-const itemsPerPage = 10;
-
-const filteredPersons = ref<Person[]>([]);
-
-const totalPages = computed(() => Math.ceil(filteredPersons.value.length / itemsPerPage));
-
-const paginatedPersons = computed<Person[]>(() => {
-  const start = (currentPage.value - 1) * itemsPerPage;
-  const end = start + itemsPerPage;
-
-  console.log('Paginación actual:', {
-    start,
-    end,
-    currentPage: currentPage.value,
-    totalItems: filteredPersons.value.length,
-  });
-
-  return filteredPersons.value.slice(start, end);
+onMounted(() => {
+  personStore.setCategory('menores');
 });
 
-onMounted(async () => {
-  loading.value = true;
-  try {
-    const fetchedPersons = await fetchAllPerson();
+const { isLoading, currentPage, totalPagesByCategory, acompaneantes, menores, autorizantes } =
+  usePersons();
 
-    const classifiedPersons = fetchedPersons.map((person) => {
-      const age = person.fecha_de_nacimiento ? calculateAge(person.fecha_de_nacimiento) : null; // Verifica si tiene fecha de nacimiento
-      let category = 'acompaneantes';
+const filteredPersonsByCategory = computed(() => {
+  const categoryPersons = (() => {
+    switch (getActiveCategory.value) {
+      case 'acompaneantes':
+        return acompaneantes.value;
+      case 'menores':
+        return menores.value;
+      case 'autorizantes':
+        return autorizantes.value;
+      default:
+        return [];
+    }
+  })();
 
-      if (age !== null) {
-        if (age < 21) {
-          category = 'menores';
-        } else if (age >= 21) {
-          category = 'autorizantes';
-        }
-      }
-
-      // Construir un nombre más completo
-      const fullName = [person.nombre, person.apellido, person.otros_nombres]
-        .filter(Boolean) // Filtrar valores no válidos (null, undefined, '')
-        .join(' '); // Unir los valores con un espacio
-
-      return {
-        ...person,
-        category,
-        name: fullName || 'Sin nombre', // Usar "Sin nombre" solo si `fullName` está vacío
-      };
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase();
+    return categoryPersons.filter((person) => {
+      const fullName = `${person.nombre || ''} ${person.apellido || ''}`.toLowerCase();
+      const documento = String(person.numero_de_documento || '').toLowerCase();
+      return fullName.includes(query) || documento.includes(query);
     });
-
-    console.log('Personas clasificadas:', classifiedPersons);
-
-    persons.value = classifiedPersons; // Asignar las personas con la categoría calculada
-  } catch (error) {
-    console.error('Error cargando personas:', error);
-  } finally {
-    loading.value = false;
   }
+
+  return categoryPersons;
 });
+const searchQuery = ref('');
 
-// Funciones de paginación
-const goToPage = (page: number) => {
-  if (page >= 1 && page <= totalPages.value) currentPage.value = page;
-};
-const prevPage = () => currentPage.value > 1 && currentPage.value--;
-const nextPage = () => currentPage.value < totalPages.value && currentPage.value++;
-
-// Watch para filtrar las personas
-watch([persons, activeCategory, searchQuery], ([newPersons, newCategory, newSearchQuery]) => {
-  console.log('Cambio detectado en persons:', newPersons);
-  console.log('Cambio detectado en activeCategory:', newCategory);
-  console.log('Cambio detectado en searchQuery:', newSearchQuery);
-
-  // Revisa las categorías disponibles en los datos
-  console.log(
-    'Categorías disponibles en persons:',
-    newPersons.map((p) => p.category),
-  );
-
-  filteredPersons.value = persons.value
-    .filter((person) => {
-      const matchesCategory = person.category === activeCategory.value;
-      console.log(`Comparando ${person.category} con ${activeCategory.value}: ${matchesCategory}`);
-      return matchesCategory;
-    })
-    .filter((person) => {
-      // Validar que `name` exista antes de aplicar `toLowerCase`
-      if (!person.name) {
-        console.warn('Persona sin nombre detectada:', person);
-        return false; // Excluir personas sin nombre
-      }
-      return person.name.toLowerCase().includes(searchQuery.value.toLowerCase());
-    });
-
-  console.log('Personas filtradas por categoría:', filteredPersons.value);
+const paginatedPersons = computed(() => {
+  const start = (currentPage.value - 1) * 10;
+  const end = start + 10;
+  return filteredPersonsByCategory.value.slice(start, end);
 });
 </script>
 

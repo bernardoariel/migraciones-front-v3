@@ -13,10 +13,11 @@ export const usePersonStore = defineStore('personStore', () => {
     idPersonSelected.value = id;
   };
   const setCategory = (newCategory: CategoryPerson) => {
+    console.log('newCategory::: ', newCategory);
     activeCategory.value = newCategory;
   };
   const resetState = (category: null | string = null) => {
-    console.log('category::: ', category);
+    console.log('resetState::: ', resetState);
     setPersonId(null);
     setCategory(category as CategoryPerson);
   };

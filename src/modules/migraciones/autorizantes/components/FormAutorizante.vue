@@ -122,7 +122,8 @@ import type { Autorizante } from '../interfaces/autorizante.interface';
 import usePerson from '@/common/composables/usePerson';
 import { usePersonStore } from '@/common/store/personStore';
 import { storeToRefs } from 'pinia';
-const { documentTypeOptions, nationalityOptions, issuerDocsOptions , loadOptions } = useDropdownOptions()
+const { documentTypeOptions, nationalityOptions, issuerDocsOptions, loadOptions } =
+  useDropdownOptions();
 
 interface ButtonConfig {
   label: string;
@@ -149,7 +150,7 @@ const validationSchema = yup.object({
   secondLastName: yup.string(),
   firstName: yup.string().required().min(3),
   otherNames: yup.string(),
-  nationality: yup.string().required().oneOf([1, '2', '3', '4', '5', '6', '7']),
+  nationality: yup.string().required().oneOf(['1', '2', '3', '4', '5', '6', '7']),
   sex: yup.string().required().oneOf(['1', '2']),
   address: yup.string(),
 });
@@ -222,9 +223,9 @@ onMounted(async () => {
       documentIssuer: String(data.issuer_document_id),
     });
   }
-  loadOptions('nacionalidades', 'nombre');  
-  loadOptions('emisordocumentos', 'descripcion');  
-  loadOptions('tiposdocumentos', 'descripcion');  
+  loadOptions('nacionalidades', 'nombre');
+  loadOptions('emisordocumentos', 'descripcion');
+  loadOptions('tiposdocumentos', 'descripcion');
 });
 
 watch(

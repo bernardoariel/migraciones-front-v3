@@ -1,13 +1,26 @@
 <template>
-  <div class="join">
-    <button class="join-item btn">1</button>
-    <button class="join-item btn">2</button>
-    <button class="join-item btn btn-disabled">...</button>
-    <button class="join-item btn">99</button>
-    <button class="join-item btn">100</button>
+  <div class="pagination-container flex justify-center mt-4">
+    <div class="join">
+      <input
+        v-for="page in totalPages"
+        :key="page"
+        class="join-item btn btn-square"
+        type="radio"
+        name="pagination"
+        :aria-label="`${page}`"
+        :checked="page === currentPage"
+        @change="() => goToPage(page)"
+      />
+    </div>
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+interface Props {
+  totalPages: number;
+  currentPage: number;
+  goToPage: (page: number) => void;
+}
 
-<style scoped></style>
+defineProps<Props>();
+</script>
