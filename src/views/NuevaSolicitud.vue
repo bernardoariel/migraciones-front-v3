@@ -69,7 +69,7 @@
     <div
       class="flex-[2] bg-white p-4 rounded-lg shadow-md max-h-[85vh] overflow-auto flex justify-center"
     >
-      <div v-if="!idPersonSelected && !activeCategory">
+      <div v-if="!idPersonSelected && hasItems">
         <div
           class="!z-5 relative flex h-full w-full flex-col rounded-[20px] bg-white bg-clip-border p-4 shadow-3xl shadow-shadow-500 dark:!bg-navy-800 dark:text-white dark:shadow-none"
         >
@@ -577,6 +577,9 @@
           </div>
         </div>
       </div>
+      <div v-else-if="!idPersonSelected && !hasItems">
+        <h1>No existen personas ingresadas en esta orden</h1>
+      </div>
       <component
         v-else
         :is="dynamicComponent"
@@ -621,6 +624,7 @@ const activeCategory = getActiveCategory;
 const idPersonSelected = getIdPersonSelected;
 
 const ordenStore = useOrdenStore();
+const hasItems = computed(() => ordenStore.hasItems);
 const buttonConfig = ref<ButtonConfig[]>([]);
 const updateButtonConfigurations = (): Record<string, ButtonConfig[]> => {
   return {
@@ -629,7 +633,7 @@ const updateButtonConfigurations = (): Record<string, ButtonConfig[]> => {
         label: 'Cancelar',
         type: 'button',
         class: 'btn btn-ghost',
-        action: () => personStore.resetState(),
+        action: () => personStore.resetState('menores'),
         position: 'left',
       },
       {
@@ -645,7 +649,7 @@ const updateButtonConfigurations = (): Record<string, ButtonConfig[]> => {
         label: 'Cancelar',
         type: 'button',
         class: 'btn btn-ghost',
-        action: () => personStore.resetState(),
+        action: () => personStore.resetState('autorizantes'),
         position: 'left',
       },
       {
@@ -661,7 +665,7 @@ const updateButtonConfigurations = (): Record<string, ButtonConfig[]> => {
         label: 'Cancelar',
         type: 'button',
         class: 'btn btn-ghost',
-        action: () => personStore.resetState(),
+        action: () => personStore.resetState('acompaneantes'),
         position: 'left',
       },
       {
@@ -685,7 +689,13 @@ const dynamicComponent = computed(() => {
   const category = activeCategory.value as ActiveCategory;
   return componentMap[category] || null;
 });
-
+watch(
+  hasItems,
+  (newVal) => {
+    console.log('Valor de hasItems:', newVal);
+  },
+  { immediate: true },
+);
 watch(
   [activeCategory, idPersonSelected],
   () => {

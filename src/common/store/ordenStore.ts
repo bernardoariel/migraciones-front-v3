@@ -95,5 +95,8 @@ export const useOrdenStore = defineStore('ordenStore', () => {
     buildOrden,
     isValidOrden,
     getPerson,
+    hasItems: computed(
+      () => !!menor.value || autorizantes.value.length > 0 || acompaneantes.value.length > 0,
+    ),
   };
 });
