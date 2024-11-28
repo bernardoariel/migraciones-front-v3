@@ -614,7 +614,7 @@ import CardValidation from '@/common/components/CardValidation.vue';
 
 type ActiveCategory = 'menores' | 'autorizantes' | 'acompaneantes';
 const childRef = ref();
-// Interfaz para los botones
+
 interface ButtonConfig {
   label: string;
   type?: 'button' | 'submit' | 'reset';
@@ -643,10 +643,22 @@ const updateButtonConfigurations = (): Record<string, ButtonConfig[]> => {
         position: 'left',
       },
       {
-        label: idPersonSelected.value ? 'Seleccionar Menor' : 'Agregar Menor',
+        label:
+          idPersonSelected.value === 'new' || idPersonSelected.value === null
+            ? 'Agregando Menor'
+            : 'Seleccionar Menor',
         type: 'submit',
-        class: idPersonSelected.value ? 'btn btn-secondary' : 'btn btn-primary',
-        action: () => ordenStore.getPerson(activeCategory.value!, idPersonSelected.value),
+        class:
+          idPersonSelected.value === 'new' || idPersonSelected.value === null
+            ? 'btn btn-primary'
+            : 'btn btn-secondary',
+        action: () => {
+          if (typeof idPersonSelected.value === 'number') {
+            ordenStore.getPerson(activeCategory.value!, idPersonSelected.value);
+          } else {
+            childRef.value?.onSubmit();
+          }
+        },
         position: 'right',
       },
     ],
@@ -659,10 +671,22 @@ const updateButtonConfigurations = (): Record<string, ButtonConfig[]> => {
         position: 'left',
       },
       {
-        label: idPersonSelected.value ? 'Seleccionar Autorizante' : 'Agregar Autorizante',
+        label:
+          idPersonSelected.value === 'new' || idPersonSelected.value === null
+            ? 'Agregando Autorizante'
+            : 'Seleccionar Autorizante',
         type: 'submit',
-        class: idPersonSelected.value ? 'btn btn-secondary' : 'btn btn-primary',
-        action: () => ordenStore.getPerson(activeCategory.value!, idPersonSelected.value),
+        class:
+          idPersonSelected.value === 'new' || idPersonSelected.value === null
+            ? 'btn btn-primary'
+            : 'btn btn-secondary',
+        action: () => {
+          if (typeof idPersonSelected.value === 'number') {
+            ordenStore.getPerson(activeCategory.value!, idPersonSelected.value);
+          } else {
+            childRef.value?.onSubmit();
+          }
+        },
         position: 'right',
       },
     ],
@@ -675,10 +699,22 @@ const updateButtonConfigurations = (): Record<string, ButtonConfig[]> => {
         position: 'left',
       },
       {
-        label: idPersonSelected.value ? 'Seleccionar Acompañante' : 'Agregar Acompañante',
+        label:
+          idPersonSelected.value === 'new' || idPersonSelected.value === null
+            ? 'Agregando Acompañante'
+            : 'Seleccionar Acompañante',
         type: 'submit',
-        class: idPersonSelected.value ? 'btn btn-secondary' : 'btn btn-primary',
-        action: () => ordenStore.getPerson(activeCategory.value!, idPersonSelected.value),
+        class:
+          idPersonSelected.value === 'new' || idPersonSelected.value === null
+            ? 'btn btn-primary'
+            : 'btn btn-secondary',
+        action: () => {
+          if (typeof idPersonSelected.value === 'number') {
+            ordenStore.getPerson(activeCategory.value!, idPersonSelected.value);
+          } else {
+            childRef.value?.onSubmit();
+          }
+        },
         position: 'right',
       },
     ],
