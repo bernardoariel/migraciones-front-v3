@@ -33,7 +33,7 @@
             </a>
           </li>
         </ul>
-        <button class="btn btn-circle" @click="personStore.setPersonId(null)">
+        <button class="btn btn-circle" @click="personStore.setPersonId('new')">
           <svg
             width="30"
             height="30"
