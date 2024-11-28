@@ -147,6 +147,7 @@ const onSubmit = handleSubmit(async (value) => {
 });
 
 onMounted(async () => {
+  loadOptions('tiposdocumentos', 'descripcion');
   if (effectiveId.value) {
     const data = await fetchAllPersonById(effectiveId.value as number);
 
@@ -159,7 +160,6 @@ onMounted(async () => {
       otherNames: data.otros_nombres || '',
     });
   }
-  loadOptions('tiposdocumentos', 'descripcion');
 });
 
 watch(

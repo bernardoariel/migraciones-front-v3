@@ -199,6 +199,8 @@ const onSubmit = handleSubmit(async (value) => {
   }
 });
 onMounted(async () => {
+  loadOptions('nacionalidades', 'nombre');
+  loadOptions('tiposdocumentos', 'descripcion');
   if (effectiveId.value) {
     const data = await fetchAllPersonById(effectiveId.value as number);
 
@@ -215,8 +217,6 @@ onMounted(async () => {
       dateOfBirht: data.dateOfBirht,
     });
   }
-  loadOptions('nacionalidades', 'nombre');
-  loadOptions('tiposdocumentos', 'descripcion');
 });
 
 watch(

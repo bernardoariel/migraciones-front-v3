@@ -206,6 +206,9 @@ const onSubmit = handleSubmit(async (value) => {
   }
 });
 onMounted(async () => {
+  loadOptions('nacionalidades', 'nombre');
+  loadOptions('emisordocumentos', 'descripcion');
+  loadOptions('tiposdocumentos', 'descripcion');
   if (effectiveId.value) {
     const data = await fetchAllPersonById(effectiveId.value as number);
 
@@ -223,9 +226,6 @@ onMounted(async () => {
       documentIssuer: String(data.issuer_document_id),
     });
   }
-  loadOptions('nacionalidades', 'nombre');
-  loadOptions('emisordocumentos', 'descripcion');
-  loadOptions('tiposdocumentos', 'descripcion');
 });
 
 watch(
