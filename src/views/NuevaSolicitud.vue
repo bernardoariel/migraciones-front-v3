@@ -1,75 +1,42 @@
 <template>
   <div class="flex flex-col lg:flex-row gap-6 bg-gray-100 min-h-screen p-4">
-    <!-- Tabla de Personas -->
     <div class="flex-[2] bg-white p-4 rounded-lg shadow-md max-h-[85vh] overflow-y-hidden">
-      <div class="flex justify-between items-center">
-        <h2 class="text-xl font-semibold mb-4">Lista de Personas</h2>
-        <ul class="menu menu-horizontal menu-xs bg-base-200 rounded-box">
-          <li>
-            <a
-              class="ml-1"
-              :class="{ active: activeCategory === 'acompaneantes' }"
-              @click="personStore.resetState('acompaneantes')"
+      <div v-if="activeCategory">
+        <div class="flex justify-between items-center">
+          <h2 class="text-xl font-semibold mb-4">Lista de Personas</h2>
+          <NavBarCard typeCategory="menores" />
+          <button class="btn btn-circle" @click="personStore.setPersonId('new')">
+            <svg
+              width="30"
+              height="30"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              Acompañantes
-            </a>
-          </li>
-          <li>
-            <a
-              class="ml-1"
-              :class="{ active: activeCategory === 'menores' }"
-              @click="personStore.resetState('menores')"
-            >
-              Menores
-            </a>
-          </li>
-          <li>
-            <a
-              class="ml-1"
-              :class="{ active: activeCategory === 'autorizantes' }"
-              @click="personStore.resetState('autorizantes')"
-            >
-              Autorizantes
-            </a>
-          </li>
-        </ul>
-        <button
-          v-if="activeCategory"
-          class="btn btn-circle"
-          @click="personStore.setPersonId('new')"
-        >
-          <svg
-            width="30"
-            height="30"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-            <g id="SVGRepo_iconCarrier">
-              <path
-                d="M15 12L12 12M12 12L9 12M12 12L12 9M12 12L12 15"
-                stroke="#1C274C"
-                stroke-width="1.5"
-                stroke-linecap="round"
-              ></path>
-              <path
-                d="M7 3.33782C8.47087 2.48697 10.1786 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 10.1786 2.48697 8.47087 3.33782 7"
-                stroke="#1C274C"
-                stroke-width="1.5"
-                stroke-linecap="round"
-              ></path>
-            </g>
-          </svg>
-        </button>
+              <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+              <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+              <g id="SVGRepo_iconCarrier">
+                <path
+                  d="M15 12L12 12M12 12L9 12M12 12L12 9M12 12L12 15"
+                  stroke="#1C274C"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                ></path>
+                <path
+                  d="M7 3.33782C8.47087 2.48697 10.1786 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 10.1786 2.48697 8.47087 3.33782 7"
+                  stroke="#1C274C"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                ></path>
+              </g>
+            </svg>
+          </button>
+        </div>
+        <PersonList />
       </div>
-
-      <!-- Tabla de Personas -->
-      <PersonList />
+      <div v-else><NavBarCard typeCategory="menores" /></div>
     </div>
 
-    <!-- Formulario dinámico -->
     <div
       class="flex-[2] bg-white p-4 rounded-lg shadow-md max-h-[85vh] overflow-auto flex justify-center"
     >
@@ -611,6 +578,7 @@ import FormAutorizante from '@/modules/migraciones/autorizantes/components/FormA
 import FormAcompaneante from '@/modules/migraciones/acompaneantes/components/FormAcompaneante.vue';
 
 import CardValidation from '@/common/components/CardValidation.vue';
+import NavBarCard from '@/common/components/NavBarCard.vue';
 
 type ActiveCategory = 'menores' | 'autorizantes' | 'acompaneantes';
 const childRef = ref();
@@ -741,6 +709,7 @@ watch(
 watch(
   [activeCategory, idPersonSelected],
   () => {
+    console.log('Watch activeCategory::: ', activeCategory.value);
     const configs = updateButtonConfigurations();
     buttonConfig.value = configs[activeCategory.value || ''] || [];
   },

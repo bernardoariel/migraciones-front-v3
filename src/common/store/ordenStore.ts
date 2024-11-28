@@ -50,7 +50,6 @@ export const useOrdenStore = defineStore('ordenStore', () => {
   });
 
   const getPerson = async (category: string, id: number | null | 'new') => {
-    console.log('i!d::: ', id);
     if (!id || id === 'new') {
       console.error('ID de la persona no seleccionado.');
       return;

@@ -4,35 +4,7 @@
     <div class="flex-[2] bg-white p-4 rounded-lg shadow-md max-h-[85vh] overflow-y-hidden">
       <div class="flex justify-between items-center">
         <h2 class="text-xl font-semibold mb-4">Lista de Personas</h2>
-        <ul class="menu menu-horizontal menu-xs bg-base-200 rounded-box">
-          <li>
-            <a
-              class="ml-1"
-              :class="{ active: activeCategory === 'acompaneantes' }"
-              @click="personStore.resetState('acompaneantes')"
-            >
-              Acompañantes
-            </a>
-          </li>
-          <li>
-            <a
-              class="ml-1"
-              :class="{ active: activeCategory === 'menores' }"
-              @click="personStore.resetState('menores')"
-            >
-              Menores
-            </a>
-          </li>
-          <li>
-            <a
-              class="ml-1"
-              :class="{ active: activeCategory === 'autorizantes' }"
-              @click="personStore.resetState('autorizantes')"
-            >
-              Autorizantes
-            </a>
-          </li>
-        </ul>
+        <NavBarCard typeCategory="menores" />
         <button class="btn btn-circle" @click="personStore.setPersonId(null)">
           <svg
             width="30"
@@ -93,6 +65,7 @@ import FormMenor from '@/modules/migraciones/menores/components/FormMenor.vue';
 import FormAutorizante from '@/modules/migraciones/autorizantes/components/FormAutorizante.vue';
 import FormAcompaneante from '@/modules/migraciones/acompaneantes/components/FormAcompaneante.vue';
 import { useRoute } from 'vue-router';
+import NavBarCard from '@/common/components/NavBarCard.vue';
 
 type ActiveCategory = 'menores' | 'autorizantes' | 'acompaneantes';
 

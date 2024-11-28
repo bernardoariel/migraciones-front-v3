@@ -4,7 +4,7 @@ import { defineStore } from 'pinia';
 type CategoryPerson = 'menores' | 'acompaneantes' | 'autorizantes' | null;
 
 export const usePersonStore = defineStore('personStore', () => {
-  const activeCategory = ref<CategoryPerson>('acompaneantes');
+  const activeCategory = ref<CategoryPerson>('menores');
   const idPersonSelected = ref<number | null | 'new'>(null);
 
   const getActiveCategory = computed(() => activeCategory.value);
@@ -12,8 +12,7 @@ export const usePersonStore = defineStore('personStore', () => {
   const setPersonId = (id: number | null | 'new') => {
     idPersonSelected.value = id;
   };
-  const setCategory = (newCategory: CategoryPerson) => {
-    console.log('newCategory::: ', newCategory);
+  const setCategory = (newCategory: CategoryPerson = 'menores') => {
     activeCategory.value = newCategory;
   };
   const resetState = (category: null | string = null) => {
