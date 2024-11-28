@@ -33,7 +33,11 @@
             </a>
           </li>
         </ul>
-        <button class="btn btn-circle" @click="personStore.setPersonId('new')">
+        <button
+          v-if="activeCategory"
+          class="btn btn-circle"
+          @click="personStore.setPersonId('new')"
+        >
           <svg
             width="30"
             height="30"
@@ -596,14 +600,16 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref, watch, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
-import PersonList from '@/common/components/PersonList.vue';
+import { useOrdenStore } from '@/common/store/ordenStore';
 import { usePersonStore } from '@/common/store/personStore';
-import { computed, ref, watch } from 'vue';
+
+import PersonList from '@/common/components/PersonList.vue';
 import FormMenor from '@/modules/migraciones/menores/components/FormMenor.vue';
 import FormAutorizante from '@/modules/migraciones/autorizantes/components/FormAutorizante.vue';
 import FormAcompaneante from '@/modules/migraciones/acompaneantes/components/FormAcompaneante.vue';
-import { useOrdenStore } from '@/common/store/ordenStore';
+
 import CardValidation from '@/common/components/CardValidation.vue';
 
 type ActiveCategory = 'menores' | 'autorizantes' | 'acompaneantes';
@@ -704,6 +710,9 @@ watch(
   },
   { immediate: true },
 );
+onMounted(() => {
+  personStore.resetState();
+});
 </script>
 
 <style scoped>

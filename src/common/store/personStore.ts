@@ -17,7 +17,6 @@ export const usePersonStore = defineStore('personStore', () => {
     activeCategory.value = newCategory;
   };
   const resetState = (category: null | string = null) => {
-    console.log('resetState::: ', resetState);
     setPersonId(null);
     setCategory(category as CategoryPerson);
   };

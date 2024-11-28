@@ -25,9 +25,7 @@ export const useOrdenStore = defineStore('ordenStore', () => {
   };
 
   const addAcompaneante = (newAcompaneante: Acompaneante) => {
-    console.log('newAcompaneante::: ', newAcompaneante);
     acompaneantes.value.push(newAcompaneante);
-    console.log('acompaneantes.value::: ', acompaneantes.value);
     builder.addAcompaneante(newAcompaneante);
   };
 
@@ -50,16 +48,16 @@ export const useOrdenStore = defineStore('ordenStore', () => {
   const isValidOrden = computed(() => {
     return menor.value !== null && autorizantes.value.length > 0;
   });
-  // Nueva función getPerson
-  const getPerson = async (category: string, id: number | null) => {
+
+  const getPerson = async (category: string, id: number | null | 'new') => {
     console.log('i!d::: ', id);
-    if (!id) {
+    if (!id || id === 'new') {
       console.error('ID de la persona no seleccionado.');
       return;
     }
 
     try {
-      const person = await getById(id); // Verifica si `getById` lanza errores
+      const person = await getById(id);
       if (!person) {
         throw new Error(`No se encontró la persona con ID ${id}`);
       }
@@ -82,7 +80,6 @@ export const useOrdenStore = defineStore('ordenStore', () => {
         }
       }
 
-      // Resetear estado del otro store
       store.resetState();
     } catch (error) {
       console.error('Error al obtener la persona:', error);

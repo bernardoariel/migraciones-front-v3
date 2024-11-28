@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col">
     <div class="text-2xl font-semibold mb-6 text-center">
-      {{ !idPersonSelected ? 'Agregando ' : 'Editando' }} un {{ nombreForm }}
+      {{ idPersonSelected == 'new' ? 'Agregando ' : 'Editando' }} un {{ nombreForm }}
     </div>
 
     <form @submit="onSubmit" class="space-y-4">
@@ -197,7 +197,7 @@ const onSubmit = handleSubmit(async (value) => {
       issuer_document_id: value.documentIssuer,
     };
     if (effectiveId.value) {
-      await updatePerson(effectiveId.value, payload);
+      await updatePerson(effectiveId.value as number, payload);
       return;
     }
     await createPerson(payload);
@@ -207,7 +207,7 @@ const onSubmit = handleSubmit(async (value) => {
 });
 onMounted(async () => {
   if (effectiveId.value) {
-    const data = await fetchAllPersonById(effectiveId.value);
+    const data = await fetchAllPersonById(effectiveId.value as number);
 
     setValues({
       documentNumber: data.numero_de_documento,
@@ -237,8 +237,9 @@ watch(
   { deep: true },
 );
 watch(effectiveId, async (newId) => {
+  console.log('effectiveId::: ', effectiveId.value);
   if (newId) {
-    const data = await fetchAllPersonById(newId);
+    const data = await fetchAllPersonById(newId as number);
 
     setValues({
       documentNumber: data.numero_de_documento,
