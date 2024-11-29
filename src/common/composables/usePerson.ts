@@ -36,11 +36,13 @@ const usePerson = () => {
     }
   };
 
-  const getPersonByDoc= async (dni: number) => {
+  const getPersonByDoc = async (dni: number) => {
     try {
-      await getPersonaByDocumento(dni);
+      const response = await getPersonaByDocumento(dni);  // Ahora esperamos la respuesta
+      return response;  // Devolvemos la respuesta para que pueda ser usada donde se llame
     } catch (error) {
       console.error(`Error al obtener la persona con el DNI ${dni}:`, error);
+      throw error;  // Lanza el error para que pueda ser manejado por el código que llama a esta función
     }
   };
   return {

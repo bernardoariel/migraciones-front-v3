@@ -40,6 +40,14 @@ export const update = async (id: number, value: Partial<Person>) => {
     throw error;
   }
 };
-export const getPersonaByDocumento = (dni: number) => {
-  return apiMigrationsData.get(`/v2/getPersonaByDocumento/${dni}`);
+
+export const getPersonaByDocumento = async (dni: number) => {  
+  try {
+    const response = await apiMigrationsData.get(`/v2/getPersonaByDocumento/${dni}`);
+    return response.data; // Asegúrate de retornar la respuesta data
+  } catch (error) {
+    console.error(`Error al obtener la persona con el DNI ${dni}:`, error);
+    throw error; // Lanza el error para que lo puedas manejar en el componente
+  }
 };
+

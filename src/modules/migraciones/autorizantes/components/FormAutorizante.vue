@@ -234,20 +234,21 @@ onMounted(async () => {
 const checkDniExistence = async () => {
   if (documentNumber.value) {
     try {
-      const response: any = await getPersonByDoc(documentNumber.value); // Usa 'any' si no tienes un tipo para la respuesta
-      console.log("response dni:",response)
-      // Verifica si 'response' tiene 'data' y si contiene datos
-      if (response.id) {
-        console.log("sss")
+      const response = await getPersonByDoc(documentNumber.value);  // Ahora obtenemos la respuesta completa
+      console.log('Response:', response);  // Log para depuración
+
+      if (response && response.id) {  // Verifica si la respuesta tiene el campo id
         errorDoc.value = 'Ya existe una persona con este número de documento';
       } else {
-        errorDoc.value = ''; // Si no está registrado, limpia el mensaje
+        errorDoc.value = '';  // Si no está registrado, limpia el mensaje
       }
     } catch (error) {
-      console.error(error);      
+      console.error(error);
+      errorDoc.value = 'Error al verificar el DNI';  // Si ocurre un error, muestra este mensaje
     }
   }
 };
+
 
 
 

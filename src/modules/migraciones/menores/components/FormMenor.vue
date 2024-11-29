@@ -13,8 +13,9 @@
         label="Documento"
         placeholder="Ingrese el Documento"
         type="number"
+        @blur="checkDniExistence" 
       />
-
+      <span class="text-red-400" v-if="errorDoc">{{ errorDoc }}</span>
       <MySelect
         v-model="documentType"
         v-bind="documentTypeAttrs"
@@ -136,9 +137,11 @@ interface Props {
   menor?: number | null;
   buttons?: ButtonConfig[];
 }
+
+const errorDoc = ref('')
 const props = defineProps<Props>();
 const nombreForm = ref('Menor');
-const { createPerson, fetchAllPersonById, updatePerson } = usePerson();
+const { createPerson, fetchAllPersonById, updatePerson , getPersonByDoc } = usePerson();
 const isFormValid = ref(false);
 const validationSchema = yup.object({
   documentNumber: yup.string().matches(/^\d+$/).required().min(3),
@@ -220,6 +223,24 @@ onMounted(async () => {
   loadOptions('nacionalidades', 'nombre');  
   loadOptions('tiposdocumentos', 'descripcion');  
 });
+
+const checkDniExistence = async () => {
+  if (documentNumber.value) {
+    try {
+      const response = await getPersonByDoc(documentNumber.value);  // Ahora obtenemos la respuesta completa
+      console.log('Response:', response);  // Log para depuración
+
+      if (response && response.id) {  // Verifica si la respuesta tiene el campo id
+        errorDoc.value = 'Ya existe una persona con este número de documento';
+      } else {
+        errorDoc.value = '';  // Si no está registrado, limpia el mensaje
+      }
+    } catch (error) {
+      console.error(error);
+      errorDoc.value = 'Error al verificar el DNI';  // Si ocurre un error, muestra este mensaje
+    }
+  }
+};
 
 watch(
   () => meta.value,
