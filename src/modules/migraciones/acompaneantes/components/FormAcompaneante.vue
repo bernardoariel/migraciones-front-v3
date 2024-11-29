@@ -77,8 +77,8 @@ import useDropdownOptions from '@/common/composables/useDropdownOptions';
 import type { Acompaneante } from '../interfaces/acompaneante.interface';
 
 import { usePersonStore } from '@/common/store/personStore';
-import { useMutation, useQueryClient } from '@tanstack/vue-query';
-import { apiMigrationsData } from '@/api/apiMigrationsData';
+import { useQueryClient } from '@tanstack/vue-query';
+
 import { useToast } from 'vue-toastification';
 import usePerson from '../../../../common/composables/usePerson';
 
@@ -148,6 +148,7 @@ watch(person, (newPerson) => {
 });
 
 const onSubmit = handleSubmit(async (values) => {
+  if (isSubmitting.value) return;
   isSubmitting.value = true;
   try {
     const payload: Acompaneante = {

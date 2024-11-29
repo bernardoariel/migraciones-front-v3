@@ -123,7 +123,7 @@ import usePerson from '@/common/composables/usePerson';
 import { usePersonStore } from '@/common/store/personStore';
 import { storeToRefs } from 'pinia';
 import { useToast } from 'vue-toastification';
-import { useMutation } from '@tanstack/vue-query';
+import { useMutation, useQueryClient } from '@tanstack/vue-query';
 import { apiMigrationsData } from '@/api/apiMigrationsData';
 
 const toast = useToast();
@@ -151,7 +151,7 @@ const isFormValid = ref(false);
 const validationSchema = yup.object({
   documentNumber: yup.string().matches(/^\d+$/).required().min(3),
   documentType: yup.number().required().oneOf([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]),
-  documentIssuer: yup.string().required().oneOf(['1', '2', '3', '4', '5', '6', '7']),
+  documentIssuer: yup.number().required().oneOf([1, 2, 3, 4, 5, 6, 7]),
   lastName: yup.string().required(),
   secondLastName: yup.string(),
   firstName: yup.string().required().min(3),
@@ -185,65 +185,12 @@ const sexType = ref([
 const personStore = usePersonStore();
 const { getIdPersonSelected } = storeToRefs(personStore);
 const idPersonSelected = getIdPersonSelected;
-const effectiveId = computed(() => {
-  const id = props.autorizante ?? idPersonSelected.value;
-  return id === 'new' ? null : id;
-});
+const effectiveId = computed(() => getIdPersonSelected.value);
 const isSubmitting = ref(false);
-const { person, refetch, isLoading, isError } = usePerson(effectiveId);
 
-const { isSuccess: isSuccessNew, mutate: mutateNew } = useMutation({
-  mutationFn: (newTodo: Autorizante) =>
-    effectiveId.value
-      ? apiMigrationsData.put(`/v2/persona/update/${effectiveId.value}`, newTodo)
-      : apiMigrationsData.post('/v2/persona/new', newTodo),
-});
-const onSubmit = handleSubmit(async (value) => {
-  if (isSubmitting.value) return;
-  isSubmitting.value = true;
-  try {
-    const payload: Autorizante = {
-      numero_de_documento: value.documentNumber,
-      type_document_id: value.documentType,
-      apellido: value.lastName,
-      segundo_apellido: value.secondLastName,
-      nombre: value.firstName,
-      otros_nombres: value.otherNames,
-      nationality_id: value.nationality,
-      sex_id: value.sex,
-      domicilio: value.address,
-      fecha_de_nacimiento: value.dateOfBirht,
-      issuer_document_id: value.documentIssuer,
-    };
-    mutateNew(payload);
-  } catch (error) {
-    isSubmitting.value = false;
-  }
-});
-onMounted(async () => {
-  loadOptions('nacionalidades', 'nombre');
-  loadOptions('emisordocumentos', 'descripcion');
-  loadOptions('tiposdocumentos', 'descripcion');
-  if (effectiveId.value) {
-    refetch();
-  }
-});
+const queryClient = useQueryClient();
+const { person, createPerson, updatePerson } = usePerson(effectiveId);
 
-watch(
-  () => meta.value,
-  (newMeta) => {
-    // Usar meta.valid para habilitar el botón solo si el formulario es válido
-    isFormValid.value = newMeta.valid;
-  },
-  { deep: true },
-);
-
-watch(isSuccessNew, () => {
-  if (!isSuccessNew.value) return;
-  !effectiveId.value
-    ? toast.success('Se agregó un Autorizante')
-    : toast.success('Se Actualizo un Autorizante');
-});
 watch(person, (newPerson) => {
   if (newPerson) {
     setValues({
@@ -261,13 +208,54 @@ watch(person, (newPerson) => {
     });
   }
 });
-watch(effectiveId, (newId) => {
-  if (newId === null) {
-    resetForm(); // Resetea el formulario si el ID es "new"
-  } else {
-    refetch(); // Ejecuta la consulta si el ID es válido
+
+const onSubmit = handleSubmit(async (value) => {
+  if (isSubmitting.value) return;
+  isSubmitting.value = true;
+  try {
+    const payload: Autorizante = {
+      numero_de_documento: value.documentNumber,
+      type_document_id: value.documentType,
+      apellido: value.lastName,
+      segundo_apellido: value.secondLastName,
+      nombre: value.firstName,
+      otros_nombres: value.otherNames,
+      nationality_id: value.nationality,
+      sex_id: value.sex,
+      domicilio: value.address,
+      fecha_de_nacimiento: value.dateOfBirht,
+      issuer_document_id: value.documentIssuer,
+    };
+    if (effectiveId.value === null || effectiveId.value === 'new') {
+      await createPerson(payload);
+      toast.success('Autorizante creado exitosamente');
+    } else {
+      await updatePerson(payload);
+      toast.success('Autorizante actualizado exitosamente');
+    }
+
+    queryClient.invalidateQueries({ queryKey: ['persons'] });
+  } catch (error) {
+    isSubmitting.value = false;
   }
 });
+onMounted(async () => {
+  loadOptions('nacionalidades', 'nombre');
+  loadOptions('emisordocumentos', 'descripcion');
+  loadOptions('tiposdocumentos', 'descripcion');
+  if (effectiveId.value === 'new') {
+    resetForm();
+  }
+});
+
+watch(
+  () => meta.value,
+  (newMeta) => {
+    // Usar meta.valid para habilitar el botón solo si el formulario es válido
+    isFormValid.value = newMeta.valid;
+  },
+  { deep: true },
+);
 
 defineExpose({ resetForm, onSubmit });
 </script>
