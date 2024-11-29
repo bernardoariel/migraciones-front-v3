@@ -123,8 +123,7 @@ import usePerson from '@/common/composables/usePerson';
 import { usePersonStore } from '@/common/store/personStore';
 import { storeToRefs } from 'pinia';
 import { useToast } from 'vue-toastification';
-import { useMutation, useQueryClient } from '@tanstack/vue-query';
-import { apiMigrationsData } from '@/api/apiMigrationsData';
+import { useQueryClient } from '@tanstack/vue-query';
 
 const toast = useToast();
 const { documentTypeOptions, nationalityOptions, issuerDocsOptions, loadOptions } =
@@ -185,7 +184,8 @@ const sexType = ref([
 const personStore = usePersonStore();
 const { getIdPersonSelected } = storeToRefs(personStore);
 const idPersonSelected = getIdPersonSelected;
-const effectiveId = computed(() => getIdPersonSelected.value);
+const effectiveId = computed(() => props.autorizante ?? idPersonSelected.value);
+
 const isSubmitting = ref(false);
 
 const queryClient = useQueryClient();
@@ -256,7 +256,11 @@ watch(
   },
   { deep: true },
 );
-
+watch(effectiveId, async (newId) => {
+  if (newId) {
+    resetForm();
+  }
+});
 defineExpose({ resetForm, onSubmit });
 </script>
 

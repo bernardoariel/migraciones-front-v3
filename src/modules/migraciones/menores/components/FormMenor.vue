@@ -178,7 +178,7 @@ const sexType = ref([
 const personStore = usePersonStore();
 const { getIdPersonSelected } = storeToRefs(personStore);
 const idPersonSelected = getIdPersonSelected;
-const effectiveId = computed(() => getIdPersonSelected.value);
+const effectiveId = computed(() => props.menor ?? idPersonSelected.value);
 const isSubmitting = ref(false);
 
 const queryClient = useQueryClient();
@@ -247,7 +247,11 @@ watch(
   },
   { deep: true },
 );
-
+watch(effectiveId, async (newId) => {
+  if (newId) {
+    resetForm();
+  }
+});
 defineExpose({ resetForm, onSubmit });
 </script>
 
