@@ -34,10 +34,11 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref, watch, computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import { usePersonStore } from '../store/personStore';
 import usePersons from '../composables/usePersons';
+
 const { acompaneantes, menores, autorizantes } = usePersons();
 interface Props {
   typeCategory?: string;
@@ -48,27 +49,21 @@ const personStore = usePersonStore();
 const { getActiveCategory } = storeToRefs(personStore);
 const activeCategory = getActiveCategory;
 
-const categoryPersons = ref(0);
-const updateCategoryPersons = () => {
+const categoryPersons = computed(() => {
   switch (activeCategory.value) {
     case 'acompaneantes':
-      categoryPersons.value = acompaneantes.value.length;
-      break;
+      return acompaneantes.value.length;
     case 'menores':
-      categoryPersons.value = menores.value.length;
-      break;
+      return menores.value.length;
     case 'autorizantes':
-      categoryPersons.value = autorizantes.value.length;
-      break;
+      return autorizantes.value.length;
     default:
-      categoryPersons.value = 0;
+      return 0;
   }
-};
-
-watch(activeCategory, updateCategoryPersons);
-onMounted(() => {
-  updateCategoryPersons();
-  if (!props.typeCategory) return;
-  personStore.resetState(props.typeCategory);
 });
+
+// Ensure state is updated properly when typeCategory is passed as a prop
+if (props.typeCategory) {
+  personStore.resetState(props.typeCategory);
+}
 </script>
