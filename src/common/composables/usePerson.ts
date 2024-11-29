@@ -1,5 +1,5 @@
 import { ref, watch, unref, computed } from 'vue';
-import { useQuery } from '@tanstack/vue-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query';
 import type { Person } from '../interfaces/person.interface';
 import { apiMigrationsData } from '@/api/apiMigrationsData';
 
@@ -15,7 +15,9 @@ export const getById = async (id: number) => {
 const usePerson = (idPerson: Ref<number | null> | ComputedRef<number | null>) => {
   const person = ref<Person | null>(null);
 
-  const { data, refetch, isLoading, isError, error } = useQuery({
+  const queryClient = useQueryClient();
+
+  const { data, refetch } = useQuery({
     queryKey: computed(() => ['person', unref(idPerson)]),
     queryFn: async () => {
       const id = unref(idPerson);
@@ -26,7 +28,7 @@ const usePerson = (idPerson: Ref<number | null> | ComputedRef<number | null>) =>
     },
     enabled: computed(() => {
       const id = unref(idPerson);
-      return !!id && !isNaN(id); // Habilita la consulta solo si el ID es válido y numérico
+      return !!id && !isNaN(id);
     }),
     staleTime: 1000 * 30,
   });
@@ -38,13 +40,38 @@ const usePerson = (idPerson: Ref<number | null> | ComputedRef<number | null>) =>
     },
     { immediate: true },
   );
+  const createPerson = async (payload) => {
+    const response = await apiMigrationsData.post(`/v2/persona/new`, payload);
+    queryClient.invalidateQueries({ queryKey: ['persons'] });
+    return response.data;
+  };
 
+  const updatePerson = async (payload) => {
+    const id = unref(idPerson);
+    if (!id) throw new Error('ID inválido para actualización');
+    return apiMigrationsData.put(`/v2/persona/update/${id}`, payload);
+  };
+  const mutation = useMutation({
+    mutationFn: async (payload) => {
+      const id = unref(idPerson);
+      if (id === null || id === 'new') {
+        return createPerson(payload);
+      } else {
+        return updatePerson(payload);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['persons'] });
+      refetch();
+    },
+  });
   return {
     person,
     refetch,
-    isLoading,
-    isError,
-    error,
+    mutatePerson: mutation.mutateAsync,
+    isLoading: mutation.isLoading,
+    createPerson,
+    updatePerson,
   };
 };
 

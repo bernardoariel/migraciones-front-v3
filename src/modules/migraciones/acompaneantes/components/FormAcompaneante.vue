@@ -77,12 +77,11 @@ import useDropdownOptions from '@/common/composables/useDropdownOptions';
 import type { Acompaneante } from '../interfaces/acompaneante.interface';
 
 import { usePersonStore } from '@/common/store/personStore';
-import { useMutation } from '@tanstack/vue-query';
+import { useMutation, useQueryClient } from '@tanstack/vue-query';
 import { apiMigrationsData } from '@/api/apiMigrationsData';
 import { useToast } from 'vue-toastification';
 import usePerson from '../../../../common/composables/usePerson';
 
-const toast = useToast();
 const { documentTypeOptions, loadOptions } = useDropdownOptions();
 
 interface ButtonConfig {
@@ -126,58 +125,12 @@ const [otherNames, otherNamesAttrs] = defineField('otherNames');
 const personStore = usePersonStore();
 const { getIdPersonSelected } = storeToRefs(personStore);
 const idPersonSelected = getIdPersonSelected;
-const effectiveId = computed(() => {
-  const id = props.acompaneante ?? idPersonSelected.value;
-  return id === 'new' ? null : id;
-});
+const effectiveId = computed(() => getIdPersonSelected.value);
 const isSubmitting = ref(false);
-const { person, refetch } = usePerson(effectiveId);
 
-const { isSuccess: isSuccessNew, mutate: mutateNew } = useMutation({
-  mutationFn: (newTodo: Acompaneante) =>
-    effectiveId.value
-      ? apiMigrationsData.put(`/v2/persona/update/${effectiveId.value}`, newTodo)
-      : apiMigrationsData.post('/v2/persona/new', newTodo),
-});
-const onSubmit = handleSubmit(async (value) => {
-  if (isSubmitting.value) return;
-  isSubmitting.value = true;
-  try {
-    const payload: Acompaneante = {
-      numero_de_documento: value.documentNumber,
-      type_document_id: value.documentType,
-      apellido: value.lastName,
-      segundo_apellido: value.secondLastName,
-      nombre: value.firstName,
-      otros_nombres: value.otherNames,
-    };
-    mutateNew(payload);
-  } finally {
-    isSubmitting.value = false;
-  }
-});
-
-onMounted(async () => {
-  loadOptions('tiposdocumentos', 'descripcion');
-  if (effectiveId.value) {
-    refetch();
-  }
-});
-
-watch(
-  () => meta.value,
-  (newMeta) => {
-    isFormValid.value = newMeta.valid;
-  },
-  { deep: true },
-);
-watch(isSuccessNew, () => {
-  if (!isSuccessNew.value) return;
-  console.log('effectiveId.value::: ', effectiveId.value);
-  !effectiveId.value
-    ? toast.success('Se agregó un Acompañante')
-    : toast.success('Se Actualizo un Acompañante');
-});
+const queryClient = useQueryClient();
+const { person, createPerson, updatePerson } = usePerson(effectiveId);
+const toast = useToast();
 
 watch(person, (newPerson) => {
   if (newPerson) {
@@ -193,12 +146,49 @@ watch(person, (newPerson) => {
     resetForm();
   }
 });
-watch(effectiveId, (newId) => {
-  if (newId === null) {
-    resetForm(); // Resetea el formulario si el ID es "new"
-  } else {
-    refetch(); // Ejecuta la consulta si el ID es válido
+
+const onSubmit = handleSubmit(async (values) => {
+  isSubmitting.value = true;
+  try {
+    const payload: Acompaneante = {
+      numero_de_documento: values.documentNumber,
+      type_document_id: values.documentType,
+      apellido: values.lastName,
+      segundo_apellido: values.secondLastName,
+      nombre: values.firstName,
+      otros_nombres: values.otherNames,
+    };
+
+    if (effectiveId.value === null || effectiveId.value === 'new') {
+      await createPerson(payload);
+      toast.success('Acompañante creado exitosamente');
+    } else {
+      await updatePerson(payload);
+      toast.success('Acompañante actualizado exitosamente');
+    }
+
+    queryClient.invalidateQueries({ queryKey: ['persons'] });
+  } catch (error) {
+    toast.error('Error al guardar el acompañante');
+  } finally {
+    isSubmitting.value = false;
   }
 });
+
+onMounted(async () => {
+  loadOptions('tiposdocumentos', 'descripcion');
+  if (effectiveId.value === 'new') {
+    resetForm();
+  }
+});
+
+watch(
+  () => meta.value,
+  (newMeta) => {
+    isFormValid.value = newMeta.valid;
+  },
+  { deep: true },
+);
+
 defineExpose({ resetForm, onSubmit });
 </script>

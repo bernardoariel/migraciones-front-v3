@@ -20,7 +20,6 @@ const usePersons = () => {
 
   watch(data, (newPersons: Person[]) => {
     if (newPersons) {
-      console.log('Actualizando personas en el store...');
       store.setPersons(newPersons.filter((p) => p && p.id));
     }
   });
