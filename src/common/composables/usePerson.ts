@@ -1,4 +1,4 @@
-import { create, getAll, update, getById } from '../services/persons';
+import { create, getAll, update, getById , getPersonaByDocumento} from '../services/persons';
 
 const usePerson = () => {
   const createPerson = async (value: Acompaneante) => {
@@ -35,11 +35,20 @@ const usePerson = () => {
       console.error(`Error al actualizar el acompañante con ID ${id}:`, error);
     }
   };
+
+  const getPersonByDoc= async (dni: number) => {
+    try {
+      await getPersonaByDocumento(dni);
+    } catch (error) {
+      console.error(`Error al obtener la persona con el DNI ${dni}:`, error);
+    }
+  };
   return {
     createPerson,
     fetchAllPerson,
     fetchAllPersonById,
     updatePerson,
+    getPersonByDoc
   };
 };
 

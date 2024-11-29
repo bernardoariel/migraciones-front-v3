@@ -40,3 +40,6 @@ export const update = async (id: number, value: Partial<Person>) => {
     throw error;
   }
 };
+export const getPersonaByDocumento = (dni: number) => {
+  return apiMigrationsData.get(`/v2/getPersonaByDocumento/${dni}`);
+};
