@@ -75,8 +75,14 @@ import MySelect from '@/common/components/elementos/MySelect.vue';
 import useDropdownOptions from '@/common/composables/useDropdownOptions';
 
 import type { Acompaneante } from '../interfaces/acompaneante.interface';
-import usePerson from '../../../../common/composables/usePerson';
+
 import { usePersonStore } from '@/common/store/personStore';
+import { useMutation } from '@tanstack/vue-query';
+import { apiMigrationsData } from '@/api/apiMigrationsData';
+import { useToast } from 'vue-toastification';
+import usePerson from '../../../../common/composables/usePerson';
+
+const toast = useToast();
 const { documentTypeOptions, loadOptions } = useDropdownOptions();
 
 interface ButtonConfig {
@@ -95,7 +101,7 @@ interface Props {
 
 const props = defineProps<Props>();
 const nombreForm = ref('Acompañante');
-const { createPerson, fetchAllPersonById, updatePerson } = usePerson();
+
 const isFormValid = ref(false);
 const validationSchema = yup.object({
   documentNumber: yup.string().matches(/^\d+$/).required().min(3),
@@ -120,9 +126,19 @@ const [otherNames, otherNamesAttrs] = defineField('otherNames');
 const personStore = usePersonStore();
 const { getIdPersonSelected } = storeToRefs(personStore);
 const idPersonSelected = getIdPersonSelected;
-const effectiveId = computed(() => props.acompaneante ?? idPersonSelected.value);
+const effectiveId = computed(() => {
+  const id = props.acompaneante ?? idPersonSelected.value;
+  return id === 'new' ? null : id;
+});
 const isSubmitting = ref(false);
+const { person, refetch } = usePerson(effectiveId);
 
+const { isSuccess: isSuccessNew, mutate: mutateNew } = useMutation({
+  mutationFn: (newTodo: Acompaneante) =>
+    effectiveId.value
+      ? apiMigrationsData.put(`/v2/persona/update/${effectiveId.value}`, newTodo)
+      : apiMigrationsData.post('/v2/persona/new', newTodo),
+});
 const onSubmit = handleSubmit(async (value) => {
   if (isSubmitting.value) return;
   isSubmitting.value = true;
@@ -135,12 +151,7 @@ const onSubmit = handleSubmit(async (value) => {
       nombre: value.firstName,
       otros_nombres: value.otherNames,
     };
-
-    if (effectiveId.value) {
-      await updatePerson(effectiveId.value as number, payload);
-    } else {
-      await createPerson(payload);
-    }
+    mutateNew(payload);
   } finally {
     isSubmitting.value = false;
   }
@@ -149,16 +160,7 @@ const onSubmit = handleSubmit(async (value) => {
 onMounted(async () => {
   loadOptions('tiposdocumentos', 'descripcion');
   if (effectiveId.value) {
-    const data = await fetchAllPersonById(effectiveId.value as number);
-
-    setValues({
-      documentNumber: data.numero_de_documento,
-      documentType: String(data.type_document_id),
-      lastName: data.apellido,
-      secondLastName: data.segundo_apellido || '',
-      firstName: data.nombre,
-      otherNames: data.otros_nombres || '',
-    });
+    refetch();
   }
 });
 
@@ -169,21 +171,33 @@ watch(
   },
   { deep: true },
 );
+watch(isSuccessNew, () => {
+  if (!isSuccessNew.value) return;
+  console.log('effectiveId.value::: ', effectiveId.value);
+  !effectiveId.value
+    ? toast.success('Se agregó un Acompañante')
+    : toast.success('Se Actualizo un Acompañante');
+});
 
-watch(effectiveId, async (newId) => {
-  if (newId) {
-    const data = await fetchAllPersonById(newId as number);
-
+watch(person, (newPerson) => {
+  if (newPerson) {
     setValues({
-      documentNumber: data.numero_de_documento,
-      documentType: String(data.type_document_id),
-      lastName: data.apellido,
-      secondLastName: data.segundo_apellido || '',
-      firstName: data.nombre,
-      otherNames: data.otros_nombres || '',
+      documentNumber: newPerson.numero_de_documento,
+      documentType: String(newPerson.type_document_id),
+      lastName: newPerson.apellido,
+      secondLastName: newPerson.segundo_apellido || '',
+      firstName: newPerson.nombre,
+      otherNames: newPerson.otros_nombres || '',
     });
   } else {
     resetForm();
+  }
+});
+watch(effectiveId, (newId) => {
+  if (newId === null) {
+    resetForm(); // Resetea el formulario si el ID es "new"
+  } else {
+    refetch(); // Ejecuta la consulta si el ID es válido
   }
 });
 defineExpose({ resetForm, onSubmit });

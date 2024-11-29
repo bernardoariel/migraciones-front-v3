@@ -1,45 +1,50 @@
-import { create, getAll, update, getById } from '../services/persons';
+import { ref, watch, unref, computed } from 'vue';
+import { useQuery } from '@tanstack/vue-query';
+import type { Person } from '../interfaces/person.interface';
+import { apiMigrationsData } from '@/api/apiMigrationsData';
 
-const usePerson = () => {
-  const createPerson = async (value: Acompaneante) => {
-    try {
-      await create(value);
-    } catch (error) {
-      console.error('Error al crear la persona:', error);
-    }
-  };
-  const fetchAllPerson = async (): Promise<Person[]> => {
-    try {
-      const data = await getAll();
-      return data;
-    } catch (error) {
-      console.error('Error al obtener las personas:', error);
-    }
-  };
+export const getById = async (id: number) => {
+  try {
+    const response = await apiMigrationsData.get(`/v2/personaById/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error al obtener el acompañante con ID ${id}:`, error);
+    throw error;
+  }
+};
+const usePerson = (idPerson: Ref<number | null> | ComputedRef<number | null>) => {
+  const person = ref<Person | null>(null);
 
-  const fetchAllPersonById = async (id: number) => {
-    try {
-      const data = await getById(id);
-      return data;
-    } catch (error) {
-      console.error(`Error al obtener la Persona con ID ${id}:`, error);
-    }
-  };
+  const { data, refetch, isLoading, isError, error } = useQuery({
+    queryKey: computed(() => ['person', unref(idPerson)]),
+    queryFn: async () => {
+      const id = unref(idPerson);
+      if (!id || isNaN(id)) {
+        throw new Error('ID no válido o no numérico');
+      }
+      return getById(id);
+    },
+    enabled: computed(() => {
+      const id = unref(idPerson);
+      return !!id && !isNaN(id); // Habilita la consulta solo si el ID es válido y numérico
+    }),
+    staleTime: 1000 * 30,
+  });
 
-  const updatePerson = async (id: number, value: Partial<Acompaneante>) => {
-    console.log('value::: ', value);
-    console.log('id::: ', id);
-    try {
-      await update(id, value);
-    } catch (error) {
-      console.error(`Error al actualizar el acompañante con ID ${id}:`, error);
-    }
-  };
+  watch(
+    data,
+    (newData) => {
+      person.value = newData || null;
+    },
+    { immediate: true },
+  );
+
   return {
-    createPerson,
-    fetchAllPerson,
-    fetchAllPersonById,
-    updatePerson,
+    person,
+    refetch,
+    isLoading,
+    isError,
+    error,
   };
 };
 

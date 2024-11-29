@@ -122,6 +122,11 @@ import type { Autorizante } from '../interfaces/autorizante.interface';
 import usePerson from '@/common/composables/usePerson';
 import { usePersonStore } from '@/common/store/personStore';
 import { storeToRefs } from 'pinia';
+import { useToast } from 'vue-toastification';
+import { useMutation } from '@tanstack/vue-query';
+import { apiMigrationsData } from '@/api/apiMigrationsData';
+
+const toast = useToast();
 const { documentTypeOptions, nationalityOptions, issuerDocsOptions, loadOptions } =
   useDropdownOptions();
 
@@ -138,9 +143,10 @@ interface Props {
   autorizante?: number | null;
   buttons?: ButtonConfig[];
 }
+
 const props = defineProps<Props>();
 const nombreForm = ref('Autorizante');
-const { createPerson, fetchAllPersonById, updatePerson } = usePerson();
+
 const isFormValid = ref(false);
 const validationSchema = yup.object({
   documentNumber: yup.string().matches(/^\d+$/).required().min(3),
@@ -179,9 +185,22 @@ const sexType = ref([
 const personStore = usePersonStore();
 const { getIdPersonSelected } = storeToRefs(personStore);
 const idPersonSelected = getIdPersonSelected;
-const effectiveId = computed(() => props.autorizante ?? idPersonSelected.value);
+const effectiveId = computed(() => {
+  const id = props.autorizante ?? idPersonSelected.value;
+  return id === 'new' ? null : id;
+});
+const isSubmitting = ref(false);
+const { person, refetch, isLoading, isError } = usePerson(effectiveId);
 
+const { isSuccess: isSuccessNew, mutate: mutateNew } = useMutation({
+  mutationFn: (newTodo: Autorizante) =>
+    effectiveId.value
+      ? apiMigrationsData.put(`/v2/persona/update/${effectiveId.value}`, newTodo)
+      : apiMigrationsData.post('/v2/persona/new', newTodo),
+});
 const onSubmit = handleSubmit(async (value) => {
+  if (isSubmitting.value) return;
+  isSubmitting.value = true;
   try {
     const payload: Autorizante = {
       numero_de_documento: value.documentNumber,
@@ -196,13 +215,9 @@ const onSubmit = handleSubmit(async (value) => {
       fecha_de_nacimiento: value.dateOfBirht,
       issuer_document_id: value.documentIssuer,
     };
-    if (effectiveId.value) {
-      await updatePerson(effectiveId.value as number, payload);
-      return;
-    }
-    await createPerson(payload);
+    mutateNew(payload);
   } catch (error) {
-    console.error('Error al enviar los datos:', error);
+    isSubmitting.value = false;
   }
 });
 onMounted(async () => {
@@ -210,21 +225,7 @@ onMounted(async () => {
   loadOptions('emisordocumentos', 'descripcion');
   loadOptions('tiposdocumentos', 'descripcion');
   if (effectiveId.value) {
-    const data = await fetchAllPersonById(effectiveId.value as number);
-
-    setValues({
-      documentNumber: data.numero_de_documento,
-      documentType: String(data.type_document_id),
-      lastName: data.apellido,
-      secondLastName: data.segundo_apellido || '',
-      firstName: data.nombre,
-      otherNames: data.otros_nombres || '',
-      nationality: String(data.nationality_id),
-      sex: String(data.sex_id),
-      address: data.domicilio,
-      dateOfBirht: data.dateOfBirht,
-      documentIssuer: String(data.issuer_document_id),
-    });
+    refetch();
   }
 });
 
@@ -236,28 +237,38 @@ watch(
   },
   { deep: true },
 );
-watch(effectiveId, async (newId) => {
-  console.log('effectiveId::: ', effectiveId.value);
-  if (newId) {
-    const data = await fetchAllPersonById(newId as number);
 
+watch(isSuccessNew, () => {
+  if (!isSuccessNew.value) return;
+  !effectiveId.value
+    ? toast.success('Se agregó un Autorizante')
+    : toast.success('Se Actualizo un Autorizante');
+});
+watch(person, (newPerson) => {
+  if (newPerson) {
     setValues({
-      documentNumber: data.numero_de_documento,
-      documentType: String(data.type_document_id),
-      lastName: data.apellido,
-      secondLastName: data.segundo_apellido || '',
-      firstName: data.nombre,
-      otherNames: data.otros_nombres || '',
-      nationality: String(data.nationality_id),
-      sex: String(data.sex_id),
-      address: data.domicilio,
-      dateOfBirht: data.fecha_de_nacimiento,
-      documentIssuer: String(data.issuer_document_id),
+      documentNumber: newPerson.numero_de_documento,
+      documentType: String(newPerson.type_document_id),
+      lastName: newPerson.apellido,
+      secondLastName: newPerson.segundo_apellido || '',
+      firstName: newPerson.nombre,
+      otherNames: newPerson.otros_nombres || '',
+      nationality: String(newPerson.nationality_id),
+      sex: String(newPerson.sex_id),
+      address: newPerson.domicilio,
+      dateOfBirht: newPerson.fecha_de_nacimiento,
+      documentIssuer: String(newPerson.issuer_document_id),
     });
-  } else {
-    resetForm();
   }
 });
+watch(effectiveId, (newId) => {
+  if (newId === null) {
+    resetForm(); // Resetea el formulario si el ID es "new"
+  } else {
+    refetch(); // Ejecuta la consulta si el ID es válido
+  }
+});
+
 defineExpose({ resetForm, onSubmit });
 </script>
 
