@@ -85,6 +85,32 @@ export const useOrdenStore = defineStore('ordenStore', () => {
     }
   };
 
+  const removePerson = (category: string, id: number) => {
+    switch (category) {
+      case 'menores': {
+        if (menor.value?.id === id) {
+          menor.value = null;
+          builder.setMenor(null); // Actualiza el builder
+        }
+        break;
+      }
+      case 'autorizantes': {
+        autorizantes.value = autorizantes.value.filter((person) => person.id !== id);
+        builder.setAutorizantes(autorizantes.value); // Actualiza el builder
+        break;
+      }
+      case 'acompaneantes': {
+        acompaneantes.value = acompaneantes.value.filter((person) => person.id !== id);
+        builder.setAcompaneantes(acompaneantes.value); // Actualiza el builder
+        break;
+      }
+      default: {
+        console.error('Categoría no válida para eliminar.');
+        break;
+      }
+    }
+  };
+
   return {
     menor,
     autorizantes,
@@ -96,6 +122,7 @@ export const useOrdenStore = defineStore('ordenStore', () => {
     buildOrden,
     isValidOrden,
     getPerson,
+    removePerson,
     hasItems: computed(
       () => !!menor.value || autorizantes.value.length > 0 || acompaneantes.value.length > 0,
     ),
