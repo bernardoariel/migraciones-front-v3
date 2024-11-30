@@ -6,7 +6,7 @@
           <h2 class="text-xl font-semibold mb-4">Lista de Personas</h2>
           <NavBarCard typeCategory="menores" />
           <button class="btn btn-circle" @click="personStore.setPersonId('new')">
-            <PlusIcon color="#1C274C" width="50" height="50" />
+            <PlusIcon color="#000" width="40" height="40" />
           </button>
         </div>
         <PersonList />
@@ -17,82 +17,7 @@
     <div
       class="flex-[2] bg-white p-4 rounded-lg shadow-md max-h-[85vh] overflow-auto flex justify-center"
     >
-      <div v-if="!idPersonSelected && hasItems">
-        <div
-          class="!z-5 relative flex h-full w-full flex-col rounded-[20px] bg-white bg-clip-border p-4 shadow-3xl shadow-shadow-500 dark:!bg-navy-800 dark:text-white dark:shadow-none"
-        >
-          <div class="mb-8 w-full">
-            <h4 class="text-xl font-bold text-navy-700 dark:text-white">
-              Generación de Autorización
-            </h4>
-            <p class="mt-2 text-base text-gray-600">
-              En esta tarjeta se mostrarán las personas seleccionadas que formarán la solicitud de
-              autorización en Migraciones.
-            </p>
-          </div>
-          <div
-            class="flex w-full items-center justify-between rounded-2xl bg-white p-3 shadow-3xl shadow-shadow-500 dark:!bg-navy-700 dark:shadow-none"
-          >
-            <div class="flex items-center">
-              <BabyIcon />
-
-              <div class="ml-4">
-                <p class="text-base font-medium text-navy-700 dark:text-white">
-                  Perez Gonzalez, Juan Carlos
-                </p>
-                <p class="mt-2 text-sm text-gray-600">MENOR. <span>Edad 4</span> años</p>
-              </div>
-            </div>
-            <div class="mr-4 flex items-center justify-center text-gray-600 dark:text-white">
-              <button class="btn btn-circle btn-ghost">
-                <EditarIcon />
-              </button>
-            </div>
-          </div>
-          <div
-            class="flex w-full items-center justify-between rounded-2xl bg-white p-3 shadow-3xl shadow-shadow-500 dark:!bg-navy-700 dark:shadow-none"
-          >
-            <div class="flex items-center">
-              <AutorizanteIcon />
-
-              <div class="ml-4">
-                <p class="text-base font-medium text-navy-700 dark:text-white">
-                  Perez Gonzalez, Juan Carlos
-                </p>
-                <p class="mt-2 text-sm text-gray-600">AUTORIZANTE. <span>Edad 4</span> años</p>
-              </div>
-            </div>
-            <div class="mr-4 flex items-center justify-center text-gray-600 dark:text-white">
-              <button class="btn btn-circle btn-ghost">
-                <EditarIcon />
-              </button>
-            </div>
-          </div>
-          <div
-            class="flex w-full items-center justify-between rounded-2xl bg-white p-3 shadow-3xl shadow-shadow-500 dark:!bg-navy-700 dark:shadow-none"
-          >
-            <div class="flex items-center">
-              <AcompaneanteIcon />
-
-              <div class="ml-4">
-                <p class="text-base font-medium text-navy-700 dark:text-white">
-                  Perez Gonzalez, Juan Carlos
-                </p>
-                <p class="mt-2 text-sm text-gray-600">ACOMPAÑANTE. <span>Edad 4</span> años</p>
-              </div>
-            </div>
-            <div class="mr-4 flex items-center justify-center text-gray-600 dark:text-white">
-              <button class="btn btn-circle btn-ghost">
-                <EditarIcon />
-              </button>
-            </div>
-          </div>
-          <div v-if="!idPersonSelected && !hasItems">
-            <h1>No existen personas ingresadas en esta orden</h1>
-          </div>
-        </div>
-      </div>
-
+      <SolicitudCard v-if="!idPersonSelected && hasItems" />
       <component
         v-else
         :is="dynamicComponent"
@@ -121,11 +46,8 @@ import FormAcompaneante from '@/modules/migraciones/acompaneantes/components/For
 
 import CardValidation from '@/common/components/CardValidation.vue';
 import NavBarCard from '@/common/components/NavBarCard.vue';
-import BabyIcon from '@/common/components/iconos/BabyIcon.vue';
-import AutorizanteIcon from '@/common/components/iconos/AutorizanteIcon.vue';
-import EditarIcon from '@/common/components/iconos/EditarIcon.vue';
+import SolicitudCard from '@/common/components/SolicitudCard.vue';
 import PlusIcon from '@/common/components/iconos/PlusIcon.vue';
-import AcompaneanteIcon from '@/common/components/iconos/AcompaneanteIcon.vue';
 
 type ActiveCategory = 'menores' | 'autorizantes' | 'acompaneantes';
 const childRef = ref();
