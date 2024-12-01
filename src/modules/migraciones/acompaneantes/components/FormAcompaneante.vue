@@ -12,7 +12,9 @@
         label="Documento"
         placeholder="Ingrese el Documento"
         type="number"
+        @blur="checkDniExistence" 
       />
+      <span class="text-red-400" v-if="errorDoc">{{ errorDoc }}</span>
 
       <MySelect
         v-model="documentType"
@@ -81,6 +83,7 @@ import { useQueryClient } from '@tanstack/vue-query';
 
 import { useToast } from 'vue-toastification';
 import usePerson from '../../../../common/composables/usePerson';
+import { getPersonByDoc } from '@/common/composables/usePerson'
 
 const { documentTypeOptions, loadOptions } = useDropdownOptions();
 
@@ -101,6 +104,7 @@ interface Props {
 const props = defineProps<Props>();
 const nombreForm = ref('Acompañante');
 
+const errorDoc = ref('')
 const isFormValid = ref(false);
 const validationSchema = yup.object({
   documentNumber: yup.string().matches(/^\d+$/).required().min(3),
@@ -131,6 +135,22 @@ const isSubmitting = ref(false);
 const queryClient = useQueryClient();
 const { person, createPerson, updatePerson } = usePerson(effectiveId);
 const toast = useToast();
+
+const checkDniExistence = async () => {
+  if (documentNumber.value) {
+    try {
+      const response = await getPersonByDoc(documentNumber.value);  
+      if (response && response.id) {  
+        errorDoc.value = 'Ya existe una persona con este número de documento';
+      } else {
+        errorDoc.value = ''; 
+      }
+    } catch (error) {
+      console.error(error);
+      errorDoc.value = 'Error al verificar el DNI'
+    }
+  }
+}; 
 
 watch(person, (newPerson) => {
   if (newPerson) {

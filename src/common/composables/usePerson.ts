@@ -3,6 +3,15 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query';
 import type { Person } from '../interfaces/person.interface';
 import { apiMigrationsData } from '@/api/apiMigrationsData';
 
+export const getPersonByDoc = async (dni: number) => {
+  try {
+    const response = await apiMigrationsData.get(`/v2/getPersonaByDocumento/${dni}`);
+    return response.data; 
+  } catch (error) {
+    console.error(`Error al obtener la persona con el DNI ${dni}:`, error);
+    throw error; 
+  }
+}
 export const getById = async (id: number) => {
   try {
     const response = await apiMigrationsData.get(`/v2/personaById/${id}`);
