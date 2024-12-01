@@ -1,7 +1,8 @@
 <template>
   <div class="flex flex-col">
     <div class="text-2xl font-semibold mb-6 text-center">
-      {{ idPersonSelected == 'new' ? 'Agregando ' : 'Editando' }} un {{ nombreForm }}
+      {{ idPersonSelected == 'new' || idPersonSelected === null ? 'Agregando ' : 'Editando' }} un
+      {{ nombreForm }}
     </div>
 
     <form @submit="onSubmit" class="space-y-4">
@@ -124,11 +125,13 @@ import { usePersonStore } from '@/common/store/personStore';
 import { storeToRefs } from 'pinia';
 import { useToast } from 'vue-toastification';
 import { useQueryClient } from '@tanstack/vue-query';
+import { useRoute } from 'vue-router';
+import { useOrdenStore } from '../../../../common/store/ordenStore';
 
 const toast = useToast();
 const { documentTypeOptions, nationalityOptions, issuerDocsOptions, loadOptions } =
   useDropdownOptions();
-
+const ordenStore = useOrdenStore();
 interface ButtonConfig {
   label: string;
   type?: 'button' | 'submit' | 'reset';
@@ -146,6 +149,7 @@ interface Props {
 const props = defineProps<Props>();
 const nombreForm = ref('Autorizante');
 
+const route = useRoute();
 const isFormValid = ref(false);
 const validationSchema = yup.object({
   documentNumber: yup.string().matches(/^\d+$/).required().min(3),
@@ -227,7 +231,11 @@ const onSubmit = handleSubmit(async (value) => {
       issuer_document_id: value.documentIssuer,
     };
     if (effectiveId.value === null || effectiveId.value === 'new') {
-      await createPerson(payload);
+      const resp = await createPerson(payload);
+      if (route.path.includes('solicitud')) {
+        ordenStore.getPerson('autorizantes', resp.id);
+        toast.success('Autorizante Agregado a la solicitud');
+      }
       toast.success('Autorizante creado exitosamente');
     } else {
       await updatePerson(payload);

@@ -1,7 +1,8 @@
 <template>
   <div class="flex flex-col">
     <div class="text-2xl font-semibold mb-6 text-center">
-      {{ idPersonSelected == 'new' ? 'Agregando ' : 'Editando' }} un {{ nombreForm }}
+      {{ idPersonSelected == 'new' || idPersonSelected === null ? 'Agregando ' : 'Editando' }} un
+      {{ nombreForm }}
     </div>
 
     <form @submit="onSubmit" class="space-y-4">
@@ -122,10 +123,12 @@ import { usePersonStore } from '../../../../common/store/personStore';
 import { storeToRefs } from 'pinia';
 import { useToast } from 'vue-toastification';
 import { useQueryClient } from '@tanstack/vue-query';
+import { useRoute } from 'vue-router';
+import { useOrdenStore } from '../../../../common/store/ordenStore';
 
 const toast = useToast();
 const { documentTypeOptions, nationalityOptions, loadOptions } = useDropdownOptions();
-
+const ordenStore = useOrdenStore();
 interface ButtonConfig {
   label: string;
   type?: 'button' | 'submit' | 'reset';
@@ -142,6 +145,7 @@ interface Props {
 const props = defineProps<Props>();
 const nombreForm = ref('Menor');
 
+const route = useRoute();
 const isFormValid = ref(false);
 const validationSchema = yup.object({
   documentNumber: yup.string().matches(/^\d+$/).required().min(3),
@@ -203,6 +207,7 @@ watch(person, (newPerson) => {
 });
 
 const onSubmit = handleSubmit(async (value) => {
+  console.log('value::: ', value);
   if (isSubmitting.value) return;
   isSubmitting.value = true;
   try {
@@ -219,11 +224,16 @@ const onSubmit = handleSubmit(async (value) => {
       fecha_de_nacimiento: value.dateOfBirht,
     };
     if (effectiveId.value === null || effectiveId.value === 'new') {
-      await createPerson(payload);
-      toast.success('Autorizante creado exitosamente');
+      const resp = await createPerson(payload);
+      console.log('resp::: ', resp);
+      if (route.path.includes('solicitud')) {
+        ordenStore.getPerson('menor', resp.id);
+        toast.success('Menor agregado a la solicitud');
+      }
+      toast.success('Menor creado exitosamente');
     } else {
       await updatePerson(payload);
-      toast.success('Autorizante actualizado exitosamente');
+      toast.success('Menor actualizado exitosamente');
     }
 
     queryClient.invalidateQueries({ queryKey: ['persons'] });
@@ -254,7 +264,3 @@ watch(effectiveId, async (newId) => {
 });
 defineExpose({ resetForm, onSubmit });
 </script>
-
-<style scoped>
-/* Puedes personalizar más estilos aquí si es necesario */
-</style>
