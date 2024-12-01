@@ -13,7 +13,7 @@
         label="Documento"
         placeholder="Ingrese el Documento"
         type="number"
-        @blur="checkDniExistence" 
+        @blur="checkDniExistence"
       />
       <span class="text-red-400" v-if="errorDoc">{{ errorDoc }}</span>
 
@@ -120,7 +120,7 @@ import useDropdownOptions from '@/common/composables/useDropdownOptions';
 
 import type { Menor } from '../interfaces/menor.interface';
 import usePerson from '../../../../common/composables/usePerson';
-import { getPersonByDoc } from '@/common/composables/usePerson'
+import { getPersonByDoc } from '@/common/composables/usePerson';
 import { usePersonStore } from '../../../../common/store/personStore';
 import { storeToRefs } from 'pinia';
 import { useToast } from 'vue-toastification';
@@ -145,7 +145,7 @@ interface Props {
 const props = defineProps<Props>();
 const nombreForm = ref('Menor');
 
-const errorDoc = ref('')
+const errorDoc = ref('');
 const isFormValid = ref(false);
 const validationSchema = yup.object({
   documentNumber: yup.string().matches(/^\d+$/).required().min(3),
@@ -191,15 +191,16 @@ const { person, createPerson, updatePerson } = usePerson(effectiveId);
 const checkDniExistence = async () => {
   if (documentNumber.value) {
     try {
-      const response = await getPersonByDoc(documentNumber.value);  
-      if (response && response.id) {  
+      const response = await getPersonByDoc(documentNumber.value);
+      if (response && response.id) {
         errorDoc.value = 'Ya existe una persona con este número de documento';
       } else {
-        errorDoc.value = '';  
+        errorDoc.value = '';
       }
     } catch (error) {
       console.error(error);
-      errorDoc.value = 'Error al verificar el DNI';  
+      errorDoc.value = 'Error al verificar el DNI';
+    }
   }
 };
 watch(person, (newPerson) => {
