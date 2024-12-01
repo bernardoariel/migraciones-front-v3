@@ -79,7 +79,7 @@
           category="acompaneantes"
         >
           <template #icon>
-            <BabyIcon />
+            <AcompaneanteIcon />
           </template>
         </SelectedPersonOrden>
       </div>
@@ -100,6 +100,7 @@ import { calculateAge } from '../helpers/calculateAge';
 
 import SelectedPersonOrden from './SelectedPersonOrden.vue';
 import BabyIcon from './iconos/BabyIcon.vue';
+import AcompaneanteIcon from './iconos/AcompaneanteIcon.vue';
 
 const ordenStore = useOrdenStore();
 const { menor, autorizantes, acompaneantes } = storeToRefs(ordenStore);

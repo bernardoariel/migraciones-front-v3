@@ -14,7 +14,7 @@
     </div>
   </div>
   <div class="mr-4 flex items-center justify-center text-gray-600 dark:text-white">
-    <button class="btn btn-circle btn-ghost">
+    <button class="btn btn-circle btn-ghost" @click="seleccionarPerson(id, category)">
       <EditarIcon />
     </button>
     <button class="btn btn-circle btn-ghost" @click="eliminarPerson(id, category)">
@@ -40,8 +40,12 @@ interface Props {
 }
 defineProps<Props>();
 const ordenStore = useOrdenStore();
+
 const eliminarPerson = (idPerson: number, category: string) => {
   ordenStore.removePerson(category, idPerson);
+};
+const seleccionarPerson = (idPerson: number, category: string) => {
+  ordenStore.getPerson(category, idPerson);
 };
 </script>
 
