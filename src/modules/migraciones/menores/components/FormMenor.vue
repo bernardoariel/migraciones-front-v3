@@ -23,6 +23,14 @@
         label="Tipo de Documento"
         :options="documentTypeOptions"
       />
+
+      <MySelect
+        v-model="documentIssuer"
+        v-bind="documentIssuerAttrs"
+        :error="errors.documentType"
+        label="Emisor del Documento"
+        :options="issuerDocsOptions"
+      />
       <!-- Apellido -->
       <MyInput
         v-model="lastName"
@@ -76,13 +84,6 @@
         v-bind="sexAttrs"
         label="Sexo"
       />
-
-      <!--  <MyCalendar
-          v-model="dateOfBirht"
-          placeholder="Fecha de Nacimiento"
-          :error="errors.dateOfBirht"
-          v-bind="dateOfBirhtAttrs"
-        /> -->
       <label class="input input-bordered flex items-center gap-2">
         <span>Fecha de Nacimiento </span>
         <input
@@ -102,13 +103,14 @@
         label="Domicilio"
         placeholder="Ingrese el Domicilio"
       />
+      <!-- Buttons -->
       <ButtonGroup :buttons="buttons!" />
     </form>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, ref, watch } from 'vue';
+import { onMounted, ref, watch, computed } from 'vue';
 import * as yup from 'yup';
 import { useForm } from 'vee-validate';
 
@@ -117,17 +119,18 @@ import MySelect from '@/common/components/elementos/MySelect.vue';
 import ButtonGroup from '@/common/components/ButtonGroup.vue';
 import useDropdownOptions from '@/common/composables/useDropdownOptions';
 
-import type { Menor } from '../interfaces/menor.interface';
-import usePerson from '../../../../common/composables/usePerson';
-import { usePersonStore } from '../../../../common/store/personStore';
+import usePerson from '@/common/composables/usePerson';
+import { usePersonStore } from '@/common/store/personStore';
 import { storeToRefs } from 'pinia';
 import { useToast } from 'vue-toastification';
 import { useQueryClient } from '@tanstack/vue-query';
 import { useRoute } from 'vue-router';
 import { useOrdenStore } from '../../../../common/store/ordenStore';
+import type { Menor } from '../interfaces/menor.interface';
 
 const toast = useToast();
-const { documentTypeOptions, nationalityOptions, loadOptions } = useDropdownOptions();
+const { documentTypeOptions, nationalityOptions, issuerDocsOptions, loadOptions } =
+  useDropdownOptions();
 const ordenStore = useOrdenStore();
 interface ButtonConfig {
   label: string;
@@ -142,6 +145,7 @@ interface Props {
   menor?: number | null;
   buttons?: ButtonConfig[];
 }
+
 const props = defineProps<Props>();
 const nombreForm = ref('Menor');
 
@@ -155,7 +159,8 @@ const validationSchema = yup.object({
   secondLastName: yup.string(),
   firstName: yup.string().required().min(3),
   otherNames: yup.string(),
-  nationality: yup.string().required(),
+  nationality: yup.string().required().oneOf(['1', '2', '3', '4', '5', '6', '7']),
+  sex: yup.string().required().oneOf(['1', '2']),
   address: yup.string(),
 });
 
@@ -165,6 +170,7 @@ const { defineField, errors, handleSubmit, meta, resetForm, setValues } = useFor
 
 const [documentNumber, documentNumberAttrs] = defineField('documentNumber');
 const [documentType, documentTypeAttrs] = defineField('documentType');
+const [documentIssuer, documentIssuerAttrs] = defineField('documentIssuer');
 const [lastName, lastNameAttrs] = defineField('lastName');
 const [secondLastName, secondLastNameAttrs] = defineField('secondLastName');
 const [firstName, firstNameAttrs] = defineField('firstName');
@@ -183,6 +189,7 @@ const personStore = usePersonStore();
 const { getIdPersonSelected } = storeToRefs(personStore);
 const idPersonSelected = getIdPersonSelected;
 const effectiveId = computed(() => props.menor ?? idPersonSelected.value);
+
 const isSubmitting = ref(false);
 
 const queryClient = useQueryClient();
@@ -207,7 +214,6 @@ watch(person, (newPerson) => {
 });
 
 const onSubmit = handleSubmit(async (value) => {
-  console.log('value::: ', value);
   if (isSubmitting.value) return;
   isSubmitting.value = true;
   try {
@@ -222,13 +228,13 @@ const onSubmit = handleSubmit(async (value) => {
       sex_id: value.sex,
       domicilio: value.address,
       fecha_de_nacimiento: value.dateOfBirht,
+      issuer_document_id: value.documentIssuer,
     };
     if (effectiveId.value === null || effectiveId.value === 'new') {
       const resp = await createPerson(payload);
-      console.log('resp::: ', resp);
       if (route.path.includes('solicitud')) {
-        ordenStore.getPerson('menor', resp.id);
-        toast.success('Menor agregado a la solicitud');
+        ordenStore.getPerson('menores', resp.id);
+        toast.success('Menor Agregado a la solicitud');
       }
       toast.success('Menor creado exitosamente');
     } else {
@@ -243,6 +249,7 @@ const onSubmit = handleSubmit(async (value) => {
 });
 onMounted(async () => {
   loadOptions('nacionalidades', 'nombre');
+  loadOptions('emisordocumentos', 'descripcion');
   loadOptions('tiposdocumentos', 'descripcion');
   if (effectiveId.value === 'new') {
     resetForm();
@@ -264,3 +271,5 @@ watch(effectiveId, async (newId) => {
 });
 defineExpose({ resetForm, onSubmit });
 </script>
+
+<style scoped></style>
