@@ -117,6 +117,15 @@ const validationSchema = yup.object({
 
 const { defineField, errors, handleSubmit, meta, resetForm, setValues } = useForm({
   validationSchema,
+  initialValues: {
+    documentNumber: '',
+    documentType: 4,
+    lastName: '',
+    secondLastName: '',
+    firstName: '',
+    otherNames: '',
+    sex: '',
+  },
 });
 
 const [documentNumber, documentNumberAttrs] = defineField('documentNumber');
