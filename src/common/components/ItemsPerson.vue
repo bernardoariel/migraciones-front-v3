@@ -14,7 +14,11 @@
       </div>
 
       <!-- Botón -->
-      <button class="btn btn-primary btn-sm px-4 py-2" @click="seleccionarPersonId(person.id!)">
+      <button
+        class="btn btn-primary btn-sm px-4 py-2"
+        @click="seleccionarPersonId(person.id!)"
+        :disabled="isDisabled"
+      >
         {{ nameButton }}
       </button>
     </div>
@@ -38,6 +42,9 @@
 import type { Person } from '../interfaces/person.interface';
 import { calculateAge } from '../helpers/calculateAge';
 import { usePersonStore } from '@/common/store/personStore';
+import { useOrdenStore } from '../store/ordenStore';
+import { storeToRefs } from 'pinia';
+import { computed } from 'vue';
 
 interface Props {
   person: Partial<Person>;
@@ -45,12 +52,24 @@ interface Props {
 }
 const props = defineProps<Props>();
 const personStore = usePersonStore();
+const ordenStore = useOrdenStore();
+const { menor, autorizantes, acompaneantes } = storeToRefs(ordenStore);
 
+const isDisabled = computed(() => {
+  const id = props.person.id;
+
+  if (!id) return false;
+
+  return (
+    menor.value?.id === id ||
+    autorizantes.value.some((autorizante) => autorizante.id === id) ||
+    acompaneantes.value.some((acompaneante) => acompaneante.id === id)
+  );
+});
 const seleccionarPersonId = (id: number) => {
   personStore.setPersonId(id);
 };
 
-// Eventos que emite el componente
 const age = props.person.fecha_de_nacimiento
   ? calculateAge(props.person.fecha_de_nacimiento)
   : null;
