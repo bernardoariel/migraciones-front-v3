@@ -110,13 +110,18 @@ const nombreForm = ref('Acompañante');
 const errorDoc = ref('');
 const route = useRoute();
 const isFormValid = ref(false);
-const validationSchema = yup.object({
-  documentNumber: yup.string().matches(/^\d+$/).required().min(3),
-  documentType: yup.number().required().oneOf([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]),
-  lastName: yup.string().required(),
-  secondLastName: yup.string(),
-  firstName: yup.string().required().min(3),
-  otherNames: yup.string(),
+const validationSchema = computed(() => {
+  return yup.object({
+    documentNumber: yup.string().matches(/^\d+$/).required().min(3),
+    documentType: yup
+      .number()
+      .required()
+      .oneOf(documentTypeOptions.value.map((opt) => opt.value)),
+    lastName: yup.string().required(),
+    secondLastName: yup.string(),
+    firstName: yup.string().required().min(3),
+    otherNames: yup.string(),
+  });
 });
 
 const { defineField, errors, handleSubmit, meta, resetForm, setValues } = useForm({
@@ -160,7 +165,7 @@ watch(person, (newPerson) => {
   if (newPerson) {
     setValues({
       documentNumber: newPerson.numero_de_documento,
-      documentType: String(newPerson.type_document_id),
+      documentType: newPerson.type_document_id,
       lastName: newPerson.apellido,
       secondLastName: newPerson.segundo_apellido || '',
       firstName: newPerson.nombre,

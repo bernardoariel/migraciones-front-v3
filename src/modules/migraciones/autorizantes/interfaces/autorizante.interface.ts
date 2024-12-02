@@ -1,14 +1,14 @@
 export interface Autorizante {
-  numero_de_documento: number;
-  type_document_id: number;
+  id?: number;
+  nombre: string;
   apellido: string;
   segundo_apellido: string;
-  nombre: string;
   otros_nombres: string;
-  nationality_id: string;
-  sex_id: string;
-  fecha_de_nacimiento: string;
+  numero_de_documento: number;
   domicilio: string;
-  issuer_document_id: string;
-  id?: number;
+  sex_id: number;
+  fecha_de_nacimiento: string;
+  type_document_id: number;
+  nationality_id: number;
+  issuer_document_id: number;
 }
