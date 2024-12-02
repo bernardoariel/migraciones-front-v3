@@ -5,16 +5,12 @@ import { storeToRefs } from 'pinia';
 import { useOrdersStore } from '../store/ordersStore';
 import type { OrdenSolicitud } from '../interfaces/orders.interface';
 import { apiMigrationsData } from '@/api/apiMigrationsData';
-import type { OrdenSolicitud } from '../interfaces/orders.interface';
-export const getAllOrdenes = async () => {
-  try {
-    const response = await apiMigrationsData.get('v2/ordenestodos');
-    return response.data;
-  } catch (error) {
-    console.error('Error al obtener los datos:', error);
-    throw error;
-  }
+
+const fetchOrders = async (): Promise<OrdenSolicitud[]> => {
+  const { data } = await apiMigrationsData.get<OrdenSolicitud[]>('/v2/ordenestodos');
+  return data;
 };
+
 const useOrdenes = () => {
   const store = useOrdersStore();
   const { currentPage, orders } = storeToRefs(store);
@@ -23,7 +19,7 @@ const useOrdenes = () => {
 
   const { isLoading, data } = useQuery({
     queryKey: ['orders'],
-    queryFn: () => getAllOrdenes(),
+    queryFn: () => fetchOrders(),
     staleTime: 1000 * 30,
   });
   watch(data, (newOrders: OrdenSolicitud) => {
