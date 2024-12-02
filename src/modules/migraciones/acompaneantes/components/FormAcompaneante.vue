@@ -1,7 +1,8 @@
 <template>
   <div class="flex flex-col">
     <div class="text-2xl font-semibold mb-6 text-center">
-      {{ idPersonSelected == 'new' ? 'Agregando ' : 'Editando' }} un {{ nombreForm }}
+      {{ idPersonSelected == 'new' || idPersonSelected === null ? 'Agregando ' : 'Editando' }} un
+      {{ nombreForm }}
     </div>
 
     <form @submit.prevent="onSubmit" class="space-y-4">
@@ -12,7 +13,7 @@
         label="Documento"
         placeholder="Ingrese el Documento"
         type="number"
-        @blur="checkDniExistence" 
+        @blur="checkDniExistence"
       />
       <span class="text-red-400" v-if="errorDoc">{{ errorDoc }}</span>
 
@@ -83,10 +84,12 @@ import { useQueryClient } from '@tanstack/vue-query';
 
 import { useToast } from 'vue-toastification';
 import usePerson from '../../../../common/composables/usePerson';
-import { getPersonByDoc } from '@/common/composables/usePerson'
+import { getPersonByDoc } from '@/common/composables/usePerson';
+import { useRoute } from 'vue-router';
+import { useOrdenStore } from '@/common/store/ordenStore';
 
 const { documentTypeOptions, loadOptions } = useDropdownOptions();
-
+const ordenStore = useOrdenStore();
 interface ButtonConfig {
   label: string;
   type?: 'button' | 'submit' | 'reset';
@@ -104,7 +107,8 @@ interface Props {
 const props = defineProps<Props>();
 const nombreForm = ref('Acompañante');
 
-const errorDoc = ref('')
+const errorDoc = ref('');
+const route = useRoute();
 const isFormValid = ref(false);
 const validationSchema = yup.object({
   documentNumber: yup.string().matches(/^\d+$/).required().min(3),
@@ -139,18 +143,18 @@ const toast = useToast();
 const checkDniExistence = async () => {
   if (documentNumber.value) {
     try {
-      const response = await getPersonByDoc(documentNumber.value);  
-      if (response && response.id) {  
+      const response = await getPersonByDoc(documentNumber.value);
+      if (response && response.id) {
         errorDoc.value = 'Ya existe una persona con este número de documento';
       } else {
-        errorDoc.value = ''; 
+        errorDoc.value = '';
       }
     } catch (error) {
       console.error(error);
-      errorDoc.value = 'Error al verificar el DNI'
+      errorDoc.value = 'Error al verificar el DNI';
     }
   }
-}; 
+};
 
 watch(person, (newPerson) => {
   if (newPerson) {
@@ -181,7 +185,11 @@ const onSubmit = handleSubmit(async (values) => {
     };
 
     if (effectiveId.value === null || effectiveId.value === 'new') {
-      await createPerson(payload);
+      const resp = await createPerson(payload);
+      if (route.path.includes('solicitud')) {
+        ordenStore.getPerson('acompaneantes', resp.id);
+        toast.success('Acompañante Agregado a la solicitud');
+      }
       toast.success('Acompañante creado exitosamente');
     } else {
       await updatePerson(payload);

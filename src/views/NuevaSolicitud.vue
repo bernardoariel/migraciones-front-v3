@@ -93,6 +93,7 @@ const updateButtonConfigurations = (): Record<string, ButtonConfig[]> => {
           if (typeof idPersonSelected.value === 'number') {
             ordenStore.getPerson(activeCategory.value!, idPersonSelected.value);
           } else {
+            console.log('se hace el onsubmit');
             childRef.value?.onSubmit();
           }
         },

@@ -10,4 +10,5 @@ export interface Menor {
   fecha_de_nacimiento: string;
   domicilio: string;
   id?: number;
+  issuer_document_id: string;
 }
