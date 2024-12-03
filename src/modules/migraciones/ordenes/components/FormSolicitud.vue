@@ -38,44 +38,43 @@
         label="Cualquier Pais"
         :options="paisOptions"
       />
+      <MyInput
+        v-model="paisDescripcion"
+        v-bind="paisDescripcionAttrs"
+        :error="errors.paisDescripcion"
+        label="Paises descripcion"
+        placeholder="Paises descripcion"
+      />
 
       <MySelect
-        v-model="documentIssuer"
-        v-bind="documentIssuerAttrs"
-        :error="errors.documentType"
+        v-model="mayoriaEdad"
+        v-bind="mayoriaEdadAttrs"
+        :error="errors.mayoriaEdad"
         label="¿ Hasta mayoria de edad ?"
-        :options="issuerDocsOptions"
+        :options="mayoriaEdadOptions"
       />
 
       <label class="input input-bordered flex items-center gap-2">
         <span>Fecha desde </span>
         <input
           type="date"
-          v-model="dateOfBirht"
-          :class="['form-control', errors.dateOfBirht ? 'border-red-500' : '']"
+          v-model="dateOfInit"
+          :class="['form-control', errors.dateOfInit ? 'border-red-500' : '']"
           placeholder="Fecha desde"
-          v-bind="dateOfBirhtAttrs"
+          v-bind="dateOfInitAttrs"
         />
       </label>
       <label class="input input-bordered flex items-center gap-2">
         <span>Fecha hasta </span>
         <input
           type="date"
-          v-model="dateOfBirht"
+          v-model="dateOfEnd"
           :class="['form-control', errors.dateOfBirht ? 'border-red-500' : '']"
           placeholder="Fecha hasta"
-          v-bind="dateOfBirhtAttrs"
+          v-bind="dateOfEndAttrs"
         />
       </label>
-
-      <!-- Domicilio -->
-      <MyInput
-        v-model="address"
-        v-bind="addressAttrs"
-        :error="errors.address"
-        label="Domicilio"
-        placeholder="Paises descripcion"
-      />
+      <button type="submit" class="btn btn-primary">Generar solicitud</button>
     </form>
   </div>
 </template>
@@ -88,14 +87,14 @@ import { useForm } from 'vee-validate';
 import MyInput from '@/common/components/elementos/MyInput.vue';
 import MySelect from '@/common/components/elementos/MySelect.vue';
 
-import usePerson from '@/common/composables/usePerson';
-import { getPersonByDoc } from '@/common/composables/usePerson';
 import { usePersonStore } from '@/common/store/personStore';
 import { storeToRefs } from 'pinia';
 import { useToast } from 'vue-toastification';
 import { useQueryClient } from '@tanstack/vue-query';
 import { useRoute } from 'vue-router';
 import { useOrdenStore } from '../../../../common/store/ordenStore';
+import useOrden from '../../../../common/composables/useOrden';
+import type { OrdenSolicitud } from '@/common/interfaces/orders.interface';
 
 const toast = useToast();
 
@@ -108,30 +107,14 @@ interface Props {
 const props = defineProps<Props>();
 const nombreForm = ref('SolicitudForm');
 
-const errorDoc = ref('');
 const route = useRoute();
 const isFormValid = ref(false);
 const validationSchema = computed(() => {
   return yup.object({
     numeroActuacion: yup.number().required().min(3),
-    documentType: yup
-      .number()
-      .required()
-      .oneOf(documentTypeOptions.value.map((opt) => opt.value)),
-    documentIssuer: yup
-      .number()
-      .required()
-      .oneOf(issuerDocsOptions.value.map((opt) => opt.value)),
-    lastName: yup.string().required(),
-    secondLastName: yup.string(),
-    firstName: yup.string().required().min(3),
-    otherNames: yup.string(),
-    nationality: yup
-      .number()
-      .required()
-      .oneOf(nationalityOptions.value.map((opt) => opt.value)),
-    sex: yup.string().required().oneOf(['1', '2']),
-    address: yup.string(),
+    instrumentoType: yup.string().required().oneOf(['1', '2']),
+    paisType: yup.string().required().oneOf(['1', '2']),
+    mayoriaEdad: yup.string().required().oneOf(['1', '2']),
   });
 });
 
@@ -142,14 +125,10 @@ const [dateOfInstrumento, dateOfInstrumentoAttrs] = defineField('dateOfInstrumen
 const [numeroActuacion, numeroActuacionAttrs] = defineField('numeroActuacion');
 const [instrumentoType, instrumentoTypeAttrs] = defineField('instrumentoType');
 const [paisType, paisTypeAttrs] = defineField('paisType');
-
-const [lastName, lastNameAttrs] = defineField('lastName');
-const [secondLastName, secondLastNameAttrs] = defineField('secondLastName');
-const [firstName, firstNameAttrs] = defineField('firstName');
-const [otherNames, otherNamesAttrs] = defineField('otherNames');
-const [nationality, nationalityAttrs] = defineField('nationality');
-const [sex, sexAttrs] = defineField('sex');
-const [address, addressAttrs] = defineField('address');
+const [paisDescripcion, paisDescripcionAttrs] = defineField('paisDescripcion');
+const [mayoriaEdad, mayoriaEdadAttrs] = defineField('mayoriaEdad');
+const [dateOfEnd, dateOfEndAttrs] = defineField('dateOfEnd');
+const [dateOfInit, dateOfInitAttrs] = defineField('dateOfInit');
 
 const instrumentoTypeOptions = ref([
   { label: 'PAPEL', value: '1' },
@@ -159,91 +138,69 @@ const paisOptions = ref([
   { label: 'SI', value: '1' },
   { label: 'NO', value: '2' },
 ]);
+const mayoriaEdadOptions = ref([
+  { label: 'SI', value: '1' },
+  { label: 'NO', value: '2' },
+]);
 
 const personStore = usePersonStore();
 const { getIdPersonSelected } = storeToRefs(personStore);
 const idPersonSelected = getIdPersonSelected;
-const effectiveId = computed(() => props.autorizante ?? idPersonSelected.value);
+const effectiveId = computed(() => props.nroSolicitud ?? idPersonSelected.value);
 
 const isSubmitting = ref(false);
 
 const queryClient = useQueryClient();
-const { person, createPerson, updatePerson } = usePerson(effectiveId);
+const { orden, createOrden, updateOrden } = useOrden(effectiveId);
 
-const checkDniExistence = async () => {
-  if (documentNumber.value) {
-    try {
-      const response = await getPersonByDoc(documentNumber.value);
-      if (response && response.id) {
-        errorDoc.value = 'Ya existe una persona con este número de documento';
-      } else {
-        errorDoc.value = '';
-      }
-    } catch (error) {
-      console.error(error);
-      errorDoc.value = 'Error al verificar el DNI';
-    }
-  }
-};
-watch(person, (newPerson) => {
-  if (newPerson) {
+watch(orden, (newOrden) => {
+  if (newOrden) {
     setValues({
-      documentNumber: newPerson.numero_de_documento,
-      documentType: newPerson.type_document_id,
-      lastName: newPerson.apellido,
-      secondLastName: newPerson.segundo_apellido || '',
-      firstName: newPerson.nombre,
-      otherNames: newPerson.otros_nombres || '',
-      nationality: newPerson.nationality_id,
-      sex: newPerson.sex_id,
-      address: newPerson.domicilio,
-      dateOfBirht: newPerson.fecha_de_nacimiento,
-      documentIssuer: newPerson.issuer_document_id,
+      numeroActuacion: newOrden.numero_actuacion_notarial_cert_firma,
+      instrumentoType: newOrden.instrumento,
+      paisType: newOrden.cualquier_pais,
+      mayoriaEdad: newOrden.vigencia_hasta_mayoria_edad,
+      dateOfInstrumento: newOrden.fecha_del_instrumento,
+      paisDescripcion: newOrden.paises_desc,
+      dateOfEnd: newOrden.fecha_vigencia_hasta,
+      dateOfInit: newOrden.fecha_vigencia_desde,
     });
   }
 });
 
 const onSubmit = handleSubmit(async (value) => {
+  console.log('value::: ', value);
   if (isSubmitting.value) return;
   isSubmitting.value = true;
   try {
-    const payload: Menor = {
-      numero_de_documento: value.documentNumber,
-      type_document_id: value.documentType,
-      apellido: value.lastName,
-      segundo_apellido: value.secondLastName,
-      nombre: value.firstName,
-      otros_nombres: value.otherNames,
-      nationality_id: value.nationality,
-      sex_id: value.sex,
-      domicilio: value.address,
-      fecha_de_nacimiento: value.dateOfBirht,
-      issuer_document_id: value.documentIssuer,
+    const payload: Partial<OrdenSolicitud> = {
+      numero_actuacion_notarial_cert_firma: value.numeroActuacion,
+      instrumento: value.instrumentoType,
+      cualquier_pais: value.paisType,
+      vigencia_hasta_mayoria_edad: value.mayoriaEdad,
+      fecha_del_instrumento: value.dateOfInstrumento,
+      paises_desc: value.paisDescripcion,
+      fecha_vigencia_hasta: value.dateOfEnd,
+      fecha_vigencia_desde: value.dateOfInit,
     };
     if (effectiveId.value === null || effectiveId.value === 'new') {
-      const resp = await createPerson(payload);
+      const resp = await createOrden(payload);
       if (route.path.includes('solicitud')) {
         ordenStore.getPerson('autorizantes', resp.id);
         toast.success('Autorizante Agregado a la solicitud');
       }
       toast.success('Autorizante creado exitosamente');
     } else {
-      await updatePerson(payload);
+      await updateOrden(payload);
       toast.success('Autorizante actualizado exitosamente');
     }
 
-    queryClient.invalidateQueries({ queryKey: ['persons'] });
+    queryClient.invalidateQueries({ queryKey: ['orders'] });
   } catch (error) {
     isSubmitting.value = false;
   }
 });
 onMounted(async () => {
-  await Promise.all([
-    loadOptions('nacionalidades', 'nombre'),
-    loadOptions('emisordocumentos', 'descripcion'),
-    loadOptions('tiposdocumentos', 'descripcion'),
-  ]);
-
   if (effectiveId.value === 'new') {
     resetForm();
   }

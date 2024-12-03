@@ -85,6 +85,8 @@
       </div>
     </div>
     <div class="divider"></div>
+    <FormSolicitud />
+    <div class="divider"></div>
     <div v-if="false">
       <h1>No existen personas ingresadas en esta orden</h1>
     </div>
@@ -101,6 +103,7 @@ import { calculateAge } from '../helpers/calculateAge';
 import SelectedPersonOrden from './SelectedPersonOrden.vue';
 import BabyIcon from './iconos/BabyIcon.vue';
 import AcompaneanteIcon from './iconos/AcompaneanteIcon.vue';
+import FormSolicitud from '@/modules/migraciones/ordenes/components/FormSolicitud.vue';
 
 const ordenStore = useOrdenStore();
 const { menor, autorizantes, acompaneantes } = storeToRefs(ordenStore);

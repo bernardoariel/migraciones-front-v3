@@ -2,7 +2,7 @@ import { ref, watch, unref, computed } from 'vue';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query';
 
 import { apiMigrationsData } from '@/api/apiMigrationsData';
-import { OrdenSolicitud } from '../interfaces/orders.interface';
+import type { OrdenSolicitud } from '../interfaces/orders.interface';
 
 export const getOrdenById = async (id: number) => {
   try {
@@ -37,7 +37,7 @@ const useOrden = (idOrden: Ref<number | null> | ComputedRef<number | null>) => {
   watch(
     data,
     (newData) => {
-      person.value = newData || null;
+      orden.value = newData || null;
     },
     { immediate: true },
   );
@@ -76,4 +76,4 @@ const useOrden = (idOrden: Ref<number | null> | ComputedRef<number | null>) => {
   };
 };
 
-export default usePerson;
+export default useOrden;
