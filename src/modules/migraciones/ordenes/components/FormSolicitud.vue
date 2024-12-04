@@ -153,6 +153,7 @@ const isSubmitting = ref(false);
 
 const queryClient = useQueryClient();
 const { orden, createOrden, updateOrden } = useOrden(effectiveId);
+console.log('orden::: ', orden.value);
 
 watch(orden, (newOrden) => {
   if (newOrden) {
@@ -170,8 +171,7 @@ watch(orden, (newOrden) => {
 });
 
 const onSubmit = handleSubmit(async (value) => {
-  console.log('value::: ', value);
-  if (isSubmitting.value) return; // Evita múltiples envíos
+  if (isSubmitting.value) return;
   isSubmitting.value = true;
 
   try {

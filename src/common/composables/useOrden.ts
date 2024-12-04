@@ -6,7 +6,7 @@ import type { OrdenSolicitud } from '../interfaces/orders.interface';
 
 export const getOrdenById = async (id: number) => {
   try {
-    const response = await apiMigrationsData.get(`/v2/personaById/${id}`);
+    const response = await apiMigrationsData.get(`/v2/orden/${id}`);
     return response.data;
   } catch (error) {
     console.error(`Error al obtener el acompañante con ID ${id}:`, error);
