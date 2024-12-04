@@ -14,6 +14,22 @@
     </div>
   </div>
   <div class="mr-4 flex items-center justify-center text-gray-600 dark:text-white">
+    <div v-if="tipo === 'AUTORIZANTE'" class="dropdown">
+      <div tabindex="0" role="button" class="btn btn-xs m-1 btn-success">Relación con el menor</div>
+      <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
+        <li><a>Padre</a></li>
+        <li><a>Madre</a></li>
+      </ul>
+    </div>
+    <div v-if="tipo === 'AUTORIZANTE'" class="dropdown">
+      <div tabindex="0" role="button" class="btn btn-xs m-1 btn-warning">
+        Acreditación del vinculo
+      </div>
+      <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
+        <li><a>PARTIDA/CERTIFICADO NACIMIENTO</a></li>
+        <li><a>LIBRETA DE FAMILIA</a></li>
+      </ul>
+    </div>
     <button class="btn btn-circle btn-ghost" @click="seleccionarPerson(id, category)">
       <EditarIcon />
     </button>
