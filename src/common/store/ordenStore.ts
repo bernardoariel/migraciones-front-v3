@@ -6,11 +6,14 @@ import type { Menor } from '../../modules/migraciones/menores/interfaces/menor.i
 import { OrdenBuilder } from '../class/OrdenBuilder';
 import { getById } from '../services/persons';
 import { usePersonStore } from './personStore';
+import type { Solicitud } from '../../modules/migraciones/ordenes/interface/solicitud.interface';
 
 export const useOrdenStore = defineStore('ordenStore', () => {
   const menor = ref<Menor | null>(null);
   const autorizantes = ref<Autorizante[]>([]);
   const acompaneantes = ref<Acompaneante[]>([]);
+  const solicitud = ref<Solicitud>();
+
   const store = usePersonStore();
   const builder = new OrdenBuilder();
 
@@ -28,12 +31,17 @@ export const useOrdenStore = defineStore('ordenStore', () => {
     acompaneantes.value.push(newAcompaneante);
     builder.addAcompaneante(newAcompaneante);
   };
+  const setSolicitud = (newSolicitud: Solicitud) => {
+    solicitud.value = newSolicitud;
+    builder.setSolicitud(newMenor);
+  };
 
   const resetOrden = () => {
     menor.value = null;
     autorizantes.value = [];
     acompaneantes.value = [];
     builder.setMenor(null);
+    builder.setSolicitud(null);
   };
 
   const buildOrden = () => {
@@ -90,18 +98,18 @@ export const useOrdenStore = defineStore('ordenStore', () => {
       case 'menores': {
         if (menor.value?.id === id) {
           menor.value = null;
-          builder.setMenor(null); // Actualiza el builder
+          builder.setMenor(null);
         }
         break;
       }
       case 'autorizantes': {
         autorizantes.value = autorizantes.value.filter((person) => person.id !== id);
-        builder.setAutorizantes(autorizantes.value); // Actualiza el builder
+        builder.setAutorizantes(autorizantes.value);
         break;
       }
       case 'acompaneantes': {
         acompaneantes.value = acompaneantes.value.filter((person) => person.id !== id);
-        builder.setAcompaneantes(acompaneantes.value); // Actualiza el builder
+        builder.setAcompaneantes(acompaneantes.value);
         break;
       }
       default: {
@@ -115,6 +123,8 @@ export const useOrdenStore = defineStore('ordenStore', () => {
     menor,
     autorizantes,
     acompaneantes,
+    solicitud,
+    setSolicitud,
     setMenor,
     addAutorizante,
     addAcompaneante,

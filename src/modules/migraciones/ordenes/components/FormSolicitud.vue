@@ -95,6 +95,7 @@ import { useRoute } from 'vue-router';
 import { useOrdenStore } from '../../../../common/store/ordenStore';
 import useOrden from '../../../../common/composables/useOrden';
 import type { OrdenSolicitud } from '@/common/interfaces/orders.interface';
+import type { Solicitud } from '../interface/solicitud.interface';
 
 const toast = useToast();
 
@@ -112,9 +113,9 @@ const isFormValid = ref(false);
 const validationSchema = computed(() => {
   return yup.object({
     numeroActuacion: yup.number().required().min(3),
-    instrumentoType: yup.string().required().oneOf(['1', '2']),
-    paisType: yup.string().required().oneOf(['1', '2']),
-    mayoriaEdad: yup.string().required().oneOf(['1', '2']),
+    instrumentoType: yup.string().required().oneOf(['P', 'D']),
+    paisType: yup.string().required().oneOf(['y', 'n']),
+    mayoriaEdad: yup.string().required().oneOf(['y', 'n']),
   });
 });
 
@@ -131,16 +132,16 @@ const [dateOfEnd, dateOfEndAttrs] = defineField('dateOfEnd');
 const [dateOfInit, dateOfInitAttrs] = defineField('dateOfInit');
 
 const instrumentoTypeOptions = ref([
-  { label: 'PAPEL', value: '1' },
-  { label: 'DIGITAL', value: '2' },
+  { label: 'PAPEL', value: 'P' },
+  { label: 'DIGITAL', value: 'D' },
 ]);
 const paisOptions = ref([
-  { label: 'SI', value: '1' },
-  { label: 'NO', value: '2' },
+  { label: 'SI', value: 'y' },
+  { label: 'NO', value: 'n' },
 ]);
 const mayoriaEdadOptions = ref([
-  { label: 'SI', value: '1' },
-  { label: 'NO', value: '2' },
+  { label: 'SI', value: 'y' },
+  { label: 'NO', value: 'n' },
 ]);
 
 const personStore = usePersonStore();
@@ -170,9 +171,11 @@ watch(orden, (newOrden) => {
 
 const onSubmit = handleSubmit(async (value) => {
   console.log('value::: ', value);
-  if (isSubmitting.value) return;
+  if (isSubmitting.value) return; // Evita múltiples envíos
   isSubmitting.value = true;
+
   try {
+    // Crea el payload basado en los datos del formulario
     const payload: Partial<OrdenSolicitud> = {
       numero_actuacion_notarial_cert_firma: value.numeroActuacion,
       instrumento: value.instrumentoType,
@@ -183,23 +186,18 @@ const onSubmit = handleSubmit(async (value) => {
       fecha_vigencia_hasta: value.dateOfEnd,
       fecha_vigencia_desde: value.dateOfInit,
     };
-    if (effectiveId.value === null || effectiveId.value === 'new') {
-      const resp = await createOrden(payload);
-      if (route.path.includes('solicitud')) {
-        ordenStore.getPerson('autorizantes', resp.id);
-        toast.success('Autorizante Agregado a la solicitud');
-      }
-      toast.success('Autorizante creado exitosamente');
-    } else {
-      await updateOrden(payload);
-      toast.success('Autorizante actualizado exitosamente');
-    }
 
-    queryClient.invalidateQueries({ queryKey: ['orders'] });
+    // Guarda la solicitud directamente en el store
+    ordenStore.setSolicitud(payload as Solicitud);
+    toast.success('Solicitud guardada exitosamente en el store');
   } catch (error) {
-    isSubmitting.value = false;
+    console.error('Error al guardar en el store:', error);
+    toast.error('Error al guardar la solicitud');
+  } finally {
+    isSubmitting.value = false; // Marca el envío como finalizado
   }
 });
+
 onMounted(async () => {
   if (effectiveId.value === 'new') {
     resetForm();

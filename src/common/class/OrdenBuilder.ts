@@ -1,6 +1,8 @@
 import type { Orden } from '../interfaces/orden.interface';
 import type { Menor } from '../../modules/migraciones/menores/interfaces/menor.interface';
 import type { Acompaneante } from '../../modules/migraciones/acompaneantes/interfaces/acompaneante.interface';
+import type { Solicitud } from '../../modules/migraciones/ordenes/interface/solicitud.interface';
+
 export class OrdenBuilder {
   private orden: Orden;
 
@@ -9,6 +11,7 @@ export class OrdenBuilder {
       menor: null,
       autorizantes: [],
       acompaneantes: [],
+      solicitud: null,
     };
   }
 
@@ -24,6 +27,11 @@ export class OrdenBuilder {
 
   addAcompaneante(acompaneante: Acompaneante) {
     this.orden.acompaneante = acompaneante;
+    return this;
+  }
+
+  setSolicitud(solicitud: Solicitud) {
+    this.orden.solicitud = solicitud;
     return this;
   }
 
