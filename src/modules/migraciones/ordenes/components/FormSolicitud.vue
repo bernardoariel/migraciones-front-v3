@@ -96,6 +96,7 @@ import { useOrdenStore } from '../../../../common/store/ordenStore';
 import useOrden from '../../../../common/composables/useOrden';
 import type { OrdenSolicitud } from '@/common/interfaces/orders.interface';
 import type { Solicitud } from '../interface/solicitud.interface';
+import { apiMigrationsData } from '@/api/apiMigrationsData';
 
 const toast = useToast();
 
@@ -170,26 +171,31 @@ watch(orden, (newOrden) => {
   }
 });
 
-const onSubmit = handleSubmit(async (value) => {
+const onSubmit = handleSubmit(async (values) => {
   if (isSubmitting.value) return;
   isSubmitting.value = true;
-
+  const payload = {
+    numero_actuacion_notarial_cert_firma: values.numeroActuacion,
+    instrumento: values.instrumentoType,
+    cualquier_pais: values.paisType,
+    paises_desc: 'argenytfgt', // Ajusta según el formulario
+    vigencia_hasta_mayoria_edad: values.mayoriaEdad,
+    fecha_del_instrumento: values.dateOfInstrumento,
+    fecha_vigencia_desde: values.dateOfInit,
+    fecha_vigencia_hasta: values.dateOfEnd,
+    notary_id: 2, // Debe ajustarse a los valores dinámicos
+    minor_id: 14, // Debe ajustarse a los valores dinámicos
+    autorizante1_id: 28, // Debe ajustarse a los valores dinámicos
+    acompaneantes: [{ id: 1 }], // Ajusta según los datos reales
+    serie_foja: 'A',
+    tipo_foja: '0',
+    nro_foja: '0',
+    authorizing_relatives_id: 3, // Ajusta según los datos reales
+  };
   try {
-    // Crea el payload basado en los datos del formulario
-    const payload: Partial<OrdenSolicitud> = {
-      numero_actuacion_notarial_cert_firma: value.numeroActuacion,
-      instrumento: value.instrumentoType,
-      cualquier_pais: value.paisType,
-      vigencia_hasta_mayoria_edad: value.mayoriaEdad,
-      fecha_del_instrumento: value.dateOfInstrumento,
-      paises_desc: value.paisDescripcion,
-      fecha_vigencia_hasta: value.dateOfEnd,
-      fecha_vigencia_desde: value.dateOfInit,
-    };
-
-    // Guarda la solicitud directamente en el store
-    ordenStore.setSolicitud(payload as Solicitud);
-    toast.success('Solicitud guardada exitosamente en el store');
+    const response = await apiMigrationsData.post(`/v2/agregarorden`, payload);
+    console.log('response::: ', response);
+    toast.success('Solicitud enviada con éxito');
   } catch (error) {
     console.error('Error al guardar en el store:', error);
     toast.error('Error al guardar la solicitud');
