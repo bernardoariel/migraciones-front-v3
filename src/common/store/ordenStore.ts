@@ -7,7 +7,19 @@ import { OrdenBuilder } from '../class/OrdenBuilder';
 import { getById } from '../services/persons';
 import { usePersonStore } from './personStore';
 
+type CategoryPerson = 'pendientes' | 'autorizados' | 'todos' | null;
+
 export const useOrdenStore = defineStore('ordenStore', () => {
+  const activeCategory = ref<CategoryPerson>('pendientes');
+  const getActiveCategory = computed(() => activeCategory.value);
+  const setCategory = (newCategory: CategoryPerson = 'pendientes') => {
+    activeCategory.value = newCategory;
+  };
+  const idOrdenSelected = ref<number | null | 'new'>(null);
+  const getIdOrdenSelected = computed(() => idOrdenSelected.value);
+  const setOrdenId = (id: number | null | 'new') => {
+    idOrdenSelected.value = id;
+  };
   const menor = ref<Menor | null>(null);
   const autorizantes = ref<Autorizante[]>([]);
   const acompaneantes = ref<Acompaneante[]>([]);
@@ -110,12 +122,15 @@ export const useOrdenStore = defineStore('ordenStore', () => {
       }
     }
   };
-
+  
   return {
     menor,
+    getActiveCategory,
+    setCategory,
     autorizantes,
     acompaneantes,
     setMenor,
+    setOrdenId,
     addAutorizante,
     addAcompaneante,
     resetOrden,
