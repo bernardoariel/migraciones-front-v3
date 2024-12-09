@@ -4,20 +4,22 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query';
 import { apiMigrationsData } from '@/api/apiMigrationsData';
 import type { OrdenSolicitud } from '../interfaces/orders.interface';
 
+// Función para obtener una orden por ID (similar a `getById` en el archivo de personas)
 export const getOrdenById = async (id: number) => {
   try {
-    const response = await apiMigrationsData.get(`/v2/orden/${id}`);
+    const response = await apiMigrationsData.get(`/v2/ordenes/${id}`); // Endpoint corregido para obtener una orden
     return response.data;
   } catch (error) {
-    console.error(`Error al obtener el acompañante con ID ${id}:`, error);
+    console.error(`Error al obtener la orden con ID ${id}:`, error);
     throw error;
   }
 };
+
 const useOrden = (idOrden: Ref<number | null> | ComputedRef<number | null>) => {
   const orden = ref<OrdenSolicitud | null>(null);
-
   const queryClient = useQueryClient();
 
+  // Query para obtener la orden por ID
   const { data, refetch } = useQuery({
     queryKey: computed(() => ['orden', unref(idOrden)]),
     queryFn: async () => {
@@ -29,11 +31,12 @@ const useOrden = (idOrden: Ref<number | null> | ComputedRef<number | null>) => {
     },
     enabled: computed(() => {
       const id = unref(idOrden);
-      return !!id && !isNaN(id);
+      return !!id && !isNaN(id); // La query se ejecuta solo si idOrden es válido
     }),
-    staleTime: 1000 * 30,
+    staleTime: 1000 * 30, // tiempo de expiración de los datos en cache
   });
 
+  // Almacena los datos de la orden obtenida
   watch(
     data,
     (newData) => {
@@ -48,32 +51,36 @@ const useOrden = (idOrden: Ref<number | null> | ComputedRef<number | null>) => {
     return response.data;
   };
 
-  const updateOrden = async (payload) => {
+  // Función para actualizar una orden existente
+  const updateOrden = async (payload: OrdenSolicitud) => {
     const id = unref(idOrden);
     if (!id) throw new Error('ID inválido para actualización');
-    return apiMigrationsData.put(`/v2/agregarorden/${id}`, payload);
+    return apiMigrationsData.put(`/v2/ordenes/${id}`, payload); // Endpoint para actualizar una orden
   };
+
+  // Configuración de la mutación para crear o actualizar una orden
   const mutation = useMutation({
-    mutationFn: async (payload) => {
+    mutationFn: async (payload: OrdenSolicitud) => {
       const id = unref(idOrden);
       if (id === null || id === 'new') {
-        return createPerson(payload);
+        return createOrden(payload); // Si el ID es null o 'new', crea una nueva orden
       } else {
-        return updatePerson(payload);
+        return updateOrden(payload); // Si el ID es válido, actualiza la orden existente
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['ordenes'] });
-      refetch();
+      queryClient.invalidateQueries({ queryKey: ['ordenes'] }); // Invalida las queries para obtener órdenes actualizadas
+      refetch(); // Refresca los datos de la orden
     },
   });
+
   return {
-    orden,
-    refetch,
-    mutatePerson: mutation.mutateAsync,
-    isLoading: mutation.isLoading,
-    createOrden,
-    updateOrden,
+    orden, // La orden obtenida
+    refetch, // Función para refetch de la orden
+    mutateOrden: mutation.mutateAsync, // Función para ejecutar la mutación
+    isLoading: mutation.isLoading, // Estado de carga de la mutación
+    createOrden, // Función para crear una orden
+    updateOrden, // Función para actualizar una orden
   };
 };
 
