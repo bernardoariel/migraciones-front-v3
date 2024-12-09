@@ -42,7 +42,8 @@ const useOrden = (idOrden: Ref<number | null> | ComputedRef<number | null>) => {
     { immediate: true },
   );
   const createOrden = async (payload) => {
-    const response = await apiMigrationsData.post(`/v2/persona/new`, payload);
+    const response = await apiMigrationsData.post(`/v2/agregarorden`, payload);
+
     queryClient.invalidateQueries({ queryKey: ['ordenes'] });
     return response.data;
   };

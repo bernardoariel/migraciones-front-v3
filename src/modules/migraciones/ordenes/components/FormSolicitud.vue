@@ -193,7 +193,8 @@ const onSubmit = handleSubmit(async (values) => {
     authorizing_relatives_id: 3, // Ajusta según los datos reales
   };
   try {
-    const response = await apiMigrationsData.post(`/v2/agregarorden`, payload);
+    const response = await createOrden(payload);
+
     console.log('response::: ', response);
     toast.success('Solicitud enviada con éxito');
   } catch (error) {
