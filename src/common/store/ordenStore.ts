@@ -146,7 +146,7 @@ export const useOrdenStore = defineStore('ordenStore', () => {
     menor,
     autorizantes,
     acompaneantes,
-    solicitud,
+    // solicitud,
     setSolicitud,
     setMenor,
     addAutorizante,
