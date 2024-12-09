@@ -6,6 +6,7 @@ import type { Menor } from '../../modules/migraciones/menores/interfaces/menor.i
 import { OrdenBuilder } from '../class/OrdenBuilder';
 import { getById } from '../services/persons';
 import { usePersonStore } from './personStore';
+import type { Solicitud } from '../../modules/migraciones/ordenes/interface/solicitud.interface';
 
 type CategoryOrden = 'pendientes' | 'autorizados' | 'todos' | null;
 
@@ -55,6 +56,10 @@ export const useOrdenStore = defineStore('ordenStore', () => {
     acompaneantes.value.push(newAcompaneante);
     builder.addAcompaneante(newAcompaneante);
   };
+  const setSolicitud = (newSolicitud: Solicitud) => {
+    solicitud.value = newSolicitud;
+    builder.setSolicitud(newMenor);
+  };
 
   const removePerson = (category: string, id: number) => {
     switch (category) {
@@ -84,6 +89,7 @@ export const useOrdenStore = defineStore('ordenStore', () => {
     autorizantes.value = [];
     acompaneantes.value = [];
     builder.setMenor(null);
+    builder.setSolicitud(null);
   };
 
   const buildOrden = () => {
@@ -140,6 +146,8 @@ export const useOrdenStore = defineStore('ordenStore', () => {
     menor,
     autorizantes,
     acompaneantes,
+    solicitud,
+    setSolicitud,
     setMenor,
     addAutorizante,
     addAcompaneante,

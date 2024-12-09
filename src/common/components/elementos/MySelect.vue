@@ -30,7 +30,7 @@ interface Option {
 }
 interface Props {
   label?: string;
-  modelValue?: string | null; // Cambiado a `string` para que coincida con el tipo de las opciones
+  modelValue?: string | null | number; // Cambiado a `string` para que coincida con el tipo de las opciones
   error?: string;
   options?: Option[];
 }

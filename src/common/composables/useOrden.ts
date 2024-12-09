@@ -2,7 +2,7 @@ import { ref, watch, unref, computed } from 'vue';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query';
 
 import { apiMigrationsData } from '@/api/apiMigrationsData';
-import { OrdenSolicitud } from '../interfaces/orders.interface';
+import type { OrdenSolicitud } from '../interfaces/orders.interface';
 
 // Función para obtener una orden por ID (similar a `getById` en el archivo de personas)
 export const getOrdenById = async (id: number) => {
@@ -40,7 +40,7 @@ const useOrden = (idOrden: Ref<number | null> | ComputedRef<number | null>) => {
   watch(
     data,
     (newData) => {
-      orden.value = newData || null; // Guarda los datos de la orden o null si no se obtiene nada
+      orden.value = newData || null;
     },
     { immediate: true },
   );
