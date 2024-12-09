@@ -4,25 +4,27 @@
       <div class="flex justify-between items-center">
         <h2 class="text-xl font-semibold mb-4">Lista de Solicitudes</h2>
         <SolicitudNavBarCard typeCategory="menores" />
-        <button class="btn btn-circle" @click="personStore.setPersonId('new')">
+        <button class="btn btn-circle" @click="ordenStore.setPersonId('new')">
           <PlusIcon color="#1C274C" height="30" width="30px" />
         </button>
       </div>
-      <SolicitudesList />
+      <SolicitudesList    
+      />
     </div>
     <div
       class="flex-[2] bg-white p-4 rounded-lg shadow-md max-h-[85vh] overflow-auto flex justify-center items-center"
     >
-      <h1 v-if="!idPersonSelected && !activeCategory" class="text-4xl">
+      <!-- <h1 v-if="!idPersonSelected && !activeCategory" class="text-4xl">
         No existe ninguna persona seleccionada
-      </h1>
-      <component
+      </h1> -->
+      <SolicitudCard v-if="showCard" />
+      <!-- <component
         v-else
         :is="dynamicComponent"
         :personId="idPersonSelected"
         :buttons="buttonConfig"
         :ref="childRef"
-      ></component>
+      ></component> -->
     </div>
   </div>
 </template>
@@ -31,7 +33,7 @@
 import { computed, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 
-import { usePersonStore } from '@/common/store/personStore';
+import { useOrdenStore } from '@/common/store/ordenStore';
 import SolicitudesList from '@/common/components/SolicitudesList.vue';
 import FormMenor from '@/modules/migraciones/menores/components/FormMenor.vue';
 import FormAutorizante from '@/modules/migraciones/autorizantes/components/FormAutorizante.vue';
@@ -39,6 +41,7 @@ import FormAcompaneante from '@/modules/migraciones/acompaneantes/components/For
 import { useRoute } from 'vue-router';
 import SolicitudNavBarCard from '@/common/components/SolicitudNavBarCard.vue';
 import PlusIcon from '@/common/components/iconos/PlusIcon.vue';
+import SolicitudCard from '@/common/components/SolicitudCard.vue';
 
 type ActiveCategory = 'menores' | 'autorizantes' | 'acompaneantes';
 
@@ -52,64 +55,64 @@ interface ButtonConfig {
 }
 
 const route = useRoute();
-const personStore = usePersonStore();
-const { getActiveCategory, getIdPersonSelected } = storeToRefs(personStore);
-const idPersonSelected = getIdPersonSelected;
+const ordenStore = useOrdenStore();
+const { getActiveCategory, getIdOrdenSelected } = storeToRefs(ordenStore);
+const idOrdenSelected = getIdOrdenSelected;
 const activeCategory = getActiveCategory;
-
+const showCard = ref(false)
 const buttonConfig = ref<ButtonConfig[]>([]);
-const updateButtonConfigurations = (): Record<string, ButtonConfig[]> => {
-  return {
-    menores: [
-      {
-        label: 'Cancelar',
-        type: 'button',
-        class: 'btn btn-ghost',
-        action: () => personStore.resetState(),
-        position: 'left',
-      },
-      {
-        label: idPersonSelected.value ? 'Modificar Menor' : 'Agregar Menor',
-        type: 'submit',
-        class: 'btn btn-primary',
-        action: () => childRef.value?.onSubmit(),
-        position: 'right',
-      },
-    ],
-    autorizantes: [
-      {
-        label: 'Cancelar',
-        type: 'button',
-        class: 'btn btn-ghost',
-        action: () => personStore.resetState(),
-        position: 'left',
-      },
-      {
-        label: idPersonSelected.value ? 'Modificar Autorizante' : 'Agregar Autorizante',
-        type: 'submit',
-        class: 'btn btn-primary',
-        action: () => childRef.value?.onSubmit(),
-        position: 'right',
-      },
-    ],
-    acompaneantes: [
-      {
-        label: 'Cancelar',
-        type: 'button',
-        class: 'btn btn-ghost',
-        action: () => personStore.resetState(),
-        position: 'left',
-      },
-      {
-        label: idPersonSelected.value ? 'Modificar Acompañante' : 'Agregar Acompañante',
-        type: 'submit',
-        class: 'btn btn-primary',
-        action: () => childRef.value?.onSubmit(),
-        position: 'right',
-      },
-    ],
-  };
-};
+// const updateButtonConfigurations = (): Record<string, ButtonConfig[]> => {
+//   return {
+//     menores: [
+//       {
+//         label: 'Cancelar',
+//         type: 'button',
+//         class: 'btn btn-ghost',
+//         action: () => ordenStore.resetState(),
+//         position: 'left',
+//       },
+//       {
+//         label: idPersonSelected.value ? 'Modificar Menor' : 'Agregar Menor',
+//         type: 'submit',
+//         class: 'btn btn-primary',
+//         action: () => childRef.value?.onSubmit(),
+//         position: 'right',
+//       },
+//     ],
+//     autorizantes: [
+//       {
+//         label: 'Cancelar',
+//         type: 'button',
+//         class: 'btn btn-ghost',
+//         action: () => ordenStore.resetState(),
+//         position: 'left',
+//       },
+//       {
+//         label: idPersonSelected.value ? 'Modificar Autorizante' : 'Agregar Autorizante',
+//         type: 'submit',
+//         class: 'btn btn-primary',
+//         action: () => childRef.value?.onSubmit(),
+//         position: 'right',
+//       },
+//     ],
+//     acompaneantes: [
+//       {
+//         label: 'Cancelar',
+//         type: 'button',
+//         class: 'btn btn-ghost',
+//         action: () => ordenStore.resetState(),
+//         position: 'left',
+//       },
+//       {
+//         label: idPersonSelected.value ? 'Modificar Acompañante' : 'Agregar Acompañante',
+//         type: 'submit',
+//         class: 'btn btn-primary',
+//         action: () => childRef.value?.onSubmit(),
+//         position: 'right',
+//       },
+//     ],
+//   };
+// };
 
 const childRef = ref();
 const componentMap: Record<ActiveCategory, any> = {
@@ -125,7 +128,7 @@ const dynamicComponent = computed(() => {
 
 const setActiveCategoryFromPath = () => {
   const category = route.path.slice(1) as ActiveCategory;
-  personStore.setCategory(category);
+  ordenStore.setCategory(category);
 };
 
 watch(
@@ -136,12 +139,21 @@ watch(
   { immediate: true },
 );
 
+// watch(
+//   [activeCategory, idOrdenSelected],
+//   () => {
+//     const configs = updateButtonConfigurations();
+//     buttonConfig.value = configs[activeCategory.value || ''] || [];
+    
+//   },
+//   { immediate: true },
+// );
 watch(
-  [activeCategory, idPersonSelected],
-  () => {
-    const configs = updateButtonConfigurations();
-    buttonConfig.value = configs[activeCategory.value || ''] || [];
+  () => idOrdenSelected.value,
+  (newValue) => {
+    // Si el nuevo valor de idPersonSelected no es null o undefined, mostramos la tarjeta
+    showCard.value = newValue !== null && newValue !== undefined;
   },
-  { immediate: true },
+  { immediate: true } // Esto asegura que el valor se verifique también al inicio
 );
 </script>

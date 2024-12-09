@@ -1,4 +1,4 @@
-import { computed, ref } from 'vue';
+import { computed, ref , watch} from 'vue';
 import { useQuery } from '@tanstack/vue-query';
 import { storeToRefs } from 'pinia';
 import { useOrdersStore } from '../store/ordersStore';
@@ -22,6 +22,11 @@ const useOrdenes = () => {
     staleTime: 1000 * 30,
   });
 
+  watch(data, (newOrdens: OrdenSolicitud[]) => {
+    if (newOrdens) {
+      store.setOrders(newOrdens.filter((p) => p && p.id));
+    }
+  });
   // Filtrado por estados de 'aprobacion'
   const pendingOrders = computed(() => orders.value.filter((order) => order.aprobacion === null)); // Pendientes
   const authorizedOrders = computed(() => orders.value.filter((order) => order.aprobacion !== null && !isNaN(Number(order.aprobacion)))); // Autorizadas

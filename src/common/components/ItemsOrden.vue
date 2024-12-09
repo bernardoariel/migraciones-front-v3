@@ -14,19 +14,27 @@
         </div>
   
         <!-- Botón -->
-        <!-- <button
+        <button
           class="btn btn-primary btn-sm px-4 py-2"
           @click="seleccionarordenId(orden.id)"
-          :disabled="isDisabled"
+         
         >
           {{ nameButton }}
-        </button> -->
+        </button>
       </div>
       <!-- Contenido centrado -->
       <div class="entry-content flex items-center text-gray-500 text-sm">
         <div v-if="orden.fecha_del_instrumento">
           Fecha del Instrumento {{ orden.fecha_del_instrumento }}
         </div>
+        <div class="ml-10">
+        <span v-if="orden.fecha_del_instrumento">
+           Escribano {{ orden.apellidoescribano }} {{ orden.nombreescribano }} 
+        </span></div>
+        <div class="ml-10">
+        <span v-if="orden.fecha_del_instrumento">
+           Nro Act Notarial {{ orden.numero_actuacion_notarial_cert_firma}} 
+        </span></div>
         <div class="ml-10">
           <span v-if="orden.aprobacion">
             Aprobación: {{ orden.aprobacion }}
@@ -40,7 +48,6 @@
   <script setup lang="ts">
   import type { OrdenSolicitud } from '../interfaces/orders.interface';
   import { useOrdenStore } from '@/common/store/ordenStore';
-//   import { useOrdenStore } from '../store/ordenStore';
   import { storeToRefs } from 'pinia';
   import { computed } from 'vue';
   
@@ -50,7 +57,7 @@
   }
   const props = defineProps<Props>();
   const ordenStore = useOrdenStore();
-//   const ordenStore = useOrdenStore();
+
   const { menor, autorizantes, acompaneantes } = storeToRefs(ordenStore);
   
   const isDisabled = computed(() => {

@@ -7,25 +7,40 @@ import { OrdenBuilder } from '../class/OrdenBuilder';
 import { getById } from '../services/persons';
 import { usePersonStore } from './personStore';
 
-type CategoryPerson = 'pendientes' | 'autorizados' | 'todos' | null;
+type CategoryOrden = 'pendientes' | 'autorizados' | 'todos' | null;
 
 export const useOrdenStore = defineStore('ordenStore', () => {
-  const activeCategory = ref<CategoryPerson>('pendientes');
-  const getActiveCategory = computed(() => activeCategory.value);
-  const setCategory = (newCategory: CategoryPerson = 'pendientes') => {
-    activeCategory.value = newCategory;
-  };
+  // State variables
+  const activeCategory = ref<CategoryOrden>('pendientes');
   const idOrdenSelected = ref<number | null | 'new'>(null);
-  const getIdOrdenSelected = computed(() => idOrdenSelected.value);
-  const setOrdenId = (id: number | null | 'new') => {
-    idOrdenSelected.value = id;
-  };
   const menor = ref<Menor | null>(null);
   const autorizantes = ref<Autorizante[]>([]);
   const acompaneantes = ref<Acompaneante[]>([]);
+
+  // Computed properties
+  const getActiveCategory = computed(() => activeCategory.value);
+  const getIdOrdenSelected = computed(() => idOrdenSelected.value);
+  const isValidOrden = computed(() => menor.value !== null && autorizantes.value.length > 0);
+  const hasItems = computed(() => !!menor.value || autorizantes.value.length > 0 || acompaneantes.value.length > 0);
+
+  // Store references
   const store = usePersonStore();
   const builder = new OrdenBuilder();
 
+  // Actions for category management
+  const setCategory = (newCategory: CategoryOrden = 'pendientes') => {
+    activeCategory.value = newCategory;
+  };
+
+  // Actions for orden ID management
+  const setOrdenId = (id: number | null | 'new') => {
+    idOrdenSelected.value = id;
+  };
+  const resetState = (category: null | string = null) => {
+    setOrdenId(null);
+    setCategory(category as CategoryOrden);
+  };
+  // Actions for adding/removing persons
   const setMenor = (newMenor: Menor) => {
     menor.value = newMenor;
     builder.setMenor(newMenor);
@@ -41,6 +56,29 @@ export const useOrdenStore = defineStore('ordenStore', () => {
     builder.addAcompaneante(newAcompaneante);
   };
 
+  const removePerson = (category: string, id: number) => {
+    switch (category) {
+      case 'menores':
+        if (menor.value?.id === id) {
+          menor.value = null;
+          builder.setMenor(null);
+        }
+        break;
+      case 'autorizantes':
+        autorizantes.value = autorizantes.value.filter((person) => person.id !== id);
+        builder.setAutorizantes(autorizantes.value);
+        break;
+      case 'acompaneantes':
+        acompaneantes.value = acompaneantes.value.filter((person) => person.id !== id);
+        builder.setAcompaneantes(acompaneantes.value);
+        break;
+      default:
+        console.error('Categoría no válida para eliminar.');
+        break;
+    }
+  };
+
+  // Actions for managing orden data
   const resetOrden = () => {
     menor.value = null;
     autorizantes.value = [];
@@ -57,10 +95,7 @@ export const useOrdenStore = defineStore('ordenStore', () => {
     }
   };
 
-  const isValidOrden = computed(() => {
-    return menor.value !== null && autorizantes.value.length > 0;
-  });
-
+  // Action for fetching persons by category
   const getPerson = async (category: string, id: number | null | 'new') => {
     if (!id || id === 'new') {
       console.error('ID de la persona no seleccionado.');
@@ -74,21 +109,17 @@ export const useOrdenStore = defineStore('ordenStore', () => {
       }
 
       switch (category) {
-        case 'menores': {
+        case 'menores':
           setMenor(person as Menor);
           break;
-        }
-        case 'autorizantes': {
+        case 'autorizantes':
           addAutorizante(person as Autorizante);
           break;
-        }
-        case 'acompaneantes': {
+        case 'acompaneantes':
           addAcompaneante(person as Acompaneante);
           break;
-        }
-        default: {
+        default:
           throw new Error('Categoría no válida.');
-        }
       }
 
       store.resetState();
@@ -97,40 +128,19 @@ export const useOrdenStore = defineStore('ordenStore', () => {
     }
   };
 
-  const removePerson = (category: string, id: number) => {
-    switch (category) {
-      case 'menores': {
-        if (menor.value?.id === id) {
-          menor.value = null;
-          builder.setMenor(null); // Actualiza el builder
-        }
-        break;
-      }
-      case 'autorizantes': {
-        autorizantes.value = autorizantes.value.filter((person) => person.id !== id);
-        builder.setAutorizantes(autorizantes.value); // Actualiza el builder
-        break;
-      }
-      case 'acompaneantes': {
-        acompaneantes.value = acompaneantes.value.filter((person) => person.id !== id);
-        builder.setAcompaneantes(acompaneantes.value); // Actualiza el builder
-        break;
-      }
-      default: {
-        console.error('Categoría no válida para eliminar.');
-        break;
-      }
-    }
-  };
-  
+  // Return store state and actions
   return {
-    menor,
+    activeCategory,
     getActiveCategory,
     setCategory,
+    resetState,
+    idOrdenSelected,
+    getIdOrdenSelected,
+    setOrdenId,
+    menor,
     autorizantes,
     acompaneantes,
     setMenor,
-    setOrdenId,
     addAutorizante,
     addAcompaneante,
     resetOrden,
@@ -138,8 +148,6 @@ export const useOrdenStore = defineStore('ordenStore', () => {
     isValidOrden,
     getPerson,
     removePerson,
-    hasItems: computed(
-      () => !!menor.value || autorizantes.value.length > 0 || acompaneantes.value.length > 0,
-    ),
+    hasItems,
   };
 });

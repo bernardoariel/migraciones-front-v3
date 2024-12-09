@@ -2,8 +2,8 @@
     <div class="entry-list-container">
       <div class="px-2 py-2 flex items-center justify-between">
         <label class="input input-bordered flex items-center gap-2 input-primary w-full">
-          <input type="text" class="grow" placeholder="Buscar" v-model="searchQuery" />
-          <SearchIcon />
+          <!-- <input type="text" class="grow" placeholder="Buscar" v-model="searchQuery" />
+          <SearchIcon /> -->
         </label>
       </div>
   
@@ -19,15 +19,16 @@
             :orden="orden"
             class="w-full"
             nameButton="Seleccionar"
+            @showSolicitudCard="showSolicitudCard"
           />
         </div>
       </div>
-      <PaginationComponent
+      <!-- <PaginationComponent
         v-if="paginatedOrdens.length >= 10"
         :totalPages="totalPagesByCategory[getActiveCategory!]"
         :currentPage="currentPage"
         :goToPage="(page: number) => (currentPage = page)"
-      />
+      /> -->
     </div>
   </template>
   
@@ -37,9 +38,9 @@
   import { useOrdenStore } from '../store/ordenStore';
   import useOrdenes from '../composables/useOrdenes';
   import ItemsOrden from './ItemsOrden.vue';
-  import PaginationComponent from './PaginationComponent.vue';
+  // import PaginationComponent from './PaginationComponent.vue';
   import SearchIcon from './iconos/SearchIcon.vue';
-  
+  const emit = defineEmits(['showSolicitudCard']);
   const ordenStore = useOrdenStore();
   const { getActiveCategory } = storeToRefs(ordenStore);
   
@@ -64,9 +65,9 @@
   
     if (searchQuery.value) {
       const query = searchQuery.value.toLowerCase();
-      return categoryOrdens.filter((person) => {
-        const fullName = `${person.nombre || ''} ${person.apellido || ''}`.toLowerCase();
-        const documento = String(person.numero_de_documento || '').toLowerCase();
+      return categoryOrdens.filter((orden) => {
+        const fullName = `${orden.nombre || ''} ${orden.apellido || ''}`.toLowerCase();
+        const documento = String(orden.documento || '').toLowerCase();
         return fullName.includes(query) || documento.includes(query);
       });
     }
@@ -85,6 +86,9 @@
     ordenStore.setCategory('todos');
     console.log("todos:", allOrders.value)
   });
+  const showSolicitudCard = () =>{
+    emit('showSolicitudCard', true);
+  }
   </script>
   
   <style scoped>

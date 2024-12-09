@@ -6,7 +6,7 @@
           <a
             class="ml-1"
             :class="{ active: activeCategory === 'todos' }"
-     
+            @click="ordenStore.resetState('todos')"
           >
             Todos
           </a>
@@ -15,7 +15,7 @@
           <a
             class="ml-1"
             :class="{ active: activeCategory === 'pendientes' }"
-        
+            @click="ordenStore.resetState('pendientes')"
           >
             Pendientes
           </a>
@@ -24,7 +24,7 @@
           <a
             class="ml-1"
             :class="{ active: activeCategory === 'autorizados' }"
-       
+            @click="ordenStore.resetState('autorizados')"
           >
             Autorizados
           </a>
@@ -35,8 +35,7 @@
   
   <script lang="ts" setup>
   import { onMounted, ref, watch, computed } from 'vue';
-  import { storeToRefs } from 'pinia';
-  import { useOrdersStore } from '../store/ordersStore';
+  import { storeToRefs } from 'pinia';  
   import { useOrdenStore } from '../store/ordenStore';
   import useOrdenes from '../composables/useOrdenes';
   
@@ -45,8 +44,7 @@
     typeCategory?: string;
   }
   const props = defineProps<Props>();
-  
-  const ordersStore = useOrdersStore();
+   
   const ordenStore = useOrdenStore();
   const { getActiveCategory } = storeToRefs(ordenStore);
   const activeCategory = getActiveCategory;
@@ -66,7 +64,7 @@
   
   // Ensure state is updated properly when typeCategory is passed as a prop
   if (props.typeCategory) {
-    //  
+    ordenStore.resetState(props.typeCategory);
   }
   </script>
   
