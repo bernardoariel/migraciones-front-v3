@@ -90,17 +90,15 @@ import MySelect from '@/common/components/elementos/MySelect.vue';
 import { usePersonStore } from '@/common/store/personStore';
 import { storeToRefs } from 'pinia';
 import { useToast } from 'vue-toastification';
-import { useQueryClient } from '@tanstack/vue-query';
-import { useRoute } from 'vue-router';
+
+import { useRouter } from 'vue-router';
 import { useOrdenStore } from '../../../../common/store/ordenStore';
 import useOrden from '../../../../common/composables/useOrden';
-import type { OrdenSolicitud } from '@/common/interfaces/orders.interface';
-import type { Solicitud } from '../interface/solicitud.interface';
-import { apiMigrationsData } from '@/api/apiMigrationsData';
 
 const toast = useToast();
 
 const ordenStore = useOrdenStore();
+const { menor, autorizantes, acompaneantes } = storeToRefs(ordenStore);
 
 interface Props {
   nroSolicitud?: number | null;
@@ -109,7 +107,7 @@ interface Props {
 const props = defineProps<Props>();
 const nombreForm = ref('SolicitudForm');
 
-const route = useRoute();
+const router = useRouter();
 const isFormValid = ref(false);
 const validationSchema = computed(() => {
   return yup.object({
@@ -152,9 +150,7 @@ const effectiveId = computed(() => props.nroSolicitud ?? idPersonSelected.value)
 
 const isSubmitting = ref(false);
 
-const queryClient = useQueryClient();
 const { orden, createOrden, updateOrden } = useOrden(effectiveId);
-console.log('orden::: ', orden.value);
 
 watch(orden, (newOrden) => {
   if (newOrden) {
@@ -174,34 +170,41 @@ watch(orden, (newOrden) => {
 const onSubmit = handleSubmit(async (values) => {
   if (isSubmitting.value) return;
   isSubmitting.value = true;
+  const menorSelected = menor.value?.id || null;
+  const autorizante1 = autorizantes.value?.[0]?.id || null;
+  const autorizante2 = autorizantes.value?.[1]?.id || null;
+  const acompaneantesList = acompaneantes.value?.map((item) => ({ id: item.id })) || [];
   const payload = {
     numero_actuacion_notarial_cert_firma: values.numeroActuacion,
     instrumento: values.instrumentoType,
     cualquier_pais: values.paisType,
-    paises_desc: 'argenytfgt', // Ajusta según el formulario
+    paises_desc: 'argenytfgt',
     vigencia_hasta_mayoria_edad: values.mayoriaEdad,
     fecha_del_instrumento: values.dateOfInstrumento,
     fecha_vigencia_desde: values.dateOfInit,
     fecha_vigencia_hasta: values.dateOfEnd,
-    notary_id: 2, // Debe ajustarse a los valores dinámicos
-    minor_id: 14, // Debe ajustarse a los valores dinámicos
-    autorizante1_id: 28, // Debe ajustarse a los valores dinámicos
-    acompaneantes: [{ id: 1 }], // Ajusta según los datos reales
+    notary_id: 2,
+    minor_id: menorSelected,
+    autorizante1_id: autorizante1,
+    autorizante2_id: autorizante2,
+    acompaneantes: acompaneantesList,
     serie_foja: 'A',
     tipo_foja: '0',
     nro_foja: '0',
-    authorizing_relatives_id: 3, // Ajusta según los datos reales
+    authorizing_relatives_id: 3,
   };
   try {
     const response = await createOrden(payload);
 
     console.log('response::: ', response);
     toast.success('Solicitud enviada con éxito');
+    ordenStore.resetOrden();
+    router.push('/solicitudes');
   } catch (error) {
     console.error('Error al guardar en el store:', error);
     toast.error('Error al guardar la solicitud');
   } finally {
-    isSubmitting.value = false; // Marca el envío como finalizado
+    isSubmitting.value = false;
   }
 });
 
