@@ -22,7 +22,9 @@ export const useOrdenStore = defineStore('ordenStore', () => {
   const getActiveCategory = computed(() => activeCategory.value);
   const getIdOrdenSelected = computed(() => idOrdenSelected.value);
   const isValidOrden = computed(() => menor.value !== null && autorizantes.value.length > 0);
-  const hasItems = computed(() => !!menor.value || autorizantes.value.length > 0 || acompaneantes.value.length > 0);
+  const hasItems = computed(
+    () => !!menor.value || autorizantes.value.length > 0 || acompaneantes.value.length > 0,
+  );
 
   // Store references
   const store = usePersonStore();
@@ -48,7 +50,8 @@ export const useOrdenStore = defineStore('ordenStore', () => {
   };
 
   const addAutorizante = (newAutorizante: Autorizante) => {
-    autorizantes.value.push(newAutorizante);
+    console.log('newAutorizante::: ', newAutorizante);
+    autorizantes.value.push({ ...newAutorizante });
     builder.addAutorizante(newAutorizante);
   };
 
@@ -110,19 +113,22 @@ export const useOrdenStore = defineStore('ordenStore', () => {
 
     try {
       const person = await getById(id);
+      const cleanedPerson = { ...person };
+      delete cleanedPerson.authorizing_relatives_id;
+      delete cleanedPerson.accreditation_links_id;
       if (!person) {
         throw new Error(`No se encontró la persona con ID ${id}`);
       }
 
       switch (category) {
         case 'menores':
-          setMenor(person as Menor);
+          setMenor(cleanedPerson as Menor);
           break;
         case 'autorizantes':
-          addAutorizante(person as Autorizante);
+          addAutorizante(cleanedPerson as Autorizante);
           break;
         case 'acompaneantes':
-          addAcompaneante(person as Acompaneante);
+          addAcompaneante(cleanedPerson as Acompaneante);
           break;
         default:
           throw new Error('Categoría no válida.');
@@ -133,7 +139,17 @@ export const useOrdenStore = defineStore('ordenStore', () => {
       console.error('Error al obtener la persona:', error);
     }
   };
-
+  const updateAutorizante = (id: number, updates: Partial<Autorizante>) => {
+    const autorizanteIndex = autorizantes.value.findIndex((aut) => aut.id === id);
+    if (autorizanteIndex !== -1) {
+      autorizantes.value[autorizanteIndex] = {
+        ...autorizantes.value[autorizanteIndex],
+        ...updates,
+      };
+    } else {
+      console.error(`No se encontró el autorizante con ID ${id}`);
+    }
+  };
   // Return store state and actions
   return {
     activeCategory,
@@ -157,5 +173,6 @@ export const useOrdenStore = defineStore('ordenStore', () => {
     getPerson,
     removePerson,
     hasItems,
+    updateAutorizante,
   };
 });

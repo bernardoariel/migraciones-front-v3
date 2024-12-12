@@ -171,8 +171,9 @@ const onSubmit = handleSubmit(async (values) => {
   if (isSubmitting.value) return;
   isSubmitting.value = true;
   const menorSelected = menor.value?.id || null;
-  const autorizante1 = autorizantes.value?.[0]?.id || null;
-  const autorizante2 = autorizantes.value?.[1]?.id || null;
+  const autorizante1 = autorizantes.value?.[0] || null;
+  const autorizante2 = autorizantes.value?.[1] || null;
+
   const acompaneantesList = acompaneantes.value?.map((item) => ({ id: item.id })) || [];
   const payload = {
     numero_actuacion_notarial_cert_firma: values.numeroActuacion,
@@ -191,15 +192,15 @@ const onSubmit = handleSubmit(async (values) => {
     serie_foja: 'A',
     tipo_foja: '0',
     nro_foja: '0',
-    authorizing_relatives_id: 3,
   };
   try {
     const response = await createOrden(payload);
-
     console.log('response::: ', response);
+    console.log('payload::: ', payload);
+
     toast.success('Solicitud enviada con éxito');
     ordenStore.resetOrden();
-    router.push('/solicitudes');
+    // router.push('/solicitudes');
   } catch (error) {
     console.error('Error al guardar en el store:', error);
     toast.error('Error al guardar la solicitud');
