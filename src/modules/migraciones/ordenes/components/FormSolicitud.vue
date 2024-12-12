@@ -200,7 +200,7 @@ const onSubmit = handleSubmit(async (values) => {
 
     toast.success('Solicitud enviada con éxito');
     ordenStore.resetOrden();
-    // router.push('/solicitudes');
+    router.push('/solicitudes');
   } catch (error) {
     console.error('Error al guardar en el store:', error);
     toast.error('Error al guardar la solicitud');
