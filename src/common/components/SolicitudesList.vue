@@ -18,8 +18,7 @@
             :key="orden.id"
             :orden="orden"
             class="w-full"
-            nameButton="Seleccionar"
-            @showSolicitudCard="showSolicitudCard"
+            nameButton="Seleccionar"         
           />
         </div>
       </div>
@@ -86,9 +85,7 @@
     ordenStore.setCategory('todos');
     console.log("todos:", allOrders.value)
   });
-  const showSolicitudCard = () =>{
-    emit('showSolicitudCard', true);
-  }
+
   </script>
   
   <style scoped>

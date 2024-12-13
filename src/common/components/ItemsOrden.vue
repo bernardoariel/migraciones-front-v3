@@ -48,6 +48,7 @@
   <script setup lang="ts">
   import type { OrdenSolicitud } from '../interfaces/orders.interface';
   import { useOrdenStore } from '@/common/store/ordenStore';
+  import { getOrdenById } from '@/common/composables/useOrden'
   import { storeToRefs } from 'pinia';
   import { computed } from 'vue';
   
@@ -71,7 +72,8 @@
       acompaneantes.value.some((acompaneante) => acompaneante.id === id)
     );
   });
-  const seleccionarordenId = (id: number) => {
+  const seleccionarordenId = async (id: number) => {
+    await getOrdenById(id)
     ordenStore.setOrdenId(id);
   };
   
