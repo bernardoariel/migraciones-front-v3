@@ -11,4 +11,6 @@ export interface Autorizante {
   type_document_id: number;
   nationality_id: number;
   issuer_document_id: number;
+  authorizing_relatives_id?: number | null;
+  accreditation_links_id?: number | null;
 }

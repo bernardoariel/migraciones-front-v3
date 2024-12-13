@@ -15,19 +15,28 @@
   </div>
   <div class="mr-4 flex items-center justify-center text-gray-600 dark:text-white">
     <div v-if="tipo === 'AUTORIZANTE'" class="dropdown">
-      <div tabindex="0" role="button" class="btn btn-xs m-1 btn-success">Relación con el menor</div>
+      <div
+        tabindex="0"
+        role="button"
+        class="btn btn-xs m-1 btn-success"
+        @click="toggleDropdown('autoritation')"
+      >
+        {{ autorizanteSelected }}
+      </div>
       <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
-        <li><a>Padre</a></li>
-        <li><a>Madre</a></li>
+        <li v-for="autoritation of autoritations" :key="autoritation.id">
+          <a @click="selectAutoritation(autoritation)">{{ autoritation.descripcion }}</a>
+        </li>
       </ul>
     </div>
     <div v-if="tipo === 'AUTORIZANTE'" class="dropdown">
       <div tabindex="0" role="button" class="btn btn-xs m-1 btn-warning">
-        Acreditación del vinculo
+        {{ acreditacionSelected }}
       </div>
       <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
-        <li><a>PARTIDA/CERTIFICADO NACIMIENTO</a></li>
-        <li><a>LIBRETA DE FAMILIA</a></li>
+        <li v-for="acreditation of acreditations" :key="acreditation.id">
+          <a @click="selectAcreditation(acreditation)">{{ acreditation.descripcion }}</a>
+        </li>
       </ul>
     </div>
     <button class="btn btn-circle btn-ghost" @click="seleccionarPerson(id, category)">
@@ -43,6 +52,11 @@
 import EditarIcon from './iconos/EditarIcon.vue';
 import EliminarIcon from './iconos/EliminarIcon.vue';
 import { useOrdenStore } from '../store/ordenStore';
+import useAutoritations from '../composables/useAutoritations';
+import useAcreditations from '../composables/useAcreditations';
+import { ref } from 'vue';
+import type { Autoritation } from '../interfaces/autoritation.interface';
+import type { Acreditation } from '../interfaces/acreditations.interface';
 
 interface Props {
   id: number;
@@ -54,9 +68,42 @@ interface Props {
   tipo: string;
   category: string;
 }
-defineProps<Props>();
+const props = defineProps<Props>();
 const ordenStore = useOrdenStore();
+const { autoritations } = useAutoritations();
+const { acreditations } = useAcreditations();
+const autorizanteSelected = ref('Relación con el menor');
+const acreditacionSelected = ref('Acreditación del parentezco');
+const isDropdownOpen = ref<string | null>(null);
 
+const selectAutoritation = (autoritation: Autoritation) => {
+  autorizanteSelected.value = autoritation.descripcion;
+
+  // Busca al autorizante por ID en el store y actualiza el valor de authorizing_relatives_id
+  const autorizante = ordenStore.autorizantes.find((aut) => aut.id === props.id);
+  if (autorizante) {
+    ordenStore.updateAutorizante(props.id, {
+      authorizing_relatives_id: autoritation.id,
+    });
+  }
+  isDropdownOpen.value = null;
+};
+
+const selectAcreditation = (acreditation: Acreditation) => {
+  acreditacionSelected.value = acreditation.descripcion;
+
+  // Busca al autorizante por ID en el store y actualiza el valor de accreditation_links_id
+  const autorizante = ordenStore.autorizantes.find((aut) => aut.id === props.id);
+  if (autorizante) {
+    ordenStore.updateAutorizante(props.id, {
+      accreditation_links_id: acreditation.id,
+    });
+  }
+  isDropdownOpen.value = null;
+};
+const toggleDropdown = (dropdown: string) => {
+  isDropdownOpen.value = isDropdownOpen.value === dropdown ? null : dropdown;
+};
 const eliminarPerson = (idPerson: number, category: string) => {
   ordenStore.removePerson(category, idPerson);
 };
