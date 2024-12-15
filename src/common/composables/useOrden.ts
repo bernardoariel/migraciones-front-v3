@@ -14,7 +14,15 @@ export const getOrdenById = async (id: number) => {
     throw error;
   }
 };
-
+export const getOrdenItemById = async (id: number) => {
+  try {
+    const response = await apiMigrationsData.get(`/ordenesitems/${id}`); // Endpoint corregido para obtener una orden
+    return response.data;
+  } catch (error) {
+    console.error(`Error al obtener la orden con ID ${id}:`, error);
+    throw error;
+  }
+};
 const useOrden = (idOrden: Ref<number | null> | ComputedRef<number | null>) => {
   const orden = ref<OrdenSolicitud | null>(null);
   const queryClient = useQueryClient();
