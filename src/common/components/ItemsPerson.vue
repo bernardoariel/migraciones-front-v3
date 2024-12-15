@@ -21,7 +21,7 @@
       >
         {{ nameButton }}
       </button>
-    </div>
+    </div>    
     <!-- Contenido centrado -->
     <div class="entry-content flex items-center text-gray-500 text-sm">
       <div v-if="person.domicilio">
@@ -45,16 +45,19 @@ import { usePersonStore } from '@/common/store/personStore';
 import { useOrdenStore } from '../store/ordenStore';
 import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
+import { useToast } from 'vue-toastification';
 
 interface Props {
   person: Partial<Person>;
   nameButton: string;
 }
+const toast = useToast();
 const props = defineProps<Props>();
 const personStore = usePersonStore();
 const ordenStore = useOrdenStore();
 const { menor, autorizantes, acompaneantes } = storeToRefs(ordenStore);
 
+const isMaxAutorizantesReached = computed(() => autorizantes.value.length >= 2);
 const isDisabled = computed(() => {
   const id = props.person.id;
 
@@ -67,6 +70,11 @@ const isDisabled = computed(() => {
   );
 });
 const seleccionarPersonId = (id: number) => {
+  if (isMaxAutorizantesReached.value) {
+    toast.error('Ya se han seleccionado 2 autorizantes');
+    console.log("Ya se han seleccionado 2 autorizantes");
+    return;
+  }
   personStore.setPersonId(id);
 };
 
