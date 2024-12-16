@@ -94,15 +94,15 @@
 </template>
 
 <script setup lang="ts">
-import AutorizanteIcon from '@/common/components/iconos/AutorizanteIcon.vue';
+import AutorizanteIcon from '@/migraciones/persons/assets/AutorizanteIcon.vue';
 import { useOrdenStore } from '../store/ordenStore';
 import { storeToRefs } from 'pinia';
 
 import { calculateAge } from '../helpers/calculateAge';
 
 import SelectedPersonOrden from './SelectedPersonOrden.vue';
-import BabyIcon from './iconos/BabyIcon.vue';
-import AcompaneanteIcon from './iconos/AcompaneanteIcon.vue';
+import BabyIcon from '../../migraciones/persons/assets/BabyIcon.vue';
+import AcompaneanteIcon from '../../migraciones/persons/assets/AcompaneanteIcon.vue';
 import FormSolicitud from '@/migraciones/ordenes/components/FormSolicitud.vue';
 
 const ordenStore = useOrdenStore();
