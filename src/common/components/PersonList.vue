@@ -41,10 +41,11 @@ import PaginationComponent from './PaginationComponent.vue';
 import SearchIcon from './iconos/SearchIcon.vue';
 
 const personStore = usePersonStore();
+
 const { getActiveCategory } = storeToRefs(personStore);
 
-onMounted(() => {
-  personStore.setCategory('menores');
+onMounted(() => {  
+  personStore.setCategory('menores');  
 });
 
 const { isLoading, currentPage, totalPagesByCategory, acompaneantes, menores, autorizantes } =
