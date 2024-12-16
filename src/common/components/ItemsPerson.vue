@@ -45,7 +45,7 @@ import { useOrdenStore } from '../store/ordenStore';
 import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
 import { useToast } from 'vue-toastification';
-import usePersons from '../composables/usePersons'; // Importamos el hook usePersons
+import usePersons from '../composables/usePersons'; 
 
 interface Props {
   person: Partial<Person>;
@@ -58,19 +58,17 @@ const personStore = usePersonStore();
 const ordenStore = useOrdenStore();
 const { menor, autorizantes, acompaneantes } = storeToRefs(ordenStore);
 
-// Renombramos las variables importadas desde usePersons para evitar conflicto de nombres
+
 const { menores: menoresTabla, autorizantes: autorizantesTabla, acompaneantes: acompaneantesTabla } = usePersons();
 
-// Computed to check if the maximum number of autorizantes is reached
+
 const isMaxAutorizantesReached = computed(() => autorizantes.value.length >= 2);
 
-// Disable the button if the person is already in any of the groups (menor, autorizante, acompaneante)
 const isDisabled = computed(() => {
   const id = props.person.id;
 
   if (!id) return false;
-
-  // Disable button if the person is already in any group
+  
   return (
     menor.value?.id === id ||
     autorizantes.value.some((autorizante) => autorizante.id === id) ||
@@ -79,26 +77,21 @@ const isDisabled = computed(() => {
 });
 
 const seleccionarPersonId = (id: number) => {
-  if (isMaxAutorizantesReached.value) {
-    // If the person is an autorizante and the max is reached, show the toast
+  if (isMaxAutorizantesReached.value) {    
     if (!isPersonMenorOrAcompañante(id)) {
       toast.error('Ya se han seleccionado 2 autorizantes');
       console.log("Ya se han seleccionado 2 autorizantes");
       return;
     }
   }
-
-  // Set the person ID to the store
+ 
   personStore.setPersonId(id);
 };
 
-// Helper function to check if the person is a menor or acompaneante (this check is only for autorizantes)
 const isPersonMenorOrAcompañante = (id: number) => {
-  return (
-    // menores.value.some((menorItem) => menorItem.id === id) ||  // Verificar con los menores
-    // acompaneantes.value.some((acompaneanteItem) => acompaneanteItem.id === id) ||  // Verificar con los acompañantes
-    acompaneantesTabla.value.some((acompaneanteItem) => acompaneanteItem.id === id) ||  // Verificar con los acompañantes de la tabla
-    menoresTabla.value.some((menorItem) => menorItem.id === id)  // Verificar con los menores de la tabla
+  return (    
+    acompaneantesTabla.value.some((acompaneanteItem) => acompaneanteItem.id === id) ||  
+    menoresTabla.value.some((menorItem) => menorItem.id === id)  
   );
 };
 
