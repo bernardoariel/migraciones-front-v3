@@ -121,15 +121,16 @@ import MySelect from '@/common/components/elementos/MySelect.vue';
 import ButtonGroup from '@/common/components/ButtonGroup.vue';
 import useDropdownOptions from '@/common/composables/useDropdownOptions';
 
-import type { Autorizante } from '../interfaces/autorizante.interface';
-import usePerson from '@/common/composables/usePerson';
-import { getPersonByDoc } from '@/common/composables/usePerson';
-import { usePersonStore } from '@/common/store/personStore';
+import usePerson from '@/migraciones/persons/composables/usePerson';
+import { getPersonByDoc } from '@/migraciones/persons/composables/usePerson';
+import { usePersonStore } from '@/migraciones/persons/store/personStore';
 import { storeToRefs } from 'pinia';
 import { useToast } from 'vue-toastification';
 import { useQueryClient } from '@tanstack/vue-query';
 import { useRoute } from 'vue-router';
-import { useOrdenStore } from '../../../../common/store/ordenStore';
+
+import type { Menor } from '../interfaces/menor.interface';
+import { useOrdenStore } from '@/common/store/ordenStore';
 
 const toast = useToast();
 const { documentTypeOptions, nationalityOptions, issuerDocsOptions, loadOptions } =
@@ -150,7 +151,7 @@ interface Props {
 }
 
 const props = defineProps<Props>();
-const nombreForm = ref('Autorizante');
+const nombreForm = ref('Menor');
 
 const errorDoc = ref('');
 const route = useRoute();
@@ -247,7 +248,7 @@ const onSubmit = handleSubmit(async (value) => {
   if (isSubmitting.value) return;
   isSubmitting.value = true;
   try {
-    const payload: Autorizante = {
+    const payload: Menor = {
       numero_de_documento: value.documentNumber,
       type_document_id: value.documentType,
       apellido: value.lastName,

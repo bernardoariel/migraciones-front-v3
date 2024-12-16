@@ -1,6 +1,6 @@
 import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
-import type { Person } from '../interfaces/person.interface';
+import type { Person } from '../../../../common/interfaces/person.interface';
 
 export const usePersonsStore = defineStore('personsStore', () => {
   const persons = ref<Person[]>([]);

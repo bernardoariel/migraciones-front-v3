@@ -82,8 +82,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
+
+import { usePersonStore } from '@/migraciones/persons/store/personStore';
 import { useOrdenStore } from '../store/ordenStore';
-import { usePersonStore } from '../store/personStore';
 
 const ordenStore = useOrdenStore();
 const personStore = usePersonStore();

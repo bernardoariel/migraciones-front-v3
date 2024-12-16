@@ -1,12 +1,12 @@
 import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
-import type { Autorizante } from '../../modules/migraciones/autorizantes/interfaces/autorizante.interface';
-import type { Acompaneante } from '../../modules/migraciones/acompaneantes/interfaces/acompaneante.interface';
-import type { Menor } from '../../modules/migraciones/menores/interfaces/menor.interface';
+import type { Autorizante } from '../../migraciones/autorizantes/interfaces/autorizante.interface';
+import type { Acompaneante } from '../../migraciones/acompaneantes/interfaces/acompaneante.interface';
+import type { Menor } from '../../migraciones/menores/interfaces/menor.interface';
 import { OrdenBuilder } from '../class/OrdenBuilder';
 import { getById } from '../services/persons';
-import { usePersonStore } from './personStore';
-import type { Solicitud } from '../../modules/migraciones/ordenes/interface/solicitud.interface';
+import { usePersonStore } from '../../migraciones/persons/store/personStore';
+import type { Solicitud } from '../../migraciones/ordenes/interface/solicitud.interface';
 
 type CategoryOrden = 'pendientes' | 'autorizados' | 'todos' | null;
 

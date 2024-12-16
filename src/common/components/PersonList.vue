@@ -34,11 +34,12 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
-import { usePersonStore } from '../store/personStore';
-import usePersons from '../composables/usePersons';
+import { usePersonStore } from '../../migraciones/persons/store/personStore';
+
 import ItemsPerson from './ItemsPerson.vue';
 import PaginationComponent from './PaginationComponent.vue';
 import SearchIcon from './iconos/SearchIcon.vue';
+import usePersons from '@/migraciones/persons/composables/usePersons';
 
 const personStore = usePersonStore();
 const { getActiveCategory } = storeToRefs(personStore);

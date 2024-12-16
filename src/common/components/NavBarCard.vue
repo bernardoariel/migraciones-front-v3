@@ -34,10 +34,10 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, watch, computed } from 'vue';
+import { computed } from 'vue';
 import { storeToRefs } from 'pinia';
-import { usePersonStore } from '../store/personStore';
-import usePersons from '../composables/usePersons';
+import { usePersonStore } from '../../migraciones/persons/store/personStore';
+import usePersons from '@/migraciones/persons/composables/usePersons';
 
 const { acompaneantes, menores, autorizantes } = usePersons();
 interface Props {

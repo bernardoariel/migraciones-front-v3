@@ -79,12 +79,12 @@ import useDropdownOptions from '@/common/composables/useDropdownOptions';
 
 import type { Acompaneante } from '../interfaces/acompaneante.interface';
 
-import { usePersonStore } from '@/common/store/personStore';
+import { usePersonStore } from '@/migraciones/persons/store/personStore';
 import { useQueryClient } from '@tanstack/vue-query';
 
 import { useToast } from 'vue-toastification';
-import usePerson from '../../../../common/composables/usePerson';
-import { getPersonByDoc } from '@/common/composables/usePerson';
+import usePerson from '../../persons/composables/usePerson';
+import { getPersonByDoc } from '@/migraciones/persons/composables/usePerson';
 import { useRoute } from 'vue-router';
 import { useOrdenStore } from '@/common/store/ordenStore';
 

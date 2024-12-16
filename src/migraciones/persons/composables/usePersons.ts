@@ -1,10 +1,11 @@
 import { watch, computed } from 'vue';
 import { useQuery } from '@tanstack/vue-query';
-import { usePersonsStore } from '../store/personsStore';
 import { storeToRefs } from 'pinia';
-import { getAll } from '../services/persons';
-import type { Person } from '../interfaces/person.interface';
-import { calculateAge } from '../helpers/calculateAge';
+
+import { calculateAge } from '../../../common/helpers/calculateAge';
+import type { Person } from '../../../common/interfaces/person.interface';
+import { usePersonsStore } from '../../../migraciones/persons/store/personsStore';
+import { getAll } from '../../../migraciones/persons/services/actions';
 
 const usePersons = () => {
   const store = usePersonsStore();

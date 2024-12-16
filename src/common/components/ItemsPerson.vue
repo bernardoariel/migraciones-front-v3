@@ -21,7 +21,7 @@
       >
         {{ nameButton }}
       </button>
-    </div>    
+    </div>
     <!-- Contenido centrado -->
     <div class="entry-content flex items-center text-gray-500 text-sm">
       <div v-if="person.domicilio">
@@ -41,7 +41,7 @@
 <script setup lang="ts">
 import type { Person } from '../interfaces/person.interface';
 import { calculateAge } from '../helpers/calculateAge';
-import { usePersonStore } from '@/common/store/personStore';
+import { usePersonStore } from '@/migraciones/persons/store/personStore';
 import { useOrdenStore } from '../store/ordenStore';
 import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
@@ -72,7 +72,7 @@ const isDisabled = computed(() => {
 const seleccionarPersonId = (id: number) => {
   if (isMaxAutorizantesReached.value) {
     toast.error('Ya se han seleccionado 2 autorizantes');
-    console.log("Ya se han seleccionado 2 autorizantes");
+    console.log('Ya se han seleccionado 2 autorizantes');
     return;
   }
   personStore.setPersonId(id);

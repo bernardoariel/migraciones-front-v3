@@ -8,16 +8,13 @@
         <span class="ml-3 text-lg uppercase text-gray-800 font-semibold">
           {{ orden.apellido }} {{ orden.segundo_apellido }}
         </span>
-        <span class="font-light capitalize text-gray-600">    
+        <span class="font-light capitalize text-gray-600">
           ,{{ orden.nombre }} {{ orden.otros_nombres }}
         </span>
       </div>
-  
+
       <!-- Botón -->
-      <button
-        class="btn btn-primary btn-sm px-4 py-2"
-        @click="seleccionarordenId(orden.id)"
-      >
+      <button class="btn btn-primary btn-sm px-4 py-2" @click="seleccionarordenId(orden.id)">
         {{ nameButton }}
       </button>
     </div>
@@ -28,18 +25,16 @@
       </div>
       <div class="ml-10">
         <span v-if="orden.fecha_del_instrumento">
-           Escribano {{ orden.apellidoescribano }} {{ orden.nombreescribano }} 
+          Escribano {{ orden.apellidoescribano }} {{ orden.nombreescribano }}
         </span>
       </div>
       <div class="ml-10">
         <span v-if="orden.fecha_del_instrumento">
-           Nro Act Notarial {{ orden.numero_actuacion_notarial_cert_firma}} 
+          Nro Act Notarial {{ orden.numero_actuacion_notarial_cert_firma }}
         </span>
       </div>
       <div class="ml-10">
-        <span v-if="orden.aprobacion">
-          Aprobación: {{ orden.aprobacion }}
-        </span>         
+        <span v-if="orden.aprobacion"> Aprobación: {{ orden.aprobacion }} </span>
       </div>
       <div class="end"></div>
     </div>
@@ -49,9 +44,9 @@
 <script setup lang="ts">
 import type { OrdenSolicitud } from '../interfaces/orders.interface';
 import { useOrdenStore } from '@/common/store/ordenStore';
-import { usePersonStore } from '@/common/store/personStore';
-import useOrdenItem from '@/common/composables/useOrdenItem'
-import { getById } from '@/common/composables/usePerson'
+import { usePersonStore } from '@/migraciones/persons/store/personStore';
+import useOrdenItem from '@/common/composables/useOrdenItem';
+import { getById } from '@/migraciones/persons/composables/usePerson';
 import { storeToRefs } from 'pinia';
 import { computed, ref } from 'vue';
 
@@ -70,7 +65,6 @@ const { cargarOrdenItem } = useOrdenItem();
 // Usamos ref para hacer que 'items' sea reactivo
 const items = ref<any[]>([]); // Inicialización de items como un arreglo vacío
 
-
 const isDisabled = computed(() => {
   const id = props.orden.id;
 
@@ -84,10 +78,10 @@ const isDisabled = computed(() => {
 });
 const seleccionarordenId = async (id: number) => {
   // Cargamos los items de la orden
-  ordenStore.resetOrden()
+  ordenStore.resetOrden();
   items.value = await cargarOrdenItem(id); // Asignamos los datos a items
-  ordenStore.setOrdenId(id); 
-  console.log("Items cargados:", items.value); // Verifica lo que retorna cargarOrdenItem
+  ordenStore.setOrdenId(id);
+  console.log('Items cargados:', items.value); // Verifica lo que retorna cargarOrdenItem
 
   if (Array.isArray(items.value)) {
     items.value.forEach(async (item) => {
@@ -97,26 +91,25 @@ const seleccionarordenId = async (id: number) => {
       switch (tipo) {
         case 'menor':
           const menorData = await getById(id_detalle);
-          ordenStore.setMenor(menorData);  // Suponiendo que tienes un setter en el store
-          console.log("Menor id", id_detalle);
+          ordenStore.setMenor(menorData); // Suponiendo que tienes un setter en el store
+          console.log('Menor id', id_detalle);
           break;
         case 'autorizante':
           const autorizanteData = await getById(id_detalle);
-          ordenStore.addAutorizante(autorizanteData);  // Suponiendo que tienes un setter en el store
-          console.log("Autorizante id", id_detalle);
+          ordenStore.addAutorizante(autorizanteData); // Suponiendo que tienes un setter en el store
+          console.log('Autorizante id', id_detalle);
           break;
         case 'acompaneante':
           const acompaneanteData = await getById(id_detalle);
-          ordenStore.addAcompaneante(acompaneanteData);  // Suponiendo que tienes un setter en el store
-          console.log("Acompañante id", id_detalle);
+          ordenStore.addAcompaneante(acompaneanteData); // Suponiendo que tienes un setter en el store
+          console.log('Acompañante id', id_detalle);
           break;
-        
       }
     });
   } else {
-    console.error("Los datos no son un array válido", items.value);
+    console.error('Los datos no son un array válido', items.value);
   }
-}
+};
 </script>
 
 <style scoped>

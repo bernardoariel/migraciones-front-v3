@@ -1,7 +1,7 @@
 import type { Orden } from '../interfaces/orden.interface';
-import type { Menor } from '../../modules/migraciones/menores/interfaces/menor.interface';
-import type { Acompaneante } from '../../modules/migraciones/acompaneantes/interfaces/acompaneante.interface';
-import type { Solicitud } from '../../modules/migraciones/ordenes/interface/solicitud.interface';
+import type { Menor } from '../..migraciones/menores/interfaces/menor.interface';
+import type { Acompaneante } from '../..migraciones/acompaneantes/interfaces/acompaneante.interface';
+import type { Solicitud } from '../..migraciones/ordenes/interface/solicitud.interface';
 
 export class OrdenBuilder {
   private orden: Orden;

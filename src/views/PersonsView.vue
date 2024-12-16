@@ -31,11 +31,11 @@
 import { computed, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 
-import { usePersonStore } from '@/common/store/personStore';
+import { usePersonStore } from '@/migraciones/persons/store/personStore';
 import PersonList from '@/common/components/PersonList.vue';
-import FormMenor from '@/modules/migraciones/menores/components/FormMenor.vue';
-import FormAutorizante from '@/modules/migraciones/autorizantes/components/FormAutorizante.vue';
-import FormAcompaneante from '@/modules/migraciones/acompaneantes/components/FormAcompaneante.vue';
+import FormMenor from '@/migraciones/menores/components/FormMenor.vue';
+import FormAutorizante from '@/migraciones/autorizantes/components/FormAutorizante.vue';
+import FormAcompaneante from '@/migraciones/acompaneantes/components/FormAcompaneante.vue';
 import { useRoute } from 'vue-router';
 import NavBarCard from '@/common/components/NavBarCard.vue';
 import PlusIcon from '@/common/components/iconos/PlusIcon.vue';

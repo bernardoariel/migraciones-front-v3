@@ -103,7 +103,7 @@ import { calculateAge } from '../helpers/calculateAge';
 import SelectedPersonOrden from './SelectedPersonOrden.vue';
 import BabyIcon from './iconos/BabyIcon.vue';
 import AcompaneanteIcon from './iconos/AcompaneanteIcon.vue';
-import FormSolicitud from '@/modules/migraciones/ordenes/components/FormSolicitud.vue';
+import FormSolicitud from '@/migraciones/ordenes/components/FormSolicitud.vue';
 
 const ordenStore = useOrdenStore();
 const { menor, autorizantes, acompaneantes } = storeToRefs(ordenStore);

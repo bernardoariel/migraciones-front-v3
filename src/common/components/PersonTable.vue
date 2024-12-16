@@ -76,7 +76,7 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import PersonItems from './PersonItems.vue';
 
-import useAcompaneante from '../../modules/migraciones/acompaneantes/composables/useAcompaneante';
+import useAcompaneante from '../..migraciones/acompaneantes/composables/useAcompaneante';
 // Usa el composable
 const { fetchAllAcompaneante, filteredAcompaneantes, searchQuery, categoryFilter } =
   useAcompaneante();

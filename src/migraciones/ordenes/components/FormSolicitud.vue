@@ -87,13 +87,14 @@ import { useForm } from 'vee-validate';
 import MyInput from '@/common/components/elementos/MyInput.vue';
 import MySelect from '@/common/components/elementos/MySelect.vue';
 
-import { usePersonStore } from '@/common/store/personStore';
+import { usePersonStore } from '@/migraciones/persons/store/personStore';
 import { storeToRefs } from 'pinia';
 import { useToast } from 'vue-toastification';
 
 import { useRouter } from 'vue-router';
-import { useOrdenStore } from '../../../../common/store/ordenStore';
-import useOrden from '../../../../common/composables/useOrden';
+
+import useOrden from '@/common/composables/useOrden';
+import { useOrdenStore } from '@/common/store/ordenStore';
 
 const toast = useToast();
 

@@ -8,8 +8,7 @@
           <PlusIcon color="#1C274C" height="30" width="30px" />
         </button>
       </div>
-      <SolicitudesList    
-      />
+      <SolicitudesList />
     </div>
     <div
       class="flex-[2] bg-white p-4 rounded-lg shadow-md max-h-[85vh] overflow-auto flex justify-center items-center"
@@ -17,7 +16,7 @@
       <!-- <h1 v-if="!idPersonSelected && !activeCategory" class="text-4xl">
         No existe ninguna persona seleccionada
       </h1> -->
-      <SolicitudCard v-if="idOrdenSelected"  />
+      <SolicitudCard v-if="idOrdenSelected" />
       <!-- <component
         v-else
         :is="dynamicComponent"
@@ -35,9 +34,9 @@ import { storeToRefs } from 'pinia';
 
 import { useOrdenStore } from '@/common/store/ordenStore';
 import SolicitudesList from '@/common/components/SolicitudesList.vue';
-import FormMenor from '@/modules/migraciones/menores/components/FormMenor.vue';
-import FormAutorizante from '@/modules/migraciones/autorizantes/components/FormAutorizante.vue';
-import FormAcompaneante from '@/modules/migraciones/acompaneantes/components/FormAcompaneante.vue';
+import FormMenor from '@/migraciones/menores/components/FormMenor.vue';
+import FormAutorizante from '@/migraciones/autorizantes/components/FormAutorizante.vue';
+import FormAcompaneante from '@/migraciones/acompaneantes/components/FormAcompaneante.vue';
 import { useRoute } from 'vue-router';
 import SolicitudNavBarCard from '@/common/components/SolicitudNavBarCard.vue';
 import PlusIcon from '@/common/components/iconos/PlusIcon.vue';
@@ -59,7 +58,7 @@ const ordenStore = useOrdenStore();
 const { getActiveCategory, getIdOrdenSelected } = storeToRefs(ordenStore);
 const idOrdenSelected = getIdOrdenSelected;
 const activeCategory = getActiveCategory;
-const showCard = ref(false)
+const showCard = ref(false);
 const buttonConfig = ref<ButtonConfig[]>([]);
 const hasItems = computed(() => ordenStore.hasItems);
 // const updateButtonConfigurations = (): Record<string, ButtonConfig[]> => {
@@ -145,7 +144,7 @@ watch(
 //   () => {
 //     const configs = updateButtonConfigurations();
 //     buttonConfig.value = configs[activeCategory.value || ''] || [];
-    
+
 //   },
 //   { immediate: true },
 // );
