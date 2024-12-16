@@ -1,113 +1,121 @@
 <template>
   <div class="flex flex-col">
-    <div class="text-2xl font-semibold mb-6 text-center">
-      {{ idPersonSelected == 'new' || idPersonSelected === null ? 'Agregando ' : 'Editando' }} un
-      {{ nombreForm }}
+    <div
+      v-if="!person && idPersonSelected !== 'new' && idPersonSelected"
+      class="flex items-center justify-center h-20"
+    >
+      <span class="loading loading-dots loading-lg text-primary"></span>
     </div>
+    <div v-else>
+      <div class="text-2xl font-semibold mb-6 text-center">
+        {{ idPersonSelected == 'new' || idPersonSelected === null ? 'Agregando ' : 'Editando' }} un
+        {{ nombreForm }}
+      </div>
 
-    <form @submit="onSubmit" class="space-y-4">
-      <!-- Número de Documento -->
-      <MyInput
-        v-model.number="documentNumber"
-        v-bind="documentNumberAttrs"
-        :error="errors.documentNumber"
-        label="Documento"
-        placeholder="Ingrese el Documento"
-        type="number"
-        @blur="checkDniExistence"
-      />
-      <span class="text-red-400" v-if="errorDoc">{{ errorDoc }}</span>
-
-      <MySelect
-        v-model="documentType"
-        v-bind="documentTypeAttrs"
-        :error="errors.documentType"
-        label="Tipo de Documento"
-        :options="documentTypeOptions"
-      />
-
-      <MySelect
-        v-model="documentIssuer"
-        v-bind="documentIssuerAttrs"
-        :error="errors.documentType"
-        label="Emisor del Documento"
-        :options="issuerDocsOptions"
-      />
-      <!-- Apellido -->
-      <MyInput
-        v-model="lastName"
-        v-bind="lastNameAttrs"
-        :error="errors.lastName"
-        label="Apellido"
-        placeholder="Ingrese el Apellido"
-      />
-
-      <!-- Segundo Apellido -->
-      <MyInput
-        v-model="secondLastName"
-        v-bind="secondLastNameAttrs"
-        :error="errors.secondLastName"
-        label="Segundo Apellido"
-        placeholder="Ingrese el Segundo Apellido"
-      />
-
-      <!-- Nombre -->
-      <MyInput
-        v-model="firstName"
-        v-bind="firstNameAttrs"
-        :error="errors.firstName"
-        label="Nombre"
-        placeholder="Ingrese el Nombre"
-      />
-
-      <!-- Otros Nombres -->
-      <MyInput
-        v-model="otherNames"
-        v-bind="otherNamesAttrs"
-        :error="errors.otherNames"
-        label="Otros Nombres"
-        placeholder="Ingrese Otros Nombres"
-      />
-
-      <!-- Nacionalidad -->
-      <MySelect
-        v-model="nationality"
-        :options="nationalityOptions"
-        :error="errors.nationality"
-        v-bind="nationalityAttrs"
-        label="Nacionalidad"
-      />
-
-      <!-- Sexo -->
-      <MySelect
-        v-model="sex"
-        :options="sexType"
-        :error="errors.sex"
-        v-bind="sexAttrs"
-        label="Sexo"
-      />
-      <label class="input input-bordered flex items-center gap-2">
-        <span>Fecha de Nacimiento </span>
-        <input
-          type="date"
-          v-model="dateOfBirht"
-          :class="['form-control', errors.dateOfBirht ? 'border-red-500' : '']"
-          placeholder="Fecha de Nacimiento"
-          v-bind="dateOfBirhtAttrs"
+      <form @submit="onSubmit" class="space-y-4">
+        <!-- Número de Documento -->
+        <MyInput
+          v-model.number="documentNumber"
+          v-bind="documentNumberAttrs"
+          :error="errors.documentNumber"
+          label="Documento"
+          placeholder="Ingrese el Documento"
+          type="number"
+          @blur="checkDniExistence"
         />
-      </label>
+        <span class="text-red-400" v-if="errorDoc">{{ errorDoc }}</span>
 
-      <!-- Domicilio -->
-      <MyInput
-        v-model="address"
-        v-bind="addressAttrs"
-        :error="errors.address"
-        label="Domicilio"
-        placeholder="Ingrese el Domicilio"
-      />
-      <!-- Buttons -->
-      <ButtonGroup :buttons="buttons!" />
-    </form>
+        <MySelect
+          v-model="documentType"
+          v-bind="documentTypeAttrs"
+          :error="errors.documentType"
+          label="Tipo de Documento"
+          :options="documentTypeOptions"
+        />
+
+        <MySelect
+          v-model="documentIssuer"
+          v-bind="documentIssuerAttrs"
+          :error="errors.documentType"
+          label="Emisor del Documento"
+          :options="issuerDocsOptions"
+        />
+        <!-- Apellido -->
+        <MyInput
+          v-model="lastName"
+          v-bind="lastNameAttrs"
+          :error="errors.lastName"
+          label="Apellido"
+          placeholder="Ingrese el Apellido"
+        />
+
+        <!-- Segundo Apellido -->
+        <MyInput
+          v-model="secondLastName"
+          v-bind="secondLastNameAttrs"
+          :error="errors.secondLastName"
+          label="Segundo Apellido"
+          placeholder="Ingrese el Segundo Apellido"
+        />
+
+        <!-- Nombre -->
+        <MyInput
+          v-model="firstName"
+          v-bind="firstNameAttrs"
+          :error="errors.firstName"
+          label="Nombre"
+          placeholder="Ingrese el Nombre"
+        />
+
+        <!-- Otros Nombres -->
+        <MyInput
+          v-model="otherNames"
+          v-bind="otherNamesAttrs"
+          :error="errors.otherNames"
+          label="Otros Nombres"
+          placeholder="Ingrese Otros Nombres"
+        />
+
+        <!-- Nacionalidad -->
+        <MySelect
+          v-model="nationality"
+          :options="nationalityOptions"
+          :error="errors.nationality"
+          v-bind="nationalityAttrs"
+          label="Nacionalidad"
+        />
+
+        <!-- Sexo -->
+        <MySelect
+          v-model="sex"
+          :options="sexType"
+          :error="errors.sex"
+          v-bind="sexAttrs"
+          label="Sexo"
+        />
+        <label class="input input-bordered flex items-center gap-2">
+          <span>Fecha de Nacimiento </span>
+          <input
+            type="date"
+            v-model="dateOfBirht"
+            :class="['form-control', errors.dateOfBirht ? 'border-red-500' : '']"
+            placeholder="Fecha de Nacimiento"
+            v-bind="dateOfBirhtAttrs"
+          />
+        </label>
+
+        <!-- Domicilio -->
+        <MyInput
+          v-model="address"
+          v-bind="addressAttrs"
+          :error="errors.address"
+          label="Domicilio"
+          placeholder="Ingrese el Domicilio"
+        />
+        <!-- Buttons -->
+        <ButtonGroup :buttons="buttons!" />
+      </form>
+    </div>
   </div>
 </template>
 

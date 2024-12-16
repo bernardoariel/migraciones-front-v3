@@ -1,68 +1,73 @@
 <template>
   <div class="flex flex-col">
-    <div class="text-2xl font-semibold mb-6 text-center">
-      {{ idPersonSelected == 'new' || idPersonSelected === null ? 'Agregando ' : 'Editando' }} un
-      {{ nombreForm }}
+    <div v-if="!person && idPersonSelected !== 'new' && idPersonSelected" class="flex items-center justify-center h-20">
+      <span class="loading loading-dots loading-lg text-primary"></span>
     </div>
+    <div v-else>
+      <div class="text-2xl font-semibold mb-6 text-center">
+        {{ idPersonSelected == 'new' || idPersonSelected === null ? 'Agregando ' : 'Editando' }} un
+        {{ nombreForm }}
+      </div>
 
-    <form @submit.prevent="onSubmit" class="space-y-4">
-      <MyInput
-        v-model.number="documentNumber"
-        v-bind="documentNumberAttrs"
-        :error="errors.documentNumber"
-        label="Documento"
-        placeholder="Ingrese el Documento"
-        type="number"
-        @blur="checkDniExistence"
-      />
-      <span class="text-red-400" v-if="errorDoc">{{ errorDoc }}</span>
+      <form @submit.prevent="onSubmit" class="space-y-4">
+        <MyInput
+          v-model.number="documentNumber"
+          v-bind="documentNumberAttrs"
+          :error="errors.documentNumber"
+          label="Documento"
+          placeholder="Ingrese el Documento"
+          type="number"
+          @blur="checkDniExistence"
+        />
+        <span class="text-red-400" v-if="errorDoc">{{ errorDoc }}</span>
 
-      <MySelect
-        v-model="documentType"
-        v-bind="documentTypeAttrs"
-        :error="errors.documentType"
-        label="Tipo de Documento"
-        :options="documentTypeOptions"
-      />
+        <MySelect
+          v-model="documentType"
+          v-bind="documentTypeAttrs"
+          :error="errors.documentType"
+          label="Tipo de Documento"
+          :options="documentTypeOptions"
+        />
 
-      <!-- Apellido -->
-      <MyInput
-        v-model="lastName"
-        v-bind="lastNameAttrs"
-        :error="errors.lastName"
-        label="Apellido"
-        placeholder="Ingrese el Apellido"
-      />
+        <!-- Apellido -->
+        <MyInput
+          v-model="lastName"
+          v-bind="lastNameAttrs"
+          :error="errors.lastName"
+          label="Apellido"
+          placeholder="Ingrese el Apellido"
+        />
 
-      <!-- Segundo Apellido -->
-      <MyInput
-        v-model="secondLastName"
-        v-bind="secondLastNameAttrs"
-        :error="errors.secondLastName"
-        label="Segundo Apellido"
-        placeholder="Ingrese el Segundo Apellido"
-      />
+        <!-- Segundo Apellido -->
+        <MyInput
+          v-model="secondLastName"
+          v-bind="secondLastNameAttrs"
+          :error="errors.secondLastName"
+          label="Segundo Apellido"
+          placeholder="Ingrese el Segundo Apellido"
+        />
 
-      <!-- Nombre -->
-      <MyInput
-        v-model="firstName"
-        v-bind="firstNameAttrs"
-        :error="errors.firstName"
-        label="Nombre"
-        placeholder="Ingrese el Nombre"
-      />
+        <!-- Nombre -->
+        <MyInput
+          v-model="firstName"
+          v-bind="firstNameAttrs"
+          :error="errors.firstName"
+          label="Nombre"
+          placeholder="Ingrese el Nombre"
+        />
 
-      <!-- Otros Nombres -->
-      <MyInput
-        v-model="otherNames"
-        v-bind="otherNamesAttrs"
-        :error="errors.otherNames"
-        label="Otros Nombres"
-        placeholder="Ingrese Otros Nombres"
-      />
+        <!-- Otros Nombres -->
+        <MyInput
+          v-model="otherNames"
+          v-bind="otherNamesAttrs"
+          :error="errors.otherNames"
+          label="Otros Nombres"
+          placeholder="Ingrese Otros Nombres"
+        />
 
-      <ButtonGroup :buttons="buttons!" />
-    </form>
+        <ButtonGroup :buttons="buttons!" />
+      </form>
+    </div>
   </div>
 </template>
 
