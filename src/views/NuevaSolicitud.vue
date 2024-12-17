@@ -192,6 +192,7 @@ watch(
 );
 onMounted(() => {
   personStore.resetState();
+  ordenStore.resetOrden()
 });
 </script>
 

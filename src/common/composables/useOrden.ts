@@ -7,14 +7,22 @@ import type { OrdenSolicitud } from '../interfaces/orders.interface';
 // Función para obtener una orden por ID (similar a `getById` en el archivo de personas)
 export const getOrdenById = async (id: number) => {
   try {
-    const response = await apiMigrationsData.get(`/v2/ordenes/${id}`); // Endpoint corregido para obtener una orden
+    const response = await apiMigrationsData.get(`/v2/orden/${id}`); // Endpoint corregido para obtener una orden
     return response.data;
   } catch (error) {
     console.error(`Error al obtener la orden con ID ${id}:`, error);
     throw error;
   }
 };
-
+export const getOrdenItemById = async (id: number) => {
+  try {
+    const response = await apiMigrationsData.get(`/ordenesitems/${id}`); // Endpoint corregido para obtener una orden
+    return response.data;
+  } catch (error) {
+    console.error(`Error al obtener la orden con ID ${id}:`, error);
+    throw error;
+  }
+};
 const useOrden = (idOrden: Ref<number | null> | ComputedRef<number | null>) => {
   const orden = ref<OrdenSolicitud | null>(null);
   const queryClient = useQueryClient();

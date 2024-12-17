@@ -17,7 +17,7 @@
       <!-- <h1 v-if="!idPersonSelected && !activeCategory" class="text-4xl">
         No existe ninguna persona seleccionada
       </h1> -->
-      <SolicitudCard v-if="showCard" />
+      <SolicitudCard v-if="idOrdenSelected"  />
       <!-- <component
         v-else
         :is="dynamicComponent"
@@ -61,6 +61,7 @@ const idOrdenSelected = getIdOrdenSelected;
 const activeCategory = getActiveCategory;
 const showCard = ref(false)
 const buttonConfig = ref<ButtonConfig[]>([]);
+const hasItems = computed(() => ordenStore.hasItems);
 // const updateButtonConfigurations = (): Record<string, ButtonConfig[]> => {
 //   return {
 //     menores: [
@@ -148,12 +149,12 @@ watch(
 //   },
 //   { immediate: true },
 // );
-watch(
-  () => idOrdenSelected.value,
-  (newValue) => {
-    // Si el nuevo valor de idPersonSelected no es null o undefined, mostramos la tarjeta
-    showCard.value = newValue !== null && newValue !== undefined;
-  },
-  { immediate: true } // Esto asegura que el valor se verifique también al inicio
-);
+// watch(
+//   () => idOrdenSelected.value,
+//   (newValue) => {
+//     // Si el nuevo valor de idPersonSelected no es null o undefined, mostramos la tarjeta
+//     showCard.value = newValue !== null && newValue !== undefined;
+//   },
+//   { immediate: true } // Esto asegura que el valor se verifique también al inicio
+// );
 </script>
