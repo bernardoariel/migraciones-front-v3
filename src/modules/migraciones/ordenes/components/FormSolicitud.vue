@@ -52,6 +52,7 @@
         :error="errors.mayoriaEdad"
         label="¿ Hasta mayoria de edad ?"
         :options="mayoriaEdadOptions"
+         @change="handleMayoriaEdadChange"
       />
 
       <label class="input input-bordered flex items-center gap-2">
@@ -74,7 +75,7 @@
           v-bind="dateOfEndAttrs"
         />
       </label>
-      <button type="submit" class="btn btn-primary">Generar solicitud</button>
+      <button type="submit" class="btn btn-primary" :disabled="!isFormValid">Generar solicitud</button>
     </form>
   </div>
 </template>
@@ -106,6 +107,7 @@ interface Props {
 
 const props = defineProps<Props>();
 const nombreForm = ref('SolicitudForm');
+const mayoriaEdadAnos = 21;
 
 const router = useRouter();
 const isFormValid = ref(false);
@@ -159,7 +161,7 @@ watch(orden, (newOrden) => {
       instrumentoType: newOrden.instrumento,
       paisType: newOrden.cualquier_pais,
       mayoriaEdad: newOrden.vigencia_hasta_mayoria_edad,
-      dateOfInstrumento: newOrden.fecha_del_instrumento,
+      dateOfInstrumento: newOrden.fecha_del_instrumento || new Date().toISOString().split('T')[0],
       paisDescripcion: newOrden.paises_desc,
       dateOfEnd: newOrden.fecha_vigencia_hasta,
       dateOfInit: newOrden.fecha_vigencia_desde,
@@ -209,6 +211,18 @@ const onSubmit = handleSubmit(async (values) => {
   }
 });
 
+const handleMayoriaEdadChange= (value: string)=> {
+  if (value === 'y' && menor.value?.fecha_de_nacimiento) {
+    const fechaNacimiento = new Date(menor.value.fecha_de_nacimiento)
+    const fechaMayoriaEdad = new Date(
+      fechaNacimiento.getFullYear() + mayoriaEdadAnos,
+      fechaNacimiento.getMonth(),
+      fechaNacimiento.getDate()
+    );
+    setValues({ dateOfEnd: fechaMayoriaEdad.toISOString().split('T')[0] });
+  }
+}
+
 onMounted(async () => {
   if (effectiveId.value === 'new') {
     resetForm();
@@ -228,7 +242,10 @@ watch(effectiveId, async (newId) => {
     resetForm();
   }
 });
-
+onMounted(() => {
+  const today = new Date().toISOString().split('T')[0];
+  setValues({ dateOfInstrumento: today });
+});
 defineExpose({ resetForm, onSubmit });
 </script>
 
