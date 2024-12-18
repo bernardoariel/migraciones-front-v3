@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col">
-    <div class="text-2xl font-semibold mb-6 text-center">
+    <div class="text-2xl font-semibold mb-6 text-center mt-2">
       {{ idPersonSelected == 'new' || idPersonSelected === null ? 'Agregando ' : 'Editando' }} un
       {{ nombreForm }}
     </div>

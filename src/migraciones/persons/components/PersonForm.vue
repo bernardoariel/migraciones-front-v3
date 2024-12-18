@@ -68,46 +68,50 @@
         label="Otros Nombres"
         placeholder="Ingrese Otros Nombres"
       />
-
-      <!-- Nacionalidad -->
-      <MySelect
-        v-model="nationality"
-        :options="nationalityOptions"
-        :error="errors.nationality"
-        v-bind="nationalityAttrs"
-        label="Nacionalidad"
-      />
-
-      <!-- Sexo -->
-      <MySelect
-        v-model="sex"
-        :options="sexType"
-        :error="errors.sex"
-        v-bind="sexAttrs"
-        label="Sexo"
-      />
-      <label class="input input-bordered flex items-center gap-2">
-        <span>Fecha de Nacimiento </span>
-        <input
-          type="date"
-          v-model="dateOfBirht"
-          :class="['form-control', errors.dateOfBirht ? 'border-red-500' : '']"
-          placeholder="Fecha de Nacimiento"
-          v-bind="dateOfBirhtAttrs"
+      <template v-if="!isAcompaneante">
+        <!-- Nacionalidad -->
+        <MySelect
+          v-model="nationality"
+          :options="nationalityOptions"
+          :error="errors.nationality"
+          v-bind="nationalityAttrs"
+          label="Nacionalidad"
         />
-      </label>
-
-      <!-- Domicilio -->
-      <MyInput
-        v-model="address"
-        v-bind="addressAttrs"
-        :error="errors.address"
-        label="Domicilio"
-        placeholder="Ingrese el Domicilio"
-      />
+        <!-- Sexo -->
+        <MySelect
+          v-model="sex"
+          :options="sexType"
+          :error="errors.sex"
+          v-bind="sexAttrs"
+          label="Sexo"
+        />
+        <label class="input input-bordered flex items-center gap-2">
+          <span>Fecha de Nacimiento </span>
+          <input
+            type="date"
+            v-model="dateOfBirht"
+            :class="['form-control', errors.dateOfBirht ? 'border-red-500' : '']"
+            placeholder="Fecha de Nacimiento"
+            v-bind="dateOfBirhtAttrs"
+          />
+        </label>
+        <!-- Domicilio -->
+        <MyInput
+          v-model="address"
+          v-bind="addressAttrs"
+          :error="errors.address"
+          label="Domicilio"
+          placeholder="Ingrese el Domicilio"
+        />
+      </template>
       <!-- Buttons -->
+      <p>¿Formulario válido?: {{ meta.valid }}</p>
       <ButtonGroup :buttons="buttons!" />
     </form>
+    <div v-if="Object.keys(errors).length">
+      <p class="text-red-500 font-bold">Errores de validación:</p>
+      <pre>{{ errors }}</pre>
+    </div>
   </div>
 </template>
 
@@ -129,7 +133,7 @@ import usePerson from '@/migraciones/persons/composables/usePerson';
 import { getPersonByDoc } from '@/migraciones/persons/composables/usePerson';
 import { usePersonStore } from '@/migraciones/persons/store/personStore';
 import { useOrdenStore } from '@/common/store/ordenStore';
-import type { Autorizante } from '../../../modules/migraciones/autorizantes/interfaces/autorizante.interface';
+import type { Autorizante } from '../../autorizantes/interfaces/autorizante.interface';
 
 const toast = useToast();
 const { documentTypeOptions, nationalityOptions, issuerDocsOptions, loadOptions } =
@@ -145,37 +149,68 @@ interface ButtonConfig {
 }
 
 interface Props {
-  autorizante?: number | null;
+  autorizante?: number | 'new' | null;
   buttons?: ButtonConfig[];
 }
 
 const props = defineProps<Props>();
-const nombreForm = ref('Autorizante');
 
 const errorDoc = ref('');
 const route = useRoute();
 const isFormValid = ref(false);
 const validationSchema = computed(() => {
   return yup.object({
-    documentNumber: yup.string().matches(/^\d+$/).required().min(3),
+    documentNumber: yup
+      .string()
+      .matches(/^\d+$/)
+      .required('El número de documento es requerido')
+      .min(3, 'El documento debe tener al menos 3 caracteres'),
     documentType: yup
       .number()
-      .required()
+      .required('El tipo de documento es requerido')
       .oneOf(documentTypeOptions.value.map((opt) => opt.value)),
     documentIssuer: yup
       .number()
-      .required()
+      .required('El emisor del documento es requerido')
       .oneOf(issuerDocsOptions.value.map((opt) => opt.value)),
-    lastName: yup.string().required(),
+    lastName: yup.string().required('El apellido es requerido'),
     secondLastName: yup.string(),
-    firstName: yup.string().required().min(3),
+    firstName: yup
+      .string()
+      .required('El nombre es requerido')
+      .min(3, 'El nombre debe tener al menos 3 caracteres'),
     otherNames: yup.string(),
+
+    // Validación condicional para nationality
     nationality: yup
       .number()
-      .required()
-      .oneOf(nationalityOptions.value.map((opt) => opt.value)),
-    sex: yup.string().required().oneOf(['1', '2']),
+      .when([], {
+        is: () => getActiveCategory.value !== 'acompaneantes',
+        then: (schema) => schema.required('La nacionalidad es requerida'),
+        otherwise: (schema) => schema.optional(),
+      })
+      .oneOf(
+        nationalityOptions.value.map((opt) => opt.value),
+        'Valor no válido',
+      ),
+
+    // Validación condicional para sex
+    sex: yup
+      .string()
+      .when([], {
+        is: () => getActiveCategory.value !== 'acompaneantes',
+        then: (schema) => schema.required('El sexo es requerido'),
+        otherwise: (schema) => schema.optional(),
+      })
+      .oneOf(['1', '2'], 'Valor no válido'),
+
     address: yup.string(),
+
+    dateOfBirht: yup.string().when([], {
+      is: () => getActiveCategory.value !== 'acompaneantes',
+      then: (schema) => schema.required('La fecha de nacimiento es requerida'),
+      otherwise: (schema) => schema.optional(),
+    }),
   });
 });
 
@@ -201,12 +236,22 @@ const sexType = ref([
 ]);
 
 const personStore = usePersonStore();
-const { getIdPersonSelected } = storeToRefs(personStore);
+const { getIdPersonSelected, getActiveCategory } = storeToRefs(personStore);
+const categoryNameMap: Record<string, string> = {
+  menores: 'Menor',
+  autorizantes: 'Autorizante',
+  acompaneantes: 'Acompañante',
+};
+const nombreForm = ref('Autorizante');
+
 const idPersonSelected = getIdPersonSelected;
 const effectiveId = computed(() => props.autorizante ?? idPersonSelected.value);
 
 const isSubmitting = ref(false);
-
+const isAcompaneante = computed(() => {
+  console.log('Categoría Activa:', getActiveCategory.value);
+  return getActiveCategory.value === 'acompaneantes';
+});
 const queryClient = useQueryClient();
 const { person, createPerson, updatePerson } = usePerson(effectiveId);
 
@@ -244,20 +289,22 @@ watch(person, (newPerson) => {
 });
 
 const onSubmit = handleSubmit(async (value) => {
+  console.log('value::: ', value);
   if (isSubmitting.value) return;
   isSubmitting.value = true;
   try {
-    const payload: Autorizante = {
+    const payload: Partial<Autorizante> = {
       numero_de_documento: value.documentNumber,
       type_document_id: value.documentType,
       apellido: value.lastName,
       segundo_apellido: value.secondLastName,
       nombre: value.firstName,
-      otros_nombres: value.otherNames,
-      nationality_id: value.nationality,
-      sex_id: value.sex,
-      domicilio: value.address,
-      fecha_de_nacimiento: value.dateOfBirht,
+      ...(getActiveCategory.value !== 'acompaneantes' && {
+        nationality_id: value.nationality,
+        sex_id: value.sex,
+        domicilio: value.address,
+        fecha_de_nacimiento: value.dateOfBirht,
+      }),
       issuer_document_id: value.documentIssuer,
     };
     if (effectiveId.value === null || effectiveId.value === 'new') {
@@ -302,7 +349,13 @@ watch(effectiveId, async (newId) => {
     resetForm();
   }
 });
-
+watch(
+  getActiveCategory,
+  (newCategory) => {
+    nombreForm.value = categoryNameMap[newCategory!] || ''; // Usa el mapa para obtener el nombre
+  },
+  { immediate: true }, // Ejecuta inmediatamente con el valor inicial
+);
 defineExpose({ resetForm, onSubmit });
 </script>
 
