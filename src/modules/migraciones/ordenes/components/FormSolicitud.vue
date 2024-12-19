@@ -52,7 +52,7 @@
         :error="errors.mayoriaEdad"
         label="¿ Hasta mayoria de edad ?"
         :options="mayoriaEdadOptions"
-         @change="handleMayoriaEdadChange"
+         @update:modelValue="handleMayoriaEdadChange"
       />
 
       <label class="input input-bordered flex items-center gap-2">
@@ -163,8 +163,8 @@ watch(orden, (newOrden) => {
       mayoriaEdad: newOrden.vigencia_hasta_mayoria_edad,
       dateOfInstrumento: newOrden.fecha_del_instrumento || new Date().toISOString().split('T')[0],
       paisDescripcion: newOrden.paises_desc,
-      dateOfEnd: newOrden.fecha_vigencia_hasta,
-      dateOfInit: newOrden.fecha_vigencia_desde,
+      dateOfInit: yup.string().required('La fecha desde es requerida.'),
+       dateOfEnd: yup.string().required('La fecha hasta es requerida.'),  
     });
   }
 });
@@ -210,23 +210,35 @@ const onSubmit = handleSubmit(async (values) => {
     isSubmitting.value = false;
   }
 });
-
-const handleMayoriaEdadChange= (value: string)=> {
+const handleMayoriaEdadChange = (value: string) => {
+  console.log("aawwa")
   if (value === 'y' && menor.value?.fecha_de_nacimiento) {
-    const fechaNacimiento = new Date(menor.value.fecha_de_nacimiento)
+    console.log("aaa")
+    const fechaNacimiento = new Date(menor.value.fecha_de_nacimiento);
     const fechaMayoriaEdad = new Date(
       fechaNacimiento.getFullYear() + mayoriaEdadAnos,
       fechaNacimiento.getMonth(),
       fechaNacimiento.getDate()
     );
+
+    // Asignar directamente al v-model del campo 'Fecha hasta'
     setValues({ dateOfEnd: fechaMayoriaEdad.toISOString().split('T')[0] });
+  } else {
+    // Si selecciona 'No', limpiar el campo de fecha hasta
+    setValues({ dateOfEnd: '' });
   }
-}
+};
+
 
 onMounted(async () => {
   if (effectiveId.value === 'new') {
     resetForm();
   }
+  const today = new Date().toISOString().split('T')[0];
+  setValues({
+    dateOfInstrumento: today,
+    dateOfEnd: '',
+  });
 });
 
 watch(
@@ -242,10 +254,7 @@ watch(effectiveId, async (newId) => {
     resetForm();
   }
 });
-onMounted(() => {
-  const today = new Date().toISOString().split('T')[0];
-  setValues({ dateOfInstrumento: today });
-});
+
 defineExpose({ resetForm, onSubmit });
 </script>
 
