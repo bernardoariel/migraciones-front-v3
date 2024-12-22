@@ -24,15 +24,15 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import { storeToRefs } from 'pinia';
 
-import { usePersonStore } from '@/migraciones/persons/store/personStore';
-import PersonList from '@/common/components/PersonList.vue';
-
-import { useRoute } from 'vue-router';
 import NavBarCard from '@/common/components/NavBarCard.vue';
-import PlusIcon from '@/common/components/iconos/PlusIcon.vue';
+import PersonList from '@/migraciones/persons/components/PersonList.vue';
 import PersonForm from '@/migraciones/persons/components/PersonForm.vue';
+
+import PlusIcon from '@/common/components/iconos/PlusIcon.vue';
+import { usePersonStore } from '@/migraciones/persons/store/personStore';
 
 type ActiveCategory = 'menores' | 'autorizantes' | 'acompaneantes';
 

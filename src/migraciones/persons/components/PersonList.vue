@@ -34,11 +34,11 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
-import { usePersonStore } from '../../migraciones/persons/store/personStore';
+import { usePersonStore } from '../store/personStore';
 
-import ItemsPerson from './ItemsPerson.vue';
-import PaginationComponent from './PaginationComponent.vue';
-import SearchIcon from './iconos/SearchIcon.vue';
+import ItemsPerson from '../../../common/components/ItemsPerson.vue';
+import PaginationComponent from '../../../common/components/PaginationComponent.vue';
+import SearchIcon from '../../../common/components/iconos/SearchIcon.vue';
 import usePersons from '@/migraciones/persons/composables/usePersons';
 
 const personStore = usePersonStore();
@@ -67,7 +67,7 @@ const filteredPersonsByCategory = computed(() => {
 
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase();
-    return categoryPersons.filter((person) => {
+    return categoryPersons.filter((person: any) => {
       const fullName = `${person.nombre || ''} ${person.apellido || ''}`.toLowerCase();
       const documento = String(person.numero_de_documento || '').toLowerCase();
       return fullName.includes(query) || documento.includes(query);

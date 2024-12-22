@@ -39,7 +39,7 @@ import { storeToRefs } from 'pinia';
 import { useOrdenStore } from '@/common/store/ordenStore';
 import { usePersonStore } from '@/migraciones/persons/store/personStore';
 
-import PersonList from '@/common/components/PersonList.vue';
+import PersonList from '@/migraciones/persons/components/PersonList.vue';
 import FormMenor from '@/migraciones/menores/components/FormMenor.vue';
 import FormAutorizante from '@/migraciones/autorizantes/components/FormAutorizante.vue';
 import FormAcompaneante from '@/migraciones/acompaneantes/components/FormAcompaneante.vue';
