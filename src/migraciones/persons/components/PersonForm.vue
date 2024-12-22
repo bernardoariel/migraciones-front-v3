@@ -289,9 +289,9 @@ watch(person, (newPerson) => {
 });
 
 const onSubmit = handleSubmit(async (value) => {
-  console.log('value::: ', value);
   if (isSubmitting.value) return;
   isSubmitting.value = true;
+
   try {
     const payload: Partial<Autorizante> = {
       numero_de_documento: value.documentNumber,
@@ -307,20 +307,28 @@ const onSubmit = handleSubmit(async (value) => {
       }),
       issuer_document_id: value.documentIssuer,
     };
-    if (effectiveId.value === null || effectiveId.value === 'new') {
-      const resp = await createPerson(payload);
-      if (route.path.includes('solicitud')) {
-        ordenStore.getPerson('autorizantes', resp.id);
-        toast.success('Autorizante Agregado a la solicitud');
-      }
-      toast.success('Autorizante creado exitosamente');
-    } else {
-      await updatePerson(payload);
-      toast.success('Autorizante actualizado exitosamente');
-    }
 
+    const resp =
+      effectiveId.value === 'new' ? await createPerson(payload) : await updatePerson(payload);
+    const categoryMessageMap = {
+      menores: 'Menor agregado exitosamente.',
+      autorizantes: 'Autorizante agregado exitosamente.',
+      acompaneantes: 'Acompañante agregado exitosamente.',
+    };
+    // Llama al método getPerson solo si es necesario
+    if (route.path.includes('solicitud') && resp.id) {
+      ordenStore.getPerson(getActiveCategory.value!, resp.id);
+    }
+    const categoryMessage = categoryMessageMap[getActiveCategory.value!];
+    if (categoryMessage) {
+      toast.success(categoryMessage);
+    }
+    personStore.setPersonId('new');
     queryClient.invalidateQueries({ queryKey: ['persons'] });
   } catch (error) {
+    console.error(error);
+    toast.error('Error al procesar la acción.');
+  } finally {
     isSubmitting.value = false;
   }
 });
