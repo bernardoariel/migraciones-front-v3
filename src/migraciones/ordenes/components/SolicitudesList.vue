@@ -36,7 +36,7 @@ import { ref, computed, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
 
 import useOrdenes from '../../../common/composables/useOrdenes';
-import ItemsOrden from '../../../common/components/ItemsOrden.vue';
+import ItemsOrden from './ItemsOrden.vue';
 import { useOrdenStore } from '../store/ordenStore';
 // import PaginationComponent from './PaginationComponent.vue';
 

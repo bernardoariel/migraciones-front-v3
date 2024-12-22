@@ -42,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import type { OrdenSolicitud } from '../interfaces/orders.interface';
+import type { OrdenSolicitud } from '../../../common/interfaces/orders.interface';
 import { usePersonStore } from '@/migraciones/persons/store/personStore';
 import useOrdenItem from '@/common/composables/useOrdenItem';
 import { getById } from '@/migraciones/persons/composables/usePerson';
