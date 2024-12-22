@@ -13,17 +13,7 @@
     <div
       class="flex-[2] bg-white p-4 rounded-lg shadow-md max-h-[85vh] overflow-auto flex justify-center items-center"
     >
-      <!-- <h1 v-if="!idPersonSelected && !activeCategory" class="text-4xl">
-        No existe ninguna persona seleccionada
-      </h1> -->
       <SolicitudCard v-if="idOrdenSelected" />
-      <!-- <component
-        v-else
-        :is="dynamicComponent"
-        :personId="idPersonSelected"
-        :buttons="buttonConfig"
-        :ref="childRef"
-      ></component> -->
     </div>
   </div>
 </template>
@@ -42,18 +32,9 @@ import { useOrdenStore } from '@/migraciones/ordenes/store/ordenStore';
 
 type ActiveCategory = 'menores' | 'autorizantes' | 'acompaneantes';
 
-interface ButtonConfig {
-  label: string;
-  type?: 'button' | 'submit' | 'reset';
-  class?: string;
-  disabled?: boolean;
-  position?: 'left' | 'right' | 'center';
-  action: () => void;
-}
-
 const route = useRoute();
 const ordenStore = useOrdenStore();
-const { getActiveCategory, getIdOrdenSelected } = storeToRefs(ordenStore);
+const { getIdOrdenSelected } = storeToRefs(ordenStore);
 const idOrdenSelected = getIdOrdenSelected;
 
 const setActiveCategoryFromPath = () => {

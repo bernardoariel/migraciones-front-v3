@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/vue-query';
 import { storeToRefs } from 'pinia';
 
 import type { Acreditation } from '../interfaces/acreditations.interface';
-import { useAcreditationsStore } from '../store/acreditationsStore';
+import { useAcreditationsStore } from '../../../common/store/acreditationsStore';
 import { apiMigrationsData } from '@/api/apiMigrationsData';
 
 export const getAllAcreditations = async () => {

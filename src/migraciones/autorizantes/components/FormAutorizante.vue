@@ -123,7 +123,7 @@ import { useForm } from 'vee-validate';
 import MyInput from '@/common/components/elementos/MyInput.vue';
 import MySelect from '@/common/components/elementos/MySelect.vue';
 import ButtonGroup from '@/common/components/ButtonGroup.vue';
-import useDropdownOptions from '@/common/composables/useDropdownOptions';
+import useDropdownOptions from '@/migraciones/persons/composables/useDropdownOptions';
 
 import type { Autorizante } from '../interfaces/autorizante.interface';
 import usePerson from '@/migraciones/persons/composables/usePerson';

@@ -1,7 +1,7 @@
 import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
 
-import type { Autoritation } from '../interfaces/autoritation.interface';
+import type { Autoritation } from '../../migraciones/persons/interfaces/autoritation.interface';
 
 export const useAutoritationsStore = defineStore('autoritationsStore', () => {
   const autoritations = ref<Autoritation[]>([]);

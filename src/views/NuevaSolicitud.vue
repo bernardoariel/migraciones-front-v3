@@ -44,7 +44,7 @@ import FormMenor from '@/migraciones/menores/components/FormMenor.vue';
 import FormAutorizante from '@/migraciones/autorizantes/components/FormAutorizante.vue';
 import FormAcompaneante from '@/migraciones/acompaneantes/components/FormAcompaneante.vue';
 
-import CardValidation from '@/common/components/CardValidation.vue';
+import CardValidation from '@/migraciones/ordenes/components/CardValidation.vue';
 import NavBarCard from '@/migraciones/persons/components/NavBarCard.vue';
 import SolicitudCard from '@/migraciones/ordenes/components/SolicitudCard.vue';
 import PlusIcon from '@/common/components/iconos/PlusIcon.vue';

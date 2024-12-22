@@ -1,7 +1,7 @@
 import { watch } from 'vue';
 import { useQuery } from '@tanstack/vue-query';
 import { storeToRefs } from 'pinia';
-import { useAutoritationsStore } from '../store/autoritationsStore';
+import { useAutoritationsStore } from '../../../common/store/autoritationsStore';
 import { apiMigrationsData } from '@/api/apiMigrationsData';
 
 import type { Autoritation } from '../interfaces/autoritation.interface';

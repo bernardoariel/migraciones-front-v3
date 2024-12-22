@@ -75,7 +75,7 @@ import { storeToRefs } from 'pinia';
 import ButtonGroup from '@/common/components/ButtonGroup.vue';
 import MyInput from '@/common/components/elementos/MyInput.vue';
 import MySelect from '@/common/components/elementos/MySelect.vue';
-import useDropdownOptions from '@/common/composables/useDropdownOptions';
+import useDropdownOptions from '@/migraciones/persons/composables/useDropdownOptions';
 
 import type { Acompaneante } from '../interfaces/acompaneante.interface';
 

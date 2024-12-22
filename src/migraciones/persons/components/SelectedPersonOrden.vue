@@ -49,15 +49,15 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue';
 import EditarIcon from '../../../common/components/iconos/EditarIcon.vue';
 import EliminarIcon from '../../../common/components/iconos/EliminarIcon.vue';
 
-import useAutoritations from '../../../common/composables/useAutoritations';
-import useAcreditations from '../../../common/composables/useAcreditations';
-import { ref } from 'vue';
-import type { Autoritation } from '../../../common/interfaces/autoritation.interface';
-import type { Acreditation } from '../../../common/interfaces/acreditations.interface';
 import { useOrdenStore } from '@/migraciones/ordenes/store/ordenStore';
+import type { Autoritation } from '../interfaces/autoritation.interface';
+import type { Acreditation } from '../interfaces/acreditations.interface';
+import useAutoritations from '../composables/useAutoritations';
+import useAcreditations from '../composables/useAcreditations';
 
 interface Props {
   id: number;
