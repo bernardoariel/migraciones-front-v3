@@ -94,7 +94,7 @@ import { useToast } from 'vue-toastification';
 import { useRouter } from 'vue-router';
 
 import useOrden from '@/common/composables/useOrden';
-import { useOrdenStore } from '@/common/store/ordenStore';
+import { useOrdenStore } from '../store/ordenStore';
 
 const toast = useToast();
 
@@ -175,7 +175,7 @@ const onSubmit = handleSubmit(async (values) => {
   const autorizante1 = autorizantes.value?.[0] || null;
   const autorizante2 = autorizantes.value?.[1] || null;
 
-  const acompaneantesList = acompaneantes.value?.map((item) => ({ id: item.id })) || [];
+  const acompaneantesList = acompaneantes.value?.map((item: any) => ({ id: item.id })) || [];
   const payload = {
     numero_actuacion_notarial_cert_firma: values.numeroActuacion,
     instrumento: values.instrumentoType,

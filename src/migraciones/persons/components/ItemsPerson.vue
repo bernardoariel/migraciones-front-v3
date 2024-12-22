@@ -38,14 +38,16 @@
   </div>
 </template>
 <script setup lang="ts">
-import type { Person } from '../interfaces/person.interface';
-import { calculateAge } from '../helpers/calculateAge';
-import { usePersonStore } from '@/migraciones/persons/store/personStore';
-import { useOrdenStore } from '../store/ordenStore';
 import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
 import { useToast } from 'vue-toastification';
+
+import type { Person } from '../../../common/interfaces/person.interface';
+import { calculateAge } from '../../../common/helpers/calculateAge';
+import { usePersonStore } from '@/migraciones/persons/store/personStore';
+
 import usePersons from '@/migraciones/persons/composables/usePersons';
+import { useOrdenStore } from '@/migraciones/ordenes/store/ordenStore';
 
 interface Props {
   person: Partial<Person>;
@@ -73,8 +75,8 @@ const isDisabled = computed(() => {
 
   return (
     menor.value?.id === id ||
-    autorizantes.value.some((autorizante) => autorizante.id === id) ||
-    acompaneantes.value.some((acompaneante) => acompaneante.id === id)
+    autorizantes.value.some((autorizante: any) => autorizante.id === id) ||
+    acompaneantes.value.some((acompaneante: any) => acompaneante.id === id)
   );
 });
 
@@ -92,8 +94,8 @@ const seleccionarPersonId = (id: number) => {
 
 const isPersonMenorOrAcompañante = (id: number) => {
   return (
-    acompaneantesTabla.value.some((acompaneanteItem) => acompaneanteItem.id === id) ||
-    menoresTabla.value.some((menorItem) => menorItem.id === id)
+    acompaneantesTabla.value.some((acompaneanteItem: any) => acompaneanteItem.id === id) ||
+    menoresTabla.value.some((menorItem: any) => menorItem.id === id)
   );
 };
 

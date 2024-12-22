@@ -84,7 +84,7 @@
 import { computed } from 'vue';
 
 import { usePersonStore } from '@/migraciones/persons/store/personStore';
-import { useOrdenStore } from '../store/ordenStore';
+import { useOrdenStore } from '@/migraciones/ordenes/store/ordenStore';
 
 const ordenStore = useOrdenStore();
 const personStore = usePersonStore();

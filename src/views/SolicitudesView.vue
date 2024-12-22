@@ -29,18 +29,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { watch } from 'vue';
 import { storeToRefs } from 'pinia';
-
-import { useOrdenStore } from '@/common/store/ordenStore';
-import SolicitudesList from '@/common/components/SolicitudesList.vue';
-import FormMenor from '@/migraciones/menores/components/FormMenor.vue';
-import FormAutorizante from '@/migraciones/autorizantes/components/FormAutorizante.vue';
-import FormAcompaneante from '@/migraciones/acompaneantes/components/FormAcompaneante.vue';
 import { useRoute } from 'vue-router';
-import SolicitudNavBarCard from '@/common/components/SolicitudNavBarCard.vue';
+
+import SolicitudesList from '@/migraciones/ordenes/components/SolicitudesList.vue';
+import SolicitudCard from '@/migraciones/ordenes/components/SolicitudCard.vue';
+import SolicitudNavBarCard from '@/migraciones/ordenes/components/SolicitudNavBarCard.vue';
+
 import PlusIcon from '@/common/components/iconos/PlusIcon.vue';
-import SolicitudCard from '@/common/components/SolicitudCard.vue';
+import { useOrdenStore } from '@/migraciones/ordenes/store/ordenStore';
 
 type ActiveCategory = 'menores' | 'autorizantes' | 'acompaneantes';
 
@@ -57,74 +55,6 @@ const route = useRoute();
 const ordenStore = useOrdenStore();
 const { getActiveCategory, getIdOrdenSelected } = storeToRefs(ordenStore);
 const idOrdenSelected = getIdOrdenSelected;
-const activeCategory = getActiveCategory;
-const showCard = ref(false);
-const buttonConfig = ref<ButtonConfig[]>([]);
-const hasItems = computed(() => ordenStore.hasItems);
-// const updateButtonConfigurations = (): Record<string, ButtonConfig[]> => {
-//   return {
-//     menores: [
-//       {
-//         label: 'Cancelar',
-//         type: 'button',
-//         class: 'btn btn-ghost',
-//         action: () => ordenStore.resetState(),
-//         position: 'left',
-//       },
-//       {
-//         label: idPersonSelected.value ? 'Modificar Menor' : 'Agregar Menor',
-//         type: 'submit',
-//         class: 'btn btn-primary',
-//         action: () => childRef.value?.onSubmit(),
-//         position: 'right',
-//       },
-//     ],
-//     autorizantes: [
-//       {
-//         label: 'Cancelar',
-//         type: 'button',
-//         class: 'btn btn-ghost',
-//         action: () => ordenStore.resetState(),
-//         position: 'left',
-//       },
-//       {
-//         label: idPersonSelected.value ? 'Modificar Autorizante' : 'Agregar Autorizante',
-//         type: 'submit',
-//         class: 'btn btn-primary',
-//         action: () => childRef.value?.onSubmit(),
-//         position: 'right',
-//       },
-//     ],
-//     acompaneantes: [
-//       {
-//         label: 'Cancelar',
-//         type: 'button',
-//         class: 'btn btn-ghost',
-//         action: () => ordenStore.resetState(),
-//         position: 'left',
-//       },
-//       {
-//         label: idPersonSelected.value ? 'Modificar Acompañante' : 'Agregar Acompañante',
-//         type: 'submit',
-//         class: 'btn btn-primary',
-//         action: () => childRef.value?.onSubmit(),
-//         position: 'right',
-//       },
-//     ],
-//   };
-// };
-
-const childRef = ref();
-const componentMap: Record<ActiveCategory, any> = {
-  menores: FormMenor,
-  autorizantes: FormAutorizante,
-  acompaneantes: FormAcompaneante,
-};
-
-const dynamicComponent = computed(() => {
-  const category = activeCategory.value as ActiveCategory;
-  return componentMap[category] || null;
-});
 
 const setActiveCategoryFromPath = () => {
   const category = route.path.slice(1) as ActiveCategory;
@@ -138,22 +68,4 @@ watch(
   },
   { immediate: true },
 );
-
-// watch(
-//   [activeCategory, idOrdenSelected],
-//   () => {
-//     const configs = updateButtonConfigurations();
-//     buttonConfig.value = configs[activeCategory.value || ''] || [];
-
-//   },
-//   { immediate: true },
-// );
-// watch(
-//   () => idOrdenSelected.value,
-//   (newValue) => {
-//     // Si el nuevo valor de idPersonSelected no es null o undefined, mostramos la tarjeta
-//     showCard.value = newValue !== null && newValue !== undefined;
-//   },
-//   { immediate: true } // Esto asegura que el valor se verifique también al inicio
-// );
 </script>

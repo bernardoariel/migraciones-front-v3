@@ -43,12 +43,12 @@
 
 <script setup lang="ts">
 import type { OrdenSolicitud } from '../interfaces/orders.interface';
-import { useOrdenStore } from '@/common/store/ordenStore';
 import { usePersonStore } from '@/migraciones/persons/store/personStore';
 import useOrdenItem from '@/common/composables/useOrdenItem';
 import { getById } from '@/migraciones/persons/composables/usePerson';
 import { storeToRefs } from 'pinia';
 import { computed, ref } from 'vue';
+import { useOrdenStore } from '@/migraciones/ordenes/store/ordenStore';
 
 interface Props {
   orden: Partial<OrdenSolicitud>;

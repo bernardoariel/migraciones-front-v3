@@ -27,7 +27,7 @@ import { ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { storeToRefs } from 'pinia';
 
-import NavBarCard from '@/common/components/NavBarCard.vue';
+import NavBarCard from '@/migraciones/persons/components/NavBarCard.vue';
 import PersonList from '@/migraciones/persons/components/PersonList.vue';
 import PersonForm from '@/migraciones/persons/components/PersonForm.vue';
 

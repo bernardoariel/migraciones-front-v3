@@ -22,7 +22,6 @@ export const getAll = async () => {
   }
 };
 
-// Obtener un acompañante por ID
 export const getById = async (id: number) => {
   try {
     const response = await apiMigrationsData.get(`/v2/personaById/${id}`);

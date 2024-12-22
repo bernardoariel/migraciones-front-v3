@@ -95,14 +95,13 @@
 
 <script setup lang="ts">
 import AutorizanteIcon from '@/migraciones/persons/assets/AutorizanteIcon.vue';
-import { useOrdenStore } from '../store/ordenStore';
 import { storeToRefs } from 'pinia';
+import { calculateAge } from '../../../common/helpers/calculateAge';
 
-import { calculateAge } from '../helpers/calculateAge';
-
-import SelectedPersonOrden from './SelectedPersonOrden.vue';
-import BabyIcon from '../../migraciones/persons/assets/BabyIcon.vue';
-import AcompaneanteIcon from '../../migraciones/persons/assets/AcompaneanteIcon.vue';
+import { useOrdenStore } from '../store/ordenStore';
+import BabyIcon from '../../persons/assets/BabyIcon.vue';
+import SelectedPersonOrden from '../../persons/components/SelectedPersonOrden.vue';
+import AcompaneanteIcon from '../../persons/assets/AcompaneanteIcon.vue';
 import FormSolicitud from '@/migraciones/ordenes/components/FormSolicitud.vue';
 
 const ordenStore = useOrdenStore();

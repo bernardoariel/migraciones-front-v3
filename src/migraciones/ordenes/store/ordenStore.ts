@@ -3,10 +3,12 @@ import { defineStore } from 'pinia';
 import type { Autorizante } from '../../migraciones/autorizantes/interfaces/autorizante.interface';
 import type { Acompaneante } from '../../migraciones/acompaneantes/interfaces/acompaneante.interface';
 import type { Menor } from '../../migraciones/menores/interfaces/menor.interface';
-import { OrdenBuilder } from '../class/OrdenBuilder';
-import { getById } from '../services/persons';
-import { usePersonStore } from '../../migraciones/persons/store/personStore';
+
 import type { Solicitud } from '../../migraciones/ordenes/interface/solicitud.interface';
+
+import { getById } from '../../persons/services/actions';
+import { usePersonStore } from '@/migraciones/persons/store/personStore';
+import { OrdenBuilder } from '../class/OrdenBuilder';
 
 type CategoryOrden = 'pendientes' | 'autorizados' | 'todos' | null;
 

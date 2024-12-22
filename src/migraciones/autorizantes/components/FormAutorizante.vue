@@ -129,7 +129,7 @@ import type { Autorizante } from '../interfaces/autorizante.interface';
 import usePerson from '@/migraciones/persons/composables/usePerson';
 import { getPersonByDoc } from '@/migraciones/persons/composables/usePerson';
 import { usePersonStore } from '@/migraciones/persons/store/personStore';
-import { useOrdenStore } from '@/common/store/ordenStore';
+import { useOrdenStore } from '@/migraciones/ordenes/store/ordenStore';
 
 const toast = useToast();
 const { documentTypeOptions, nationalityOptions, issuerDocsOptions, loadOptions } =

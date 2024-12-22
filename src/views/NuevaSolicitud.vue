@@ -36,7 +36,7 @@
 <script setup lang="ts">
 import { computed, ref, watch, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useOrdenStore } from '@/common/store/ordenStore';
+
 import { usePersonStore } from '@/migraciones/persons/store/personStore';
 
 import PersonList from '@/migraciones/persons/components/PersonList.vue';
@@ -45,11 +45,12 @@ import FormAutorizante from '@/migraciones/autorizantes/components/FormAutorizan
 import FormAcompaneante from '@/migraciones/acompaneantes/components/FormAcompaneante.vue';
 
 import CardValidation from '@/common/components/CardValidation.vue';
-import NavBarCard from '@/common/components/NavBarCard.vue';
-import SolicitudCard from '@/common/components/SolicitudCard.vue';
+import NavBarCard from '@/migraciones/persons/components/NavBarCard.vue';
+import SolicitudCard from '@/migraciones/ordenes/components/SolicitudCard.vue';
 import PlusIcon from '@/common/components/iconos/PlusIcon.vue';
 import useAutoritations from '../common/composables/useAutoritations';
 import useAcreditations from '../common/composables/useAcreditations';
+import { useOrdenStore } from '@/migraciones/ordenes/store/ordenStore';
 
 type ActiveCategory = 'menores' | 'autorizantes' | 'acompaneantes';
 const childRef = ref();

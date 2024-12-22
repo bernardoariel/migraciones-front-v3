@@ -36,7 +36,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
 import { storeToRefs } from 'pinia';
-import { usePersonStore } from '../../migraciones/persons/store/personStore';
+import { usePersonStore } from '../store/personStore';
 import usePersons from '@/migraciones/persons/composables/usePersons';
 
 const { acompaneantes, menores, autorizantes } = usePersons();

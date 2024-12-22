@@ -86,7 +86,7 @@ import { useToast } from 'vue-toastification';
 import usePerson from '../../persons/composables/usePerson';
 import { getPersonByDoc } from '@/migraciones/persons/composables/usePerson';
 import { useRoute } from 'vue-router';
-import { useOrdenStore } from '@/common/store/ordenStore';
+import { useOrdenStore } from '@/migraciones/ordenes/store/ordenStore';
 
 const { documentTypeOptions, loadOptions } = useDropdownOptions();
 const ordenStore = useOrdenStore();

@@ -36,7 +36,7 @@ import { ref, computed, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
 import { usePersonStore } from '../store/personStore';
 
-import ItemsPerson from '../../../common/components/ItemsPerson.vue';
+import ItemsPerson from './ItemsPerson.vue';
 import PaginationComponent from '../../../common/components/PaginationComponent.vue';
 import SearchIcon from '../../../common/components/iconos/SearchIcon.vue';
 import usePersons from '@/migraciones/persons/composables/usePersons';

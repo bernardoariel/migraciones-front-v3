@@ -49,14 +49,15 @@
 </template>
 
 <script setup lang="ts">
-import EditarIcon from './iconos/EditarIcon.vue';
-import EliminarIcon from './iconos/EliminarIcon.vue';
-import { useOrdenStore } from '../store/ordenStore';
-import useAutoritations from '../composables/useAutoritations';
-import useAcreditations from '../composables/useAcreditations';
+import EditarIcon from '../../../common/components/iconos/EditarIcon.vue';
+import EliminarIcon from '../../../common/components/iconos/EliminarIcon.vue';
+
+import useAutoritations from '../../../common/composables/useAutoritations';
+import useAcreditations from '../../../common/composables/useAcreditations';
 import { ref } from 'vue';
-import type { Autoritation } from '../interfaces/autoritation.interface';
-import type { Acreditation } from '../interfaces/acreditations.interface';
+import type { Autoritation } from '../../../common/interfaces/autoritation.interface';
+import type { Acreditation } from '../../../common/interfaces/acreditations.interface';
+import { useOrdenStore } from '@/migraciones/ordenes/store/ordenStore';
 
 interface Props {
   id: number;
@@ -80,7 +81,7 @@ const selectAutoritation = (autoritation: Autoritation) => {
   autorizanteSelected.value = autoritation.descripcion;
 
   // Busca al autorizante por ID en el store y actualiza el valor de authorizing_relatives_id
-  const autorizante = ordenStore.autorizantes.find((aut) => aut.id === props.id);
+  const autorizante = ordenStore.autorizantes.find((aut: any) => aut.id === props.id);
   if (autorizante) {
     ordenStore.updateAutorizante(props.id, {
       authorizing_relatives_id: autoritation.id,
@@ -93,7 +94,7 @@ const selectAcreditation = (acreditation: Acreditation) => {
   acreditacionSelected.value = acreditation.descripcion;
 
   // Busca al autorizante por ID en el store y actualiza el valor de accreditation_links_id
-  const autorizante = ordenStore.autorizantes.find((aut) => aut.id === props.id);
+  const autorizante = ordenStore.autorizantes.find((aut: any) => aut.id === props.id);
   if (autorizante) {
     ordenStore.updateAutorizante(props.id, {
       accreditation_links_id: acreditation.id,

@@ -130,7 +130,7 @@ import { useQueryClient } from '@tanstack/vue-query';
 import { useRoute } from 'vue-router';
 
 import type { Menor } from '../interfaces/menor.interface';
-import { useOrdenStore } from '@/common/store/ordenStore';
+import { useOrdenStore } from '@/migraciones/ordenes/store/ordenStore';
 
 const toast = useToast();
 const { documentTypeOptions, nationalityOptions, issuerDocsOptions, loadOptions } =

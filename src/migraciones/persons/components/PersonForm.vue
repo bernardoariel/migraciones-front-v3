@@ -132,8 +132,9 @@ import useDropdownOptions from '@/common/composables/useDropdownOptions';
 import usePerson from '@/migraciones/persons/composables/usePerson';
 import { getPersonByDoc } from '@/migraciones/persons/composables/usePerson';
 import { usePersonStore } from '@/migraciones/persons/store/personStore';
-import { useOrdenStore } from '@/common/store/ordenStore';
+
 import type { Autorizante } from '../../autorizantes/interfaces/autorizante.interface';
+import { useOrdenStore } from '@/migraciones/ordenes/store/ordenStore';
 
 const toast = useToast();
 const { documentTypeOptions, nationalityOptions, issuerDocsOptions, loadOptions } =
