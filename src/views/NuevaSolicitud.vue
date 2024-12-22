@@ -48,8 +48,7 @@ import CardValidation from '@/common/components/CardValidation.vue';
 import NavBarCard from '@/migraciones/persons/components/NavBarCard.vue';
 import SolicitudCard from '@/migraciones/ordenes/components/SolicitudCard.vue';
 import PlusIcon from '@/common/components/iconos/PlusIcon.vue';
-import useAutoritations from '../common/composables/useAutoritations';
-import useAcreditations from '../common/composables/useAcreditations';
+
 import { useOrdenStore } from '@/migraciones/ordenes/store/ordenStore';
 
 type ActiveCategory = 'menores' | 'autorizantes' | 'acompaneantes';
@@ -63,9 +62,6 @@ interface ButtonConfig {
   position?: 'left' | 'right' | 'center';
   action: () => void;
 }
-
-const { autoritations } = useAutoritations();
-const { acreditations } = useAcreditations();
 
 const personStore = usePersonStore();
 const { getActiveCategory, getIdPersonSelected } = storeToRefs(personStore);
