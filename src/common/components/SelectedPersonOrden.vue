@@ -1,4 +1,5 @@
 <template>
+  <div>
   <div class="flex items-center">
     <slot name="icon"></slot>
     <div class="ml-4">
@@ -46,8 +47,8 @@
       <EliminarIcon />
     </button>
   </div>
+</div>
 </template>
-
 <script setup lang="ts">
 import EditarIcon from './iconos/EditarIcon.vue';
 import EliminarIcon from './iconos/EliminarIcon.vue';
