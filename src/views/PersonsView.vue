@@ -10,19 +10,14 @@
       </div>
       <PersonList />
     </div>
+    <!-- Formulario Base -->
     <div
       class="flex-[2] bg-white p-4 rounded-lg shadow-md max-h-[85vh] overflow-auto flex justify-center items-center"
     >
       <h1 v-if="!idPersonSelected && !activeCategory" class="text-4xl">
         No existe ninguna persona seleccionada
       </h1>
-      <component
-        v-else
-        :is="dynamicComponent"
-        :personId="idPersonSelected"
-        :buttons="buttonConfig"
-        :ref="childRef"
-      ></component>
+      <PersonForm v-else :autorizante="idPersonSelected" :buttons="buttonConfig" />
     </div>
   </div>
 </template>
@@ -31,13 +26,10 @@
 import { computed, ref, watch , onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
 
-import { usePersonStore } from '@/common/store/personStore';
-import PersonList from '@/common/components/PersonList.vue';
-import FormMenor from '@/modules/migraciones/menores/components/FormMenor.vue';
-import FormAutorizante from '@/modules/migraciones/autorizantes/components/FormAutorizante.vue';
-import FormAcompaneante from '@/modules/migraciones/acompaneantes/components/FormAcompaneante.vue';
-import { useRoute } from 'vue-router';
-import NavBarCard from '@/common/components/NavBarCard.vue';
+import NavBarCard from '@/migraciones/persons/components/NavBarCard.vue';
+import PersonList from '@/migraciones/persons/components/PersonList.vue';
+import PersonForm from '@/migraciones/persons/components/PersonForm.vue';
+
 import PlusIcon from '@/common/components/iconos/PlusIcon.vue';
 import { useOrdenStore } from '@/common/store/ordenStore';
 
@@ -115,16 +107,6 @@ const updateButtonConfigurations = (): Record<string, ButtonConfig[]> => {
 };
 
 const childRef = ref();
-const componentMap: Record<ActiveCategory, any> = {
-  menores: FormMenor,
-  autorizantes: FormAutorizante,
-  acompaneantes: FormAcompaneante,
-};
-
-const dynamicComponent = computed(() => {
-  const category = activeCategory.value as ActiveCategory;
-  return componentMap[category] || null;
-});
 
 const setActiveCategoryFromPath = () => {
   const category = route.path.slice(1) as ActiveCategory;
