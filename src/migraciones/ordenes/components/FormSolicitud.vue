@@ -93,7 +93,7 @@ import { useToast } from 'vue-toastification';
 
 import { useRouter } from 'vue-router';
 
-import useOrden from '@/common/composables/useOrden';
+import useOrden from '@/migraciones/ordenes/composables/useOrden';
 import { useOrdenStore } from '../store/ordenStore';
 
 const toast = useToast();

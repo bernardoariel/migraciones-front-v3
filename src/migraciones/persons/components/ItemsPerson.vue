@@ -42,7 +42,7 @@ import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
 import { useToast } from 'vue-toastification';
 
-import type { Person } from '../../../common/interfaces/person.interface';
+import type { Person } from '../interfaces/person.interface';
 import { calculateAge } from '../../../common/helpers/calculateAge';
 import { usePersonStore } from '@/migraciones/persons/store/personStore';
 

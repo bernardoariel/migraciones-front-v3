@@ -37,7 +37,7 @@
 import { computed } from 'vue';
 import { storeToRefs } from 'pinia';
 
-import useOrdenes from '../../../common/composables/useOrdenes';
+import useOrdenes from '../composables/useOrdenes';
 import { useOrdenStore } from '../store/ordenStore';
 
 const { pendingOrders, authorizedOrders, allOrders } = useOrdenes();

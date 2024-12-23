@@ -42,9 +42,9 @@
 </template>
 
 <script setup lang="ts">
-import type { OrdenSolicitud } from '../../../common/interfaces/orders.interface';
+import type { OrdenSolicitud } from '../interface/orders.interface';
 import { usePersonStore } from '@/migraciones/persons/store/personStore';
-import useOrdenItem from '@/common/composables/useOrdenItem';
+import useOrdenItem from '@/migraciones/ordenes/composables/useOrdenItem';
 import { getById } from '@/migraciones/persons/composables/usePerson';
 import { storeToRefs } from 'pinia';
 import { computed, ref } from 'vue';

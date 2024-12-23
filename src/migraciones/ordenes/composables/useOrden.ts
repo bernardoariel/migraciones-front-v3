@@ -2,7 +2,7 @@ import { ref, watch, unref, computed } from 'vue';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query';
 
 import { apiMigrationsData } from '@/api/apiMigrationsData';
-import type { OrdenSolicitud } from '../interfaces/orders.interface';
+import type { OrdenSolicitud } from '../interface/orders.interface';
 
 // Función para obtener una orden por ID (similar a `getById` en el archivo de personas)
 export const getOrdenById = async (id: number) => {

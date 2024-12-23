@@ -1,9 +1,9 @@
 import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
-import type { OrdenSolicitud } from '../interfaces/orders.interface';
+import type { OrdenSolicitud } from '../interface/orders.interface';
 
 export const useOrdersStore = defineStore('ordersStore', () => {
-  const orders = ref<OrdenSolicitud[]>([]); 
+  const orders = ref<OrdenSolicitud[]>([]);
   const currentPage = ref<number>(1);
   const itemsPerPage = 10;
 
@@ -17,7 +17,7 @@ export const useOrdersStore = defineStore('ordersStore', () => {
     currentPage,
     totalPages,
     setOrders,
-   
+
     setPage(page: number) {
       if (currentPage.value === page) return;
       if (page <= 0) return;

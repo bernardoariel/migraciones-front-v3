@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/vue-query';
 import { storeToRefs } from 'pinia';
 
 import { calculateAge } from '../../../common/helpers/calculateAge';
-import type { Person } from '../../../common/interfaces/person.interface';
+import type { Person } from '../interfaces/person.interface';
 import { usePersonsStore } from '../../../migraciones/persons/store/personsStore';
 import { getAll } from '../../../migraciones/persons/services/actions';
 

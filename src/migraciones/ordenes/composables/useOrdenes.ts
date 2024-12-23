@@ -1,9 +1,9 @@
-import { computed, ref , watch} from 'vue';
+import { computed, watch } from 'vue';
 import { useQuery } from '@tanstack/vue-query';
 import { storeToRefs } from 'pinia';
 import { useOrdersStore } from '../store/ordersStore';
 import { apiMigrationsData } from '@/api/apiMigrationsData';
-import type { OrdenSolicitud } from '../interfaces/orders.interface';
+import type { OrdenSolicitud } from '../interface/orders.interface';
 
 const fetchOrders = async (): Promise<OrdenSolicitud[]> => {
   const { data } = await apiMigrationsData.get<OrdenSolicitud[]>('/v2/ordenestodos');
@@ -29,7 +29,9 @@ const useOrdenes = () => {
   });
   // Filtrado por estados de 'aprobacion'
   const pendingOrders = computed(() => orders.value.filter((order) => order.aprobacion === null)); // Pendientes
-  const authorizedOrders = computed(() => orders.value.filter((order) => order.aprobacion !== null && !isNaN(Number(order.aprobacion)))); // Autorizadas
+  const authorizedOrders = computed(() =>
+    orders.value.filter((order) => order.aprobacion !== null && !isNaN(Number(order.aprobacion))),
+  ); // Autorizadas
   const allOrders = computed(() => orders.value); // Todas las órdenes
 
   const totalPagesByCategory = computed(() => ({

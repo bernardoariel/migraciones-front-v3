@@ -1,7 +1,7 @@
 import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
 
-import type { Acreditation } from '../../migraciones/persons/interfaces/acreditations.interface';
+import type { Acreditation } from '../../persons/interfaces/acreditations.interface';
 
 export const useAcreditationsStore = defineStore('acreditationsStore', () => {
   const acreditations = ref<Acreditation[]>([]);

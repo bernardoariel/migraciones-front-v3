@@ -35,17 +35,15 @@
 import { ref, computed, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
 
-import useOrdenes from '../../../common/composables/useOrdenes';
+import useOrdenes from '../composables/useOrdenes';
 import ItemsOrden from './ItemsOrden.vue';
 import { useOrdenStore } from '../store/ordenStore';
-// import PaginationComponent from './PaginationComponent.vue';
 
-const emit = defineEmits(['showSolicitudCard']);
+defineEmits(['showSolicitudCard']);
 const ordenStore = useOrdenStore();
 const { getActiveCategory } = storeToRefs(ordenStore);
 
-const { isLoading, currentPage, totalPagesByCategory, allOrders, authorizedOrders, pendingOrders } =
-  useOrdenes();
+const { isLoading, currentPage, allOrders, authorizedOrders, pendingOrders } = useOrdenes();
 
 const filteredOrdensByCategory = computed(() => {
   const categoryOrdens = (() => {

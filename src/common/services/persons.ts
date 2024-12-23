@@ -1,5 +1,5 @@
 import { apiMigrationsData } from '@/api/apiMigrationsData';
-import type { Person } from '../interfaces/person.interface';
+import type { Person } from '../../migraciones/persons/interfaces/person.interface';
 
 export const create = async (value: Partial<Person>) => {
   try {
