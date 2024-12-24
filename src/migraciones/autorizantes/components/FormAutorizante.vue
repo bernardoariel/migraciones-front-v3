@@ -319,8 +319,8 @@ const loadAllOptions = async () => {
     await Promise.all([
       loadOptions('tiposdocumentos', 'descripcion'),
       loadOptions('nacionalidades', 'nombre'),
-      loadOptions('sexo', 'descripcion'),
-      loadOptions('emisordocs', 'descripcion')
+      // loadOptions('sexo', 'descripcion'),
+      // loadOptions('emisordocs', 'descripcion')
     ]);
   } catch (error) {
     console.error('Error loading options:', error);
