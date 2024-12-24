@@ -47,8 +47,6 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { apiMigrationsData } from '@/api/apiMigrationsData';
 
-// Importa las imágenes
-import logo from '@/assets/images/logo.jpg';
 import backgroundImage from '@/assets/images/portada.jpg';
 
 const router = useRouter();
@@ -64,8 +62,7 @@ const handleForgotPassword = async () => {
     alert(response.data.message);
     router.push('/login');
   } catch (err) {
-    console.error(err.response?.data?.error || 'Error al enviar la solicitud');
-    alert(err.response?.data?.error || 'No se pudo procesar la solicitud');
+    console.error(err);
   }
 };
 </script>
