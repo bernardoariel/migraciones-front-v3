@@ -93,6 +93,7 @@ const updateButtonConfigurations = (): Record<string, ButtonConfig[]> => {
             : 'btn btn-secondary',
         action: () => {
           if (typeof idPersonSelected.value === 'number') {
+            console.log('seleccionando menor');
             ordenStore.getPerson(activeCategory.value!, idPersonSelected.value);
           } else {
             console.log('se hace el onsubmit');
