@@ -1,8 +1,11 @@
 <template>
   <div class="flex flex-col">
-    <div v-if="isLoading || timeoutReached" class="flex items-center justify-center h-20">
-      <span v-if="isLoading" class="loading loading-dots loading-lg text-primary"></span>
-    </div> 
+    <div
+      v-if="(!person || !person.apellido || isLoadingOptions) && idPersonSelected !== 'new' && idPersonSelected"
+      class="flex items-center justify-center h-20"
+    >
+      <span class="loading loading-dots loading-lg text-primary"></span>
+    </div>
     <div v-else>
       <div class="text-2xl font-semibold mb-6 text-center">
         {{ idPersonSelected == 'new' || idPersonSelected === null ? 'Agregando ' : 'Editando' }} un
@@ -116,7 +119,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import { onMounted, ref, watch, computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useToast } from 'vue-toastification';
@@ -156,9 +159,6 @@ interface Props {
 
 const props = defineProps<Props>();
 const nombreForm = ref('Autorizante');
-const isLoading = ref(true); // Estado de carga
-const timeoutReached = ref(false); // Si el tiempo de carga excede un límite
-
 
 const errorDoc = ref('');
 const route = useRoute();
@@ -286,24 +286,17 @@ const onSubmit = handleSubmit(async (value) => {
   }
 });
 onMounted(async () => {
-  try {
-    const timeout = setTimeout(() => {
-      timeoutReached.value = true;
-    }, 5000); // Tiempo máximo de espera: 5 segundos
+  await Promise.all([
+    loadOptions('nacionalidades', 'nombre'),
+    loadOptions('emisordocumentos', 'descripcion'),
+    loadOptions('tiposdocumentos', 'descripcion'),
+  ]);
 
-    await Promise.all([
-      loadOptions('nacionalidades', 'nombre'),
-      loadOptions('emisordocumentos', 'descripcion'),
-      loadOptions('tiposdocumentos', 'descripcion'),
-    ]);
-
-    clearTimeout(timeout); // Limpia el timeout si los datos llegan antes
-    isLoading.value = false;
-  } catch (error) {
-    isLoading.value = false;
-    toast.error('Error al cargar los datos del formulario');
+  if (effectiveId.value === 'new') {
+    resetForm();
   }
 });
+
 watch(
   () => meta.value,
   (newMeta) => {
@@ -317,48 +310,49 @@ watch(effectiveId, async (newId) => {
     resetForm();
   }
 });
+const isLoadingOptions = ref(true);
 
-defineExpose({ resetForm, onSubmit });
-
-const autorizanteData = ref(null);
-
-// Función para cargar los datos del autorizante
-const loadAutorizanteData = async (autorizanteId: number | null) => {
-  if (autorizanteId !== null) {
-    isLoading.value = true;
-    try {
-      autorizanteData.value = await ordenStore.getAutorizanteById(autorizanteId);
-      isLoading.value = false;
-    } catch (error) {
-      errorDoc.value = 'Error al cargar los datos del autorizante';
-      isLoading.value = false;
-    }
-  } else {
-    autorizanteData.value = null;
+// Function to load all select options
+const loadAllOptions = async () => {
+  isLoadingOptions.value = true;
+  try {
+    await Promise.all([
+      loadOptions('tiposdocumentos', 'descripcion'),
+      loadOptions('nacionalidades', 'descripcion'),
+      loadOptions('sexo', 'descripcion'),
+      loadOptions('emisordocs', 'descripcion')
+    ]);
+  } catch (error) {
+    console.error('Error loading options:', error);
+  } finally {
+    isLoadingOptions.value = false;
   }
 };
 
-// Observa los cambios en la propiedad autorizante
-watch(() => props.autorizante, (newVal) => {
-  loadAutorizanteData(newVal);
+// Update the watch for autorizante
+watch(() => props.autorizante, async (newVal) => {
+  if (newVal) {
+    person.value = null;
+    isLoadingOptions.value = true;
+    try {
+      const [personData] = await Promise.all([
+        ordenStore.getAutorizanteById(newVal),
+        loadAllOptions()
+      ]);
+      if (personData) {
+        person.value = personData;
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
 });
 
-// Cargar los datos iniciales si hay un autorizante seleccionado
-if (props.autorizante) {
-  loadAutorizanteData(props.autorizante);
-}
-
-// Función para eliminar un autorizante
-const eliminarAutorizante = async (autorizanteId: number) => {
-  try {
-    await ordenStore.removeAutorizante(autorizanteId);
-    // Restablecer los datos del autorizante después de eliminar
-    autorizanteData.value = null;
-    props.autorizante = null;
-  } catch (error) {
-    errorDoc.value = 'Error al eliminar el autorizante';
-  }
-};
+// Load options when component mounts
+onMounted(() => {
+  loadAllOptions();
+});
+defineExpose({ resetForm, onSubmit });
 </script>
 
 <style scoped></style>

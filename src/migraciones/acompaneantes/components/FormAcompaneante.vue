@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col">
-    <div v-if="!person && idPersonSelected !== 'new' && idPersonSelected" class="flex items-center justify-center h-20">
+    <div v-if="(!person || !person.apellido || isLoadingOptions) && idPersonSelected !== 'new' && idPersonSelected"  class="flex items-center justify-center h-20">
       <span class="loading loading-dots loading-lg text-primary"></span>
     </div>
     <div v-else>
@@ -232,6 +232,48 @@ watch(effectiveId, async (newId) => {
   if (newId) {
     resetForm();
   }
+});
+const isLoadingOptions = ref(true);
+
+// Modifica la función loadOptions para manejar el estado de carga
+const loadAllOptions = async () => {
+  isLoadingOptions.value = true;
+  try {
+    await Promise.all([
+      loadOptions('tiposdocumentos', 'descripcion'),
+      loadOptions('nacionalidades', 'descripcion'),
+      loadOptions('sexo', 'descripcion'),
+      loadOptions('emisordocs', 'descripcion')
+    ]);
+  } catch (error) {
+    console.error('Error loading options:', error);
+  } finally {
+    isLoadingOptions.value = false;
+  }
+};
+
+// Modifica el watch de autorizante para incluir la carga de opciones
+watch(() => props.acompaneante, async (newVal) => {
+  if (newVal) {
+    person.value = null;
+    isLoadingOptions.value = true;
+    try {
+      const [personData] = await Promise.all([
+        ordenStore.getAcompananteById(newVal),
+        loadAllOptions()
+      ]);
+      if (personData) {
+        person.value = personData;
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+});
+
+// Cargar opciones al montar el componente
+onMounted(() => {
+  loadAllOptions();
 });
 defineExpose({ resetForm, onSubmit });
 </script>

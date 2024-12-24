@@ -86,7 +86,7 @@ const useOrden = (idOrden: Ref<number | null> | ComputedRef<number | null>) => {
     orden, // La orden obtenida
     refetch, // Función para refetch de la orden
     mutateOrden: mutation.mutateAsync, // Función para ejecutar la mutación
-    isLoading: mutation.isLoading, // Estado de carga de la mutación
+    isLoading: mutation.status.value === "pending", // Estado de carga de la mutación
     createOrden, // Función para crear una orden
     updateOrden, // Función para actualizar una orden
   };

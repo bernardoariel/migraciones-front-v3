@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col">
     <div
-      v-if="!person && idPersonSelected !== 'new' && idPersonSelected"
+       v-if="(!person || !person.apellido || isLoadingOptions) && idPersonSelected !== 'new' && idPersonSelected"
       class="flex items-center justify-center h-20"
     >
       <span class="loading loading-dots loading-lg text-primary"></span>
@@ -310,6 +310,47 @@ watch(effectiveId, async (newId) => {
   if (newId) {
     resetForm();
   }
+});
+const isLoadingOptions = ref(true);
+
+const loadAllOptions = async () => {
+  isLoadingOptions.value = true;
+  try {
+    await Promise.all([
+      loadOptions('tiposdocumentos', 'descripcion'),
+      loadOptions('nacionalidades', 'descripcion'),
+      loadOptions('sexo', 'descripcion'),
+      loadOptions('emisordocs', 'descripcion')
+    ]);
+  } catch (error) {
+    console.error('Error loading options:', error);
+  } finally {
+    isLoadingOptions.value = false;
+  }
+};
+
+// Update watch for menor
+watch(() => props.menor, async (newVal) => {
+  if (newVal) {
+    person.value = null;
+    isLoadingOptions.value = true;
+    try {
+      const [personData] = await Promise.all([
+        ordenStore.getMenorById(newVal),
+        loadAllOptions()
+      ]);
+      if (personData) {
+        person.value = personData;
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+});
+
+// Load options when component mounts
+onMounted(() => {
+  loadAllOptions();
 });
 
 defineExpose({ resetForm, onSubmit });
