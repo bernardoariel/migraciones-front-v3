@@ -1,11 +1,8 @@
 <template>
   <div class="flex flex-col">
-    <div
-      v-if="!person && idPersonSelected !== 'new' && idPersonSelected"
-      class="flex items-center justify-center h-20"
-    >
-      <span class="loading loading-dots loading-lg text-primary"></span>
-    </div>
+    <div v-if="isLoading || timeoutReached" class="flex items-center justify-center h-20">
+      <span v-if="isLoading" class="loading loading-dots loading-lg text-primary"></span>
+    </div> 
     <div v-else>
       <div class="text-2xl font-semibold mb-6 text-center">
         {{ idPersonSelected == 'new' || idPersonSelected === null ? 'Agregando ' : 'Editando' }} un
@@ -119,7 +116,7 @@
   </div>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { onMounted, ref, watch, computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useToast } from 'vue-toastification';
@@ -159,6 +156,9 @@ interface Props {
 
 const props = defineProps<Props>();
 const nombreForm = ref('Autorizante');
+const isLoading = ref(true); // Estado de carga
+const timeoutReached = ref(false); // Si el tiempo de carga excede un límite
+
 
 const errorDoc = ref('');
 const route = useRoute();
@@ -286,17 +286,24 @@ const onSubmit = handleSubmit(async (value) => {
   }
 });
 onMounted(async () => {
-  await Promise.all([
-    loadOptions('nacionalidades', 'nombre'),
-    loadOptions('emisordocumentos', 'descripcion'),
-    loadOptions('tiposdocumentos', 'descripcion'),
-  ]);
+  try {
+    const timeout = setTimeout(() => {
+      timeoutReached.value = true;
+    }, 5000); // Tiempo máximo de espera: 5 segundos
 
-  if (effectiveId.value === 'new') {
-    resetForm();
+    await Promise.all([
+      loadOptions('nacionalidades', 'nombre'),
+      loadOptions('emisordocumentos', 'descripcion'),
+      loadOptions('tiposdocumentos', 'descripcion'),
+    ]);
+
+    clearTimeout(timeout); // Limpia el timeout si los datos llegan antes
+    isLoading.value = false;
+  } catch (error) {
+    isLoading.value = false;
+    toast.error('Error al cargar los datos del formulario');
   }
 });
-
 watch(
   () => meta.value,
   (newMeta) => {
@@ -312,6 +319,46 @@ watch(effectiveId, async (newId) => {
 });
 
 defineExpose({ resetForm, onSubmit });
+
+const autorizanteData = ref(null);
+
+// Función para cargar los datos del autorizante
+const loadAutorizanteData = async (autorizanteId: number | null) => {
+  if (autorizanteId !== null) {
+    isLoading.value = true;
+    try {
+      autorizanteData.value = await ordenStore.getAutorizanteById(autorizanteId);
+      isLoading.value = false;
+    } catch (error) {
+      errorDoc.value = 'Error al cargar los datos del autorizante';
+      isLoading.value = false;
+    }
+  } else {
+    autorizanteData.value = null;
+  }
+};
+
+// Observa los cambios en la propiedad autorizante
+watch(() => props.autorizante, (newVal) => {
+  loadAutorizanteData(newVal);
+});
+
+// Cargar los datos iniciales si hay un autorizante seleccionado
+if (props.autorizante) {
+  loadAutorizanteData(props.autorizante);
+}
+
+// Función para eliminar un autorizante
+const eliminarAutorizante = async (autorizanteId: number) => {
+  try {
+    await ordenStore.removeAutorizante(autorizanteId);
+    // Restablecer los datos del autorizante después de eliminar
+    autorizanteData.value = null;
+    props.autorizante = null;
+  } catch (error) {
+    errorDoc.value = 'Error al eliminar el autorizante';
+  }
+};
 </script>
 
 <style scoped></style>

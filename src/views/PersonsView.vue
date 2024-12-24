@@ -31,7 +31,7 @@ import PersonList from '@/migraciones/persons/components/PersonList.vue';
 import PersonForm from '@/migraciones/persons/components/PersonForm.vue';
 
 import PlusIcon from '@/common/components/iconos/PlusIcon.vue';
-import { useOrdenStore } from '@/common/store/ordenStore';
+import { useOrdenStore } from '@/migraciones/ordenes/store/ordenStore';
 
 const ordenStore = useOrdenStore()
 
