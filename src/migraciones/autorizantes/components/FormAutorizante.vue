@@ -318,7 +318,7 @@ const loadAllOptions = async () => {
   try {
     await Promise.all([
       loadOptions('tiposdocumentos', 'descripcion'),
-      loadOptions('nacionalidades', 'descripcion'),
+      loadOptions('nacionalidades', 'nombre'),
       loadOptions('sexo', 'descripcion'),
       loadOptions('emisordocs', 'descripcion')
     ]);
