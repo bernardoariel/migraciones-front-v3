@@ -54,7 +54,6 @@ const identifier = ref('');
 
 const handleForgotPassword = async () => {
   try {
-    // Enviar el identificador al backend
     const response = await apiMigrationsData.post('/forgot-password', {
       identifier: identifier.value,
     });
@@ -66,7 +65,3 @@ const handleForgotPassword = async () => {
   }
 };
 </script>
-
-<style scoped>
-/* Opcional: Ajusta los estilos según sea necesario */
-</style>
