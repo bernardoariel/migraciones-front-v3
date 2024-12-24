@@ -1,12 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
 
+import MainLayout from '../common/layouts/MainLayout.vue';
+import AuthLayout from '../common/layouts/AuthLayout.vue';
 import SolicitudesView from '../views/SolicitudesView.vue';
 import NuevaSolicitud from '../views/NuevaSolicitud.vue';
 import PersonsView from '../views/PersonsView.vue';
 import LoginView from '../views/LoginView.vue';
-import MainLayout from '../common/layouts/MainLayout.vue';
-import AuthLayout from '../common/layouts/AuthLayout.vue';
+import ForgotPasswordView from '../views/ForgotPasswordView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -53,6 +54,12 @@ const router = createRouter({
           component: SolicitudesView,
         },
       ],
+    },
+    {
+      path: '/forgot-password',
+      name: 'ForgotPassword',
+      meta: { title: 'Recuperar Contraseña' },
+      component: ForgotPasswordView,
     },
     {
       path: '/login',

@@ -58,10 +58,10 @@
                     Recordar mi cuenta.
                   </label>
                 </div>
-                <div class="text-sm ml-3">
-                  <a href="#" class="text-blue-400 hover:text-blue-500">
-                    ¿ Olvidaste la contraseña ?
-                  </a>
+                <div class="text-sm text-center mt-4">
+                  <router-link to="/forgot-password" class="text-blue-500 hover:underline">
+                    ¿Olvidaste tu contraseña?
+                  </router-link>
                 </div>
               </div>
               <div>
