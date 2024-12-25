@@ -58,6 +58,7 @@ import type { Autoritation } from '../interfaces/autoritation.interface';
 import type { Acreditation } from '../interfaces/acreditations.interface';
 import useAutoritations from '../composables/useAutoritations';
 import useAcreditations from '../composables/useAcreditations';
+import { usePersonStore } from '@/migraciones/persons/store/personStore';
 
 interface Props {
   id: number;
@@ -76,6 +77,7 @@ const { acreditations } = useAcreditations();
 const autorizanteSelected = ref('Relación con el menor');
 const acreditacionSelected = ref('Acreditación del parentezco');
 const isDropdownOpen = ref<string | null>(null);
+const personStore = usePersonStore();
 
 const selectAutoritation = (autoritation: Autoritation) => {
   autorizanteSelected.value = autoritation.descripcion;
@@ -108,8 +110,9 @@ const toggleDropdown = (dropdown: string) => {
 const eliminarPerson = (idPerson: number, category: string) => {
   ordenStore.removePerson(category, idPerson);
 };
-const seleccionarPerson = (idPerson: number, category: string) => {
-  ordenStore.getPerson(category, idPerson);
+const seleccionarPerson = (idPerson: number, category: string) => { 
+  personStore.setPersonId(idPerson);
+ 
 };
 </script>
 
