@@ -18,13 +18,14 @@
       class="flex-[2] bg-white p-4 rounded-lg shadow-md max-h-[85vh] overflow-auto flex justify-center"
     >
       <SolicitudCard v-if="!idPersonSelected && hasItems" />
-      <component
+      <!-- <component
         v-else
         :is="dynamicComponent"
         :personId="idPersonSelected"
         :buttons="buttonConfig"
         :ref="childRef"
-      ></component>
+      ></component> -->
+      <PersonForm :buttons="buttonConfig" />
     </div>
 
     <div class="flex-[1] max-h-[85vh] overflow-auto">
@@ -40,18 +41,14 @@ import { storeToRefs } from 'pinia';
 import { usePersonStore } from '@/migraciones/persons/store/personStore';
 
 import PersonList from '@/migraciones/persons/components/PersonList.vue';
-import FormMenor from '@/migraciones/menores/components/FormMenor.vue';
-import FormAutorizante from '@/migraciones/autorizantes/components/FormAutorizante.vue';
-import FormAcompaneante from '@/migraciones/acompaneantes/components/FormAcompaneante.vue';
-
 import CardValidation from '@/migraciones/ordenes/components/CardValidation.vue';
 import NavBarCard from '@/migraciones/persons/components/NavBarCard.vue';
 import SolicitudCard from '@/migraciones/ordenes/components/SolicitudCard.vue';
 import PlusIcon from '@/common/components/iconos/PlusIcon.vue';
 
 import { useOrdenStore } from '@/migraciones/ordenes/store/ordenStore';
+import PersonForm from '@/migraciones/persons/components/PersonForm.vue';
 
-type ActiveCategory = 'menores' | 'autorizantes' | 'acompaneantes';
 const childRef = ref();
 
 interface ButtonConfig {
@@ -163,15 +160,15 @@ const updateButtonConfigurations = (): Record<string, ButtonConfig[]> => {
 };
 
 // Computed para el componente dinámico
-const componentMap: Record<ActiveCategory, any> = {
+/* const componentMap: Record<ActiveCategory, any> = {
   menores: FormMenor,
   autorizantes: FormAutorizante,
   acompaneantes: FormAcompaneante,
-};
-const dynamicComponent = computed(() => {
+}; */
+/* const dynamicComponent = computed(() => {
   const category = activeCategory.value as ActiveCategory;
   return componentMap[category] || null;
-});
+}); */
 watch(
   hasItems,
   (newVal) => {

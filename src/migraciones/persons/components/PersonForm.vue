@@ -1,116 +1,124 @@
 <template>
   <div class="flex flex-col">
-    <div class="text-2xl font-semibold mb-6 text-center">
-      {{ idPersonSelected == 'new' || idPersonSelected === null ? 'Agregando ' : 'Editando' }} un
-      {{ nombreForm }}
+    <div
+      v-if="
+        (!person || !person.apellido || isLoadingOptions) &&
+        idPersonSelected !== 'new' &&
+        idPersonSelected
+      "
+      class="flex items-center justify-center h-screen"
+    >
+      <p class="text-3xl font-semibold mb-4 text-primary">Cargando</p>
+      <span class="loading loading-dots loading-lg text-primary ml-2 pl-10"></span>
     </div>
 
-    <form @submit="onSubmit" class="space-y-4">
-      <!-- Número de Documento -->
-      <MyInput
-        v-model.number="documentNumber"
-        v-bind="documentNumberAttrs"
-        :error="errors.documentNumber"
-        label="Documento"
-        placeholder="Ingrese el Documento"
-        type="number"
-        @blur="checkDniExistence"
-      />
-      <span class="text-red-400" v-if="errorDoc">{{ errorDoc }}</span>
-
-      <MySelect
-        v-model="documentType"
-        v-bind="documentTypeAttrs"
-        :error="errors.documentType"
-        label="Tipo de Documento"
-        :options="documentTypeOptions"
-      />
-
-      <MySelect
-        v-model="documentIssuer"
-        v-bind="documentIssuerAttrs"
-        :error="errors.documentType"
-        label="Emisor del Documento"
-        :options="issuerDocsOptions"
-      />
-      <!-- Apellido -->
-      <MyInput
-        v-model="lastName"
-        v-bind="lastNameAttrs"
-        :error="errors.lastName"
-        label="Apellido"
-        placeholder="Ingrese el Apellido"
-      />
-
-      <!-- Segundo Apellido -->
-      <MyInput
-        v-model="secondLastName"
-        v-bind="secondLastNameAttrs"
-        :error="errors.secondLastName"
-        label="Segundo Apellido"
-        placeholder="Ingrese el Segundo Apellido"
-      />
-
-      <!-- Nombre -->
-      <MyInput
-        v-model="firstName"
-        v-bind="firstNameAttrs"
-        :error="errors.firstName"
-        label="Nombre"
-        placeholder="Ingrese el Nombre"
-      />
-
-      <!-- Otros Nombres -->
-      <MyInput
-        v-model="otherNames"
-        v-bind="otherNamesAttrs"
-        :error="errors.otherNames"
-        label="Otros Nombres"
-        placeholder="Ingrese Otros Nombres"
-      />
-      <template v-if="!isAcompaneante">
-        <!-- Nacionalidad -->
-        <MySelect
-          v-model="nationality"
-          :options="nationalityOptions"
-          :error="errors.nationality"
-          v-bind="nationalityAttrs"
-          label="Nacionalidad"
-        />
-        <!-- Sexo -->
-        <MySelect
-          v-model="sex"
-          :options="sexType"
-          :error="errors.sex"
-          v-bind="sexAttrs"
-          label="Sexo"
-        />
-        <label class="input input-bordered flex items-center gap-2">
-          <span>Fecha de Nacimiento </span>
-          <input
-            type="date"
-            v-model="dateOfBirht"
-            :class="['form-control', errors.dateOfBirht ? 'border-red-500' : '']"
-            placeholder="Fecha de Nacimiento"
-            v-bind="dateOfBirhtAttrs"
-          />
-        </label>
-        <!-- Domicilio -->
+    <div v-else>
+      <div class="text-2xl font-semibold mb-6 text-center">
+        {{ idPersonSelected == 'new' || idPersonSelected === null ? 'Agregando ' : 'Editando' }} un
+        {{ nombreForm }}
+      </div>
+      <form @submit="onSubmit" class="space-y-4">
+        <!-- Número de Documento -->
         <MyInput
-          v-model="address"
-          v-bind="addressAttrs"
-          :error="errors.address"
-          label="Domicilio"
-          placeholder="Ingrese el Domicilio"
+          v-model.number="documentNumber"
+          v-bind="documentNumberAttrs"
+          :error="errors.documentNumber"
+          label="Documento"
+          placeholder="Ingrese el Documento"
+          type="number"
+          @blur="checkDniExistence"
         />
-      </template>
-      <!-- Buttons -->
-      <p>¿Formulario válido?: {{ meta.valid }}</p>
-      <ButtonGroup :buttons="buttons!" />
-    </form>
-    <div v-if="Object.keys(errors).length">
-      <p class="text-red-500 font-bold">Errores de validación:</p>
-      <pre>{{ errors }}</pre>
+        <span class="text-red-400" v-if="errorDoc">{{ errorDoc }}</span>
+        <MySelect
+          v-model="documentType"
+          v-bind="documentTypeAttrs"
+          :error="errors.documentType"
+          label="Tipo de Documento"
+          :options="documentTypeOptions"
+        />
+        <MySelect
+          v-model="documentIssuer"
+          v-bind="documentIssuerAttrs"
+          :error="errors.documentType"
+          label="Emisor del Documento"
+          :options="issuerDocsOptions"
+        />
+        <!-- Apellido -->
+        <MyInput
+          v-model="lastName"
+          v-bind="lastNameAttrs"
+          :error="errors.lastName"
+          label="Apellido"
+          placeholder="Ingrese el Apellido"
+        />
+        <!-- Segundo Apellido -->
+        <MyInput
+          v-model="secondLastName"
+          v-bind="secondLastNameAttrs"
+          :error="errors.secondLastName"
+          label="Segundo Apellido"
+          placeholder="Ingrese el Segundo Apellido"
+        />
+        <!-- Nombre -->
+        <MyInput
+          v-model="firstName"
+          v-bind="firstNameAttrs"
+          :error="errors.firstName"
+          label="Nombre"
+          placeholder="Ingrese el Nombre"
+        />
+        <!-- Otros Nombres -->
+        <MyInput
+          v-model="otherNames"
+          v-bind="otherNamesAttrs"
+          :error="errors.otherNames"
+          label="Otros Nombres"
+          placeholder="Ingrese Otros Nombres"
+        />
+        <template v-if="!isAcompaneante">
+          <!-- Nacionalidad -->
+          <MySelect
+            v-model="nationality"
+            :options="nationalityOptions"
+            :error="errors.nationality"
+            v-bind="nationalityAttrs"
+            label="Nacionalidad"
+          />
+          <!-- Sexo -->
+          <MySelect
+            v-model="sex"
+            :options="sexType"
+            :error="errors.sex"
+            v-bind="sexAttrs"
+            label="Sexo"
+          />
+          <label class="input input-bordered flex items-center gap-2">
+            <span>Fecha de Nacimiento </span>
+            <input
+              type="date"
+              v-model="dateOfBirht"
+              :class="['form-control', errors.dateOfBirht ? 'border-red-500' : '']"
+              placeholder="Fecha de Nacimiento"
+              v-bind="dateOfBirhtAttrs"
+            />
+          </label>
+          <!-- Domicilio -->
+          <MyInput
+            v-model="address"
+            v-bind="addressAttrs"
+            :error="errors.address"
+            label="Domicilio"
+            placeholder="Ingrese el Domicilio"
+          />
+        </template>
+        <!-- Buttons -->
+        <p>¿Formulario válido?: {{ meta.valid }}</p>
+        <ButtonGroup :buttons="buttons!" />
+      </form>
+      <div v-if="Object.keys(errors).length">
+        <p class="text-red-500 font-bold">Errores de validación:</p>
+        <pre>{{ errors }}</pre>
+      </div>
     </div>
   </div>
 </template>
@@ -155,6 +163,7 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+console.log('props::: ', props);
 
 const errorDoc = ref('');
 const route = useRoute();
@@ -238,12 +247,14 @@ const sexType = ref([
 
 const personStore = usePersonStore();
 const { getIdPersonSelected, getActiveCategory } = storeToRefs(personStore);
+console.log('getActiveCategory::: ', getActiveCategory.value);
+console.log('getIdPersonSelected::: ', getIdPersonSelected.value);
 const categoryNameMap: Record<string, string> = {
   menores: 'Menor',
   autorizantes: 'Autorizante',
   acompaneantes: 'Acompañante',
 };
-const nombreForm = ref('Autorizante');
+const nombreForm = ref('');
 
 const idPersonSelected = getIdPersonSelected;
 const effectiveId = computed(() => props.autorizante ?? idPersonSelected.value);
@@ -333,17 +344,32 @@ const onSubmit = handleSubmit(async (value) => {
     isSubmitting.value = false;
   }
 });
-onMounted(async () => {
-  await Promise.all([
-    loadOptions('nacionalidades', 'nombre'),
-    loadOptions('emisordocumentos', 'descripcion'),
-    loadOptions('tiposdocumentos', 'descripcion'),
-  ]);
 
-  if (effectiveId.value === 'new') {
-    resetForm();
+const isLoadingOptions = ref(true);
+onMounted(() => {
+  loadAllOptions();
+});
+
+watch(getActiveCategory, async (newCategory) => {
+  if (newCategory) {
+    await loadAllOptions();
   }
 });
+const loadAllOptions = async () => {
+  isLoadingOptions.value = true;
+  try {
+    await Promise.all([
+      loadOptions('tiposdocumentos', 'descripcion'),
+      loadOptions('nacionalidades', 'nombre'),
+      loadOptions('sexo', 'descripcion'),
+      loadOptions('emisordocs', 'descripcion'),
+    ]);
+  } catch (error) {
+    console.error('Error loading options:', error);
+  } finally {
+    isLoadingOptions.value = false;
+  }
+};
 
 watch(
   () => meta.value,
