@@ -18,14 +18,8 @@
       class="flex-[2] bg-white p-4 rounded-lg shadow-md max-h-[85vh] overflow-auto flex justify-center"
     >
       <SolicitudCard v-if="!idPersonSelected && hasItems" />
-      <!-- <component
-        v-else
-        :is="dynamicComponent"
-        :personId="idPersonSelected"
-        :buttons="buttonConfig"
-        :ref="childRef"
-      ></component> -->
-      <PersonForm :buttons="buttonConfig" />
+
+      <PersonForm v-else :buttons="buttonConfig" />
     </div>
 
     <div class="flex-[1] max-h-[85vh] overflow-auto">
