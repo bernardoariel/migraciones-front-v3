@@ -1,6 +1,13 @@
 <template>
   <div class="flex flex-col">
-    <div v-if="(!person || !person.apellido || isLoadingOptions) && idPersonSelected !== 'new' && idPersonSelected"  class="flex items-center justify-center h-20">
+    <div
+      v-if="
+        (!person || !person.apellido || isLoadingOptions) &&
+        idPersonSelected !== 'new' &&
+        idPersonSelected
+      "
+      class="flex items-center justify-center h-20"
+    >
       <span class="loading loading-dots loading-lg text-primary"></span>
     </div>
     <div v-else>
@@ -242,8 +249,8 @@ const loadAllOptions = async () => {
     await Promise.all([
       loadOptions('tiposdocumentos', 'descripcion'),
       loadOptions('nacionalidades', 'descripcion'),
-      loadOptions('sexo', 'descripcion'),
-      loadOptions('emisordocs', 'descripcion')
+      loadOptions('sexos', 'descripcion'),
+      loadOptions('emisordocumentos', 'descripcion'),
     ]);
   } catch (error) {
     console.error('Error loading options:', error);
@@ -253,23 +260,26 @@ const loadAllOptions = async () => {
 };
 
 // Modifica el watch de autorizante para incluir la carga de opciones
-watch(() => props.acompaneante, async (newVal) => {
-  if (newVal) {
-    person.value = null;
-    isLoadingOptions.value = true;
-    try {
-      const [personData] = await Promise.all([
-        ordenStore.getAcompananteById(newVal),
-        loadAllOptions()
-      ]);
-      if (personData) {
-        person.value = personData;
+watch(
+  () => props.acompaneante,
+  async (newVal) => {
+    if (newVal) {
+      person.value = null;
+      isLoadingOptions.value = true;
+      try {
+        const [personData] = await Promise.all([
+          ordenStore.getAcompananteById(newVal),
+          loadAllOptions(),
+        ]);
+        if (personData) {
+          person.value = personData;
+        }
+      } catch (error) {
+        console.error('Error:', error);
       }
-    } catch (error) {
-      console.error('Error:', error);
     }
-  }
-});
+  },
+);
 
 // Cargar opciones al montar el componente
 onMounted(() => {

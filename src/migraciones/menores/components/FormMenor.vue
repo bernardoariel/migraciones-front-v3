@@ -1,7 +1,11 @@
 <template>
   <div class="flex flex-col">
     <div
-       v-if="(!person || !person.apellido || isLoadingOptions) && idPersonSelected !== 'new' && idPersonSelected"
+      v-if="
+        (!person || !person.apellido || isLoadingOptions) &&
+        idPersonSelected !== 'new' &&
+        idPersonSelected
+      "
       class="flex items-center justify-center h-20"
     >
       <span class="loading loading-dots loading-lg text-primary"></span>
@@ -319,8 +323,8 @@ const loadAllOptions = async () => {
     await Promise.all([
       loadOptions('tiposdocumentos', 'descripcion'),
       loadOptions('nacionalidades', 'nombre'),
-      loadOptions('sexo', 'descripcion'),
-      loadOptions('emisordocs', 'descripcion')
+      loadOptions('sexos', 'descripcion'),
+      loadOptions('emisordocumentos', 'descripcion'),
     ]);
   } catch (error) {
     console.error('Error loading options:', error);
@@ -330,23 +334,23 @@ const loadAllOptions = async () => {
 };
 
 // Update watch for menor
-watch(() => props.menor, async (newVal) => {
-  if (newVal) {
-    person.value = null;
-    isLoadingOptions.value = true;
-    try {
-      const [personData] = await Promise.all([
-        ordenStore.getMenorById(newVal),
-        loadAllOptions()
-      ]);
-      if (personData) {
-        person.value = personData;
+watch(
+  () => props.menor,
+  async (newVal) => {
+    if (newVal) {
+      person.value = null;
+      isLoadingOptions.value = true;
+      try {
+        const [personData] = await Promise.all([ordenStore.getMenorById(newVal), loadAllOptions()]);
+        if (personData) {
+          person.value = personData;
+        }
+      } catch (error) {
+        console.error('Error:', error);
       }
-    } catch (error) {
-      console.error('Error:', error);
     }
-  }
-});
+  },
+);
 
 // Load options when component mounts
 onMounted(() => {
