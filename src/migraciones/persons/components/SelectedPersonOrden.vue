@@ -14,31 +14,60 @@
     </div>
   </div>
   <div class="mr-4 flex items-center justify-center text-gray-600 dark:text-white">
-    <div v-if="tipo === 'AUTORIZANTE'" class="dropdown">
+    <div v-if="tipo === 'AUTORIZANTE'" class="dropdown" ref="dropdownAutoritation">
       <div
         tabindex="0"
         role="button"
-        class="btn btn-xs m-1 btn-success"
+        class="dropdown dropdown-top dropdown-end"
         @click="toggleDropdown('autoritation')"
       >
-        {{ autorizanteSelected }}
+        <div
+          tabindex="0"
+          role="button"
+          class="btn m-1"
+          :class="autorizanteSelected !== 'Relación con el menor' ? 'btn-neutral' : ''"
+        >
+          {{ autorizanteSelected }}
+        </div>
       </div>
-      <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
+      <ul
+        v-show="isDropdownOpen === 'autoritation'"
+        tabindex="0"
+        class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
+      >
         <li v-for="autoritation of autoritations" :key="autoritation.id">
           <a @click="selectAutoritation(autoritation)">{{ autoritation.descripcion }}</a>
         </li>
       </ul>
     </div>
-    <div v-if="tipo === 'AUTORIZANTE'" class="dropdown">
-      <div tabindex="0" role="button" class="btn btn-xs m-1 btn-warning">
-        {{ acreditacionSelected }}
+
+    <div v-if="tipo === 'AUTORIZANTE'" class="dropdown" ref="dropdownAcreditation">
+      <div
+        tabindex="0"
+        role="button"
+        class="dropdown dropdown-top dropdown-end"
+        @click="toggleDropdown('acreditation')"
+      >
+        <div
+          tabindex="0"
+          role="button"
+          class="btn m-1"
+          :class="acreditacionSelected !== 'Acreditación del parentezco' ? 'btn-neutral' : ''"
+        >
+          {{ acreditacionSelected }}
+        </div>
       </div>
-      <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
+      <ul
+        v-show="isDropdownOpen === 'acreditation'"
+        tabindex="0"
+        class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
+      >
         <li v-for="acreditation of acreditations" :key="acreditation.id">
           <a @click="selectAcreditation(acreditation)">{{ acreditation.descripcion }}</a>
         </li>
       </ul>
     </div>
+
     <button class="btn btn-circle btn-ghost" @click="seleccionarPerson(id, category)">
       <EditarIcon />
     </button>
@@ -49,7 +78,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 import EditarIcon from '../../../common/components/iconos/EditarIcon.vue';
 import EliminarIcon from '../../../common/components/iconos/EliminarIcon.vue';
 
@@ -82,7 +111,6 @@ const personStore = usePersonStore();
 const selectAutoritation = (autoritation: Autoritation) => {
   autorizanteSelected.value = autoritation.descripcion;
 
-  // Busca al autorizante por ID en el store y actualiza el valor de authorizing_relatives_id
   const autorizante = ordenStore.autorizantes.find((aut: any) => aut.id === props.id);
   if (autorizante) {
     ordenStore.updateAutorizante(props.id, {
@@ -95,7 +123,6 @@ const selectAutoritation = (autoritation: Autoritation) => {
 const selectAcreditation = (acreditation: Acreditation) => {
   acreditacionSelected.value = acreditation.descripcion;
 
-  // Busca al autorizante por ID en el store y actualiza el valor de accreditation_links_id
   const autorizante = ordenStore.autorizantes.find((aut: any) => aut.id === props.id);
   if (autorizante) {
     ordenStore.updateAutorizante(props.id, {
@@ -114,6 +141,27 @@ const seleccionarPerson = (idPerson: number, category: string) => {
   personStore.setPersonId(idPerson);
  
 };
+
+const handleClickOutside = (event: MouseEvent) => {
+  // Verifica si el clic ocurrió fuera de los contenedores de los dropdowns
+  const target = event.target as Node;
+  if (
+    dropdownAutoritation.value &&
+    !dropdownAutoritation.value.contains(target) &&
+    dropdownAcreditation.value &&
+    !dropdownAcreditation.value.contains(target)
+  ) {
+    isDropdownOpen.value = null;
+  }
+};
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutside);
+});
 </script>
 
 <style scoped></style>

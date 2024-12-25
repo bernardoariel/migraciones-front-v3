@@ -1,15 +1,8 @@
 <template>
   <div class="flex flex-col">
-    <div
-      v-if="
-        (!person || !person.apellido || isLoadingOptions) &&
-        idPersonSelected !== 'new' &&
-        idPersonSelected
-      "
-      class="flex items-center justify-center h-screen"
-    >
+    <div v-if="isLoadingOptions" class="flex items-center justify-center h-screen">
       <p class="text-3xl font-semibold mb-4 text-primary">Cargando</p>
-      <span class="loading loading-dots loading-lg text-primary ml-2 pl-10"></span>
+      <span class="loading loading-dots loading-lg text-primary ml-2"></span>
     </div>
 
     <div v-else>
