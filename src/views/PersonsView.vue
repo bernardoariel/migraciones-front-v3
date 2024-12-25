@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch, onMounted } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
 
 import NavBarCard from '@/migraciones/persons/components/NavBarCard.vue';
