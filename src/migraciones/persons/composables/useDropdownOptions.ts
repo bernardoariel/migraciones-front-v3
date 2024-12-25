@@ -30,8 +30,6 @@ export default function useDropdownOptions() {
           value: item.id,
         }));
       }
-
-      console.log('Loaded options:', { documentTypeOptions, nationalityOptions });
     } catch (err) {
       error.value = 'Error al cargar las opciones';
       console.error(err);
