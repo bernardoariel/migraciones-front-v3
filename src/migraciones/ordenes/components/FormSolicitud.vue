@@ -118,6 +118,8 @@ const validationSchema = computed(() => {
     instrumentoType: yup.string().required().oneOf(['P', 'D']),
     paisType: yup.string().required().oneOf(['y', 'n']),
     mayoriaEdad: yup.string().required().oneOf(['y', 'n']),
+    dateOfInit: yup.string().required('La fecha desde es requerida.'),
+    dateOfEnd: yup.string().required('La fecha hasta es requerida.'),  
   });
 });
 
@@ -164,8 +166,8 @@ watch(orden, (newOrden) => {
       mayoriaEdad: newOrden.vigencia_hasta_mayoria_edad,
       dateOfInstrumento: newOrden.fecha_del_instrumento || new Date().toISOString().split('T')[0],
       paisDescripcion: newOrden.paises_desc,
-      dateOfInit: yup.string().required('La fecha desde es requerida.'),
-       dateOfEnd: yup.string().required('La fecha hasta es requerida.'),  
+      dateOfInit: newOrden.fecha_vigencia_desde,
+      dateOfEnd: newOrden.fecha_vigencia_hasta,
     });
   }
 });
