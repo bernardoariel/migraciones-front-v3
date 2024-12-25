@@ -44,6 +44,7 @@
         :error="errors.paisDescripcion"
         label="Paises descripcion"
         placeholder="Paises descripcion"
+        :disabled="isPaisDescripcionDisabled"
       />
 
       <MySelect
@@ -111,7 +112,7 @@ const props = defineProps<Props>();
 const nombreForm = ref('SolicitudForm');
 const mayoriaEdadAnos = 21;
 const isDateDisabled = computed(() => mayoriaEdad.value === 'y');
-
+const isPaisDescripcionDisabled = computed(() => paisType.value === 'y');
 const router = useRouter();
 const isFormValid = ref(false);
 const validationSchema = computed(() => {
@@ -244,6 +245,7 @@ onMounted(async () => {
     dateOfInstrumento: today,
     dateOfEnd: '',
   });
+  dateOfInit.value = dateOfInstrumento.value;
 });
 
 watch(
@@ -257,6 +259,11 @@ watch(
 watch(effectiveId, async (newId) => {
   if (newId) {
     resetForm();
+  }
+});
+watch(paisType, (newValue) => {
+  if (newValue === 'y') {
+    paisDescripcion.value = '';
   }
 });
 

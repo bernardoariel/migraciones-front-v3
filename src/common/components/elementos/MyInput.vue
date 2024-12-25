@@ -5,6 +5,7 @@
       <input
         :type="type"
         :value="modelValue"
+        :disabled="disabled"
         @input="$emit('update:modelValue', ($event.target as HTMLInputElement)?.value ?? '')"
         @blur="$emit('blur')"
         @change="$emit('change', ($event.target as HTMLInputElement)?.value)"
@@ -29,10 +30,12 @@ interface Props {
   modelValue?: string | number;
   type?: 'text' | 'number';
   error?: string;
+  disabled?: boolean;
   modelModifiers?: Record<string, boolean>;
 }
 withDefaults(defineProps<Props>(), {
   type: 'text',
+  disabled: false,
 });
 
 defineEmits(['update:modelValue', 'blur', 'input', 'change']);
