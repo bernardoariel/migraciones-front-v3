@@ -73,6 +73,7 @@
           :class="['form-control', errors.dateOfBirht ? 'border-red-500' : '']"
           placeholder="Fecha hasta"
           v-bind="dateOfEndAttrs"
+          :disabled="isDateDisabled"
         />
       </label>
       <button type="submit" class="btn btn-primary" :disabled="!isFormValid">Generar solicitud</button>
@@ -109,6 +110,7 @@ interface Props {
 const props = defineProps<Props>();
 const nombreForm = ref('SolicitudForm');
 const mayoriaEdadAnos = 21;
+const isDateDisabled = computed(() => mayoriaEdad.value === 'y');
 
 const router = useRouter();
 const isFormValid = ref(false);
