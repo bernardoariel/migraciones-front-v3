@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch , onMounted } from 'vue';
+import { computed, ref, watch, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
 
 import NavBarCard from '@/migraciones/persons/components/NavBarCard.vue';
@@ -32,8 +32,10 @@ import PersonForm from '@/migraciones/persons/components/PersonForm.vue';
 
 import PlusIcon from '@/common/components/iconos/PlusIcon.vue';
 import { useOrdenStore } from '@/migraciones/ordenes/store/ordenStore';
+import { useRoute } from 'vue-router';
+import { usePersonStore } from '@/migraciones/persons/store/personStore';
 
-const ordenStore = useOrdenStore()
+const ordenStore = useOrdenStore();
 
 type ActiveCategory = 'menores' | 'autorizantes' | 'acompaneantes';
 
@@ -130,7 +132,7 @@ watch(
   { immediate: true },
 );
 
-onMounted(() => {  
-  ordenStore.resetOrden()
+onMounted(() => {
+  ordenStore.resetOrden();
 });
 </script>
