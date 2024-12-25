@@ -370,6 +370,12 @@ const onSubmit = handleSubmit(async (value) => {
 const isLoadingOptions = ref(true);
 onMounted(() => {
   loadAllOptions();
+  setValues({
+    documentType: documentTypeOptions.value[0]?.value || 4,
+    documentIssuer: issuerDocsOptions.value[0]?.value || 13,
+    nationality: nationalityOptions.value[0]?.value || 11,
+    sex: sexType.value[0]?.value || null,
+  });
 });
 
 watch(getActiveCategory, async (newCategory) => {
