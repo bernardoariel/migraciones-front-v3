@@ -377,12 +377,20 @@ onMounted(() => {
     sex: sexType.value[0]?.value || null,
   });
   if (effectiveId.value === 'new' || effectiveId.value === null) {
-    resetForm();
-    setValues({
-      documentType: documentTypeOptions.value[0]?.value || 4,
-      documentIssuer: issuerDocsOptions.value[0]?.value || 13,
-      nationality: nationalityOptions.value[0]?.value || 11,
-      sex: sexType.value[0]?.value || null,
+    resetForm({
+      values: {
+        documentType: documentTypeOptions.value[0]?.value || 4,
+        documentIssuer: issuerDocsOptions.value[0]?.value || 13,
+        nationality: nationalityOptions.value[0]?.value || 11,
+        sex: sexType.value[0]?.value || null,
+        documentNumber: '',
+        lastName: '',
+        secondLastName: '',
+        firstName: '',
+        otherNames: '',
+        address: '',
+        dateOfBirht: '',
+      },
     });
   }
 });
