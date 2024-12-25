@@ -8,7 +8,12 @@
         En esta tarjeta se mostrarán las personas seleccionadas que formarán la solicitud de
         autorización en Migraciones.
       </p>
+      <ul class="steps flex justify-center items-center w-full">
+        <li class="step step-primary flex-1 m-0">Personas</li>
+        <li class="step step-primary flex-1 m-0">Datos Solicitud</li>
+      </ul>
     </div>
+
     <h4 class="text-xl font-bold text-navy-700 dark:text-white">¿Quién es el menor a autorizar?</h4>
 
     <div
