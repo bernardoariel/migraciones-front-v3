@@ -60,7 +60,7 @@
           class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
         >
           <li><a>Item 1</a></li>
-          <li><a @click="logout()">Logout</a></li>
+          <li><a @click="handleLogout()">Logout</a></li>
         </ul>
       </div>
     </div>
@@ -70,12 +70,17 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
 import { watch, ref } from 'vue';
+import { useAuth } from '../../auth/composables/useAuth';
 const route = useRoute();
 const router = useRouter();
-
+const { logout } = useAuth();
 const title = ref('');
 const isButtonVisible = ref<boolean>(false);
-const logout = () => router.replace('/login');
+const handleLogout = () => {
+  logout();
+  router.replace('/login');
+};
+
 watch(
   () => route.meta.title,
   (newValue) => {

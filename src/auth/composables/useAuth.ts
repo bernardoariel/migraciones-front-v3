@@ -1,10 +1,10 @@
 import { apiMigrationsData } from '@/api/apiMigrationsData';
+import { useUserStore } from '../../common/stores/userStore';
 import { ref } from 'vue';
 
 export const useAuth = () => {
-  const user = ref(null);
   const error = ref(null);
-
+  const userStore = useUserStore();
   const login = async (email, password) => {
     try {
       const response = await apiMigrationsData.post('/login', {
@@ -17,7 +17,7 @@ export const useAuth = () => {
       localStorage.setItem('token', access_token);
       localStorage.setItem('expiry_date', expiry_date);
 
-      user.value = user;
+      userStore.setUser(user);
       error.value = null;
       return true;
     } catch (err) {
@@ -26,7 +26,7 @@ export const useAuth = () => {
   };
 
   const logout = () => {
-    user.value = null;
+    userStore.setUser(null);
     localStorage.removeItem('token');
   };
 
@@ -69,7 +69,6 @@ export const useAuth = () => {
     }
   };
   return {
-    user,
     error,
     login,
     logout,

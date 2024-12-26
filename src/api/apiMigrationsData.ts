@@ -1,23 +1,20 @@
 import axios from 'axios';
-import { useAuth } from '../auth/composables/useAuth';
 
 const apiMigrationsData = axios.create({
   baseURL: 'http://localhost:8000/api',
 });
-
-const { renewToken } = useAuth();
 
 axios.interceptors.request.use(
   async (config) => {
     const expiryDate = localStorage.getItem('expiry_date');
     if (expiryDate) {
       const now = new Date();
-      const expirationTime = new Date(expiryDate).getTime();
-      const timeLeft = expirationTime - now.getTime();
-
-      if (timeLeft <= 5 * 60 * 1000) {
-        // Si queda menos de 5 minutos
-        await renewToken();
+      const expiry = new Date(expiryDate);
+      if (now > expiry) {
+        // Si el token ha expirado, redirige al usuario a la página de inicio de sesión
+        localStorage.removeItem('token');
+        localStorage.removeItem('expiry_date');
+        window.location.href = '/login';
       }
     }
 

@@ -107,10 +107,8 @@ const handleLogin = async () => {
       localStorage.removeItem('remember_email');
       localStorage.removeItem('remember_password');
     }
-    // alert('Login successful!');
     router.replace('/');
   } else {
-    alert('Login failed!');
     toast.error('Login failed!');
   }
 };
