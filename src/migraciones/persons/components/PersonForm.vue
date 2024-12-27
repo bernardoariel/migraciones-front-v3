@@ -156,7 +156,6 @@ interface Props {
 }
 
 const props = defineProps<Props>();
-console.log('props::: ', props);
 
 const errorDoc = ref('');
 const route = useRoute();

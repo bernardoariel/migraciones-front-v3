@@ -52,7 +52,6 @@ export const useOrdenStore = defineStore('ordenStore', () => {
   };
 
   const addAutorizante = (newAutorizante: Autorizante) => {
-    console.log('newAutorizante::: ', newAutorizante);
     autorizantes.value.push({ ...newAutorizante });
     builder.addAutorizante(newAutorizante);
   };

@@ -53,7 +53,7 @@
         :error="errors.mayoriaEdad"
         label="¿ Hasta mayoria de edad ?"
         :options="mayoriaEdadOptions"
-         @update:modelValue="handleMayoriaEdadChange"
+        @update:modelValue="handleMayoriaEdadChange"
       />
 
       <label class="input input-bordered flex items-center gap-2">
@@ -77,7 +77,9 @@
           :disabled="isDateDisabled"
         />
       </label>
-      <button type="submit" class="btn btn-primary" :disabled="!isFormValid">Generar solicitud</button>
+      <button type="submit" class="btn btn-primary" :disabled="!isFormValid">
+        Generar solicitud
+      </button>
     </form>
   </div>
 </template>
@@ -122,7 +124,7 @@ const validationSchema = computed(() => {
     paisType: yup.string().required().oneOf(['y', 'n']),
     mayoriaEdad: yup.string().required().oneOf(['y', 'n']),
     dateOfInit: yup.string().required('La fecha desde es requerida.'),
-    dateOfEnd: yup.string().required('La fecha hasta es requerida.'),  
+    dateOfEnd: yup.string().required('La fecha hasta es requerida.'),
   });
 });
 
@@ -202,9 +204,7 @@ const onSubmit = handleSubmit(async (values) => {
     nro_foja: '0',
   };
   try {
-    const response = await createOrden(payload);
-    console.log('response::: ', response);
-    console.log('payload::: ', payload);
+    await createOrden(payload);
 
     toast.success('Solicitud enviada con éxito');
     ordenStore.resetOrden();
@@ -217,14 +217,12 @@ const onSubmit = handleSubmit(async (values) => {
   }
 });
 const handleMayoriaEdadChange = (value: string) => {
-  console.log("aawwa")
   if (value === 'y' && menor.value?.fecha_de_nacimiento) {
-    console.log("aaa")
     const fechaNacimiento = new Date(menor.value.fecha_de_nacimiento);
     const fechaMayoriaEdad = new Date(
       fechaNacimiento.getFullYear() + mayoriaEdadAnos,
       fechaNacimiento.getMonth(),
-      fechaNacimiento.getDate()
+      fechaNacimiento.getDate(),
     );
 
     // Asignar directamente al v-model del campo 'Fecha hasta'
@@ -234,7 +232,6 @@ const handleMayoriaEdadChange = (value: string) => {
     setValues({ dateOfEnd: '' });
   }
 };
-
 
 onMounted(async () => {
   if (effectiveId.value === 'new') {

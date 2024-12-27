@@ -84,10 +84,8 @@ const updateButtonConfigurations = (): Record<string, ButtonConfig[]> => {
             : 'btn btn-secondary',
         action: () => {
           if (typeof idPersonSelected.value === 'number') {
-            console.log('seleccionando menor');
             ordenStore.getPerson(activeCategory.value!, idPersonSelected.value);
           } else {
-            console.log('se hace el onsubmit');
             childRef.value?.onSubmit();
           }
         },
@@ -153,27 +151,10 @@ const updateButtonConfigurations = (): Record<string, ButtonConfig[]> => {
   };
 };
 
-// Computed para el componente dinámico
-/* const componentMap: Record<ActiveCategory, any> = {
-  menores: FormMenor,
-  autorizantes: FormAutorizante,
-  acompaneantes: FormAcompaneante,
-}; */
-/* const dynamicComponent = computed(() => {
-  const category = activeCategory.value as ActiveCategory;
-  return componentMap[category] || null;
-}); */
-watch(
-  hasItems,
-  (newVal) => {
-    console.log('Valor de hasItems:', newVal);
-  },
-  { immediate: true },
-);
+watch(hasItems, (newVal) => {}, { immediate: true });
 watch(
   [activeCategory, idPersonSelected],
   () => {
-    console.log('Watch activeCategory::: ', activeCategory.value);
     const configs = updateButtonConfigurations();
     buttonConfig.value = configs[activeCategory.value || ''] || [];
   },

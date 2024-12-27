@@ -14,11 +14,10 @@ const useOrdenItem = () => {
   const cargarOrdenItem = async (id: number): Promise<any[]> => {
     try {
       const response = await apiMigrationsData.get(`/ordenesitems/${id}`);
-      console.log('Respuesta completa de la API:', response); // Muestra la respuesta completa
 
       if (response.data && Array.isArray(response.data)) {
         ordenItems.value = response.data; // Asigna los datos a ordenItems
-        console.log('Datos cargados como ordenItems:', ordenItems.value); // Muestra los datos después de la asignación
+
         return ordenItems.value; // Asegúrate de retornar el valor aquí
       } else {
         console.error(
