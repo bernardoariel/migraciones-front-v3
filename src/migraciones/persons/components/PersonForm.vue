@@ -273,23 +273,34 @@ const checkDniExistence = async () => {
     }
   }
 };
-watch(person, (newPerson) => {
+watch(person,async (newPerson) => {
   if (newPerson) {
-    setValues({
-      documentNumber: newPerson.numero_de_documento,
-      documentType: newPerson.type_document_id,
-      lastName: newPerson.apellido,
-      secondLastName: newPerson.segundo_apellido || '',
-      firstName: newPerson.nombre,
-      otherNames: newPerson.otros_nombres || '',
+    // await loadAllOptions();
+    
+    console.log('Person data:', {
       nationality: newPerson.nationality_id,
-      sex: newPerson.sex_id,
-      address: newPerson.domicilio,
-      dateOfBirht: newPerson.fecha_de_nacimiento,
-      documentIssuer: newPerson.issuer_document_id,
-    });
+      sex: newPerson.sex_id
+    })
+    const formData = {
+      documentNumber: String(newPerson.numero_de_documento),
+      documentType: Number(newPerson.type_document_id),
+      lastName: String(newPerson.apellido),
+      secondLastName: String(newPerson.segundo_apellido || ''),
+      firstName: String(newPerson.nombre),
+      otherNames: String(newPerson.otros_nombres || ''),
+      nationality: Number(newPerson.nationality_id),
+      sex: String(newPerson.sex_id),
+      address: String(newPerson.domicilio),
+      dateOfBirht: String(newPerson.fecha_de_nacimiento),
+      documentIssuer: Number(newPerson.issuer_document_id)
+    };
+
+    console.log('Setting values:', formData);
+    setValues(formData);
+    
+    console.log('After setValues - new form values:', meta.value);
   }
-});
+}, { immediate: true });
 
 const onSubmit = handleSubmit(async (value) => {
   if (isSubmitting.value) return;

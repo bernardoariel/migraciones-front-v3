@@ -79,6 +79,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue';
+import type { CategoryPerson } from '@/migraciones/persons/interfaces/categoryPerson.interface';
 import EditarIcon from '../../../common/components/iconos/EditarIcon.vue';
 import EliminarIcon from '../../../common/components/iconos/EliminarIcon.vue';
 
@@ -96,8 +97,8 @@ interface Props {
   segundo_apellido?: string;
   otros_nombres?: string;
   edad?: null | number;
-  tipo: string;
-  category: string;
+  category: CategoryPerson;
+  
 }
 const props = defineProps<Props>();
 const ordenStore = useOrdenStore();
@@ -137,9 +138,15 @@ const toggleDropdown = (dropdown: string) => {
 const eliminarPerson = (idPerson: number, category: string) => {
   ordenStore.removePerson(category, idPerson);
 };
-const seleccionarPerson = (idPerson: number, category: string) => { 
-  personStore.setPersonId(idPerson);
- 
+// SelectedPersonOrden.vue
+const seleccionarPerson = async (idPerson: number, category: CategoryPerson) => {
+    console.log("seleccionarPerson", idPerson, category);
+    personStore.resetState();
+    // Set category first
+    personStore.setCategory(category);  
+   
+      personStore.setPersonId(idPerson);
+   
 };
 
 const handleClickOutside = (event: MouseEvent) => {
