@@ -1,5 +1,11 @@
 <template>
-  <div class="flex flex-col h-full">
+  <div
+    v-if="isLoading"
+    class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-10 z-50"
+  >
+    <span class="loading loading-spinner text-blue-500 w-32 h-32"></span>
+  </div>
+  <div v-else class="flex flex-col h-full">
     <RouterView />
   </div>
   <VueQueryDevtools />
@@ -9,28 +15,31 @@
 import { VueQueryDevtools } from '@tanstack/vue-query-devtools';
 import { useUserStore } from './common/stores/userStore';
 import { apiMigrationsData } from '@/api/apiMigrationsData';
-import { onMounted } from 'vue';
+import { onMounted, computed } from 'vue';
+import { useAppStore } from './common/stores/appStore';
+
 const userStore = useUserStore();
+const appStore = useAppStore();
+const isLoading = computed(() => appStore.isLoading);
 onMounted(async () => {
-  const token = localStorage.getItem('token'); // Obtén el token del localStorage
+  const token = localStorage.getItem('token');
   if (token) {
     try {
+      appStore.setLoading(true);
       const response = await apiMigrationsData.get('/me', {
         headers: {
-          Authorization: `Bearer ${token}`, // Envía el token en el encabezado
+          Authorization: `Bearer ${token}`,
         },
       });
-
-      // Guarda la información del usuario en el store
       userStore.setUser(response.data.user);
     } catch (error) {
       console.error('Error al cargar la información del usuario:', error);
-
-      // Si hay un error (por ejemplo, token inválido), elimina el token y redirige al login
       localStorage.removeItem('token');
-      userStore.clearUser();
-      window.location.href = '/login';
+    } finally {
+      appStore.setLoading(false);
     }
+  } else {
+    appStore.setLoading(false);
   }
 });
 </script>
