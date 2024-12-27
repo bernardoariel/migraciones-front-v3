@@ -80,7 +80,6 @@ const paginatedOrdens = computed(() => {
 
 onMounted(() => {
   ordenStore.setCategory('todos');
-  console.log('todos:', allOrders.value);
 });
 </script>
 

@@ -84,7 +84,6 @@ const seleccionarPersonId = (id: number) => {
   if (isMaxAutorizantesReached.value) {
     if (!isPersonMenorOrAcompañante(id)) {
       toast.error('Ya se han seleccionado 2 autorizantes');
-      console.log('Ya se han seleccionado 2 autorizantes');
       return;
     }
   }

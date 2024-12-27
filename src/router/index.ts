@@ -8,6 +8,8 @@ import NuevaSolicitud from '../views/NuevaSolicitud.vue';
 import PersonsView from '../views/PersonsView.vue';
 import LoginView from '../views/LoginView.vue';
 import ForgotPasswordView from '../views/ForgotPasswordView.vue';
+import { NotAuthenticated } from '../common/guards/NotAuthenticated.guard';
+import { isAuthenticated } from '../common/guards/isAuthenticated.guard';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -16,6 +18,7 @@ const router = createRouter({
     {
       path: '/',
       component: MainLayout,
+      beforeEnter: isAuthenticated,
       children: [
         {
           path: '',
@@ -64,6 +67,7 @@ const router = createRouter({
     {
       path: '/login',
       component: AuthLayout,
+      beforeEnter: NotAuthenticated,
       children: [
         {
           path: '',

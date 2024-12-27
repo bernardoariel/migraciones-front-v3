@@ -84,13 +84,13 @@
 import { useAuth } from '../composables/useAuth';
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-
+import { useToast } from 'vue-toastification';
 import logo from '@/assets/images/logo.jpg';
 import backgroundImage from '@/assets/images/portada.jpg';
 
 const { login } = useAuth();
 const router = useRouter();
-
+const toast = useToast();
 const email = ref('escribaniacosenza@gmail.com');
 const password = ref('123456');
 const rememberMe = ref(false);
@@ -107,10 +107,9 @@ const handleLogin = async () => {
       localStorage.removeItem('remember_email');
       localStorage.removeItem('remember_password');
     }
-    alert('Login successful!');
     router.replace('/');
   } else {
-    alert('Login failed!');
+    toast.error('Login failed!');
   }
 };
 
