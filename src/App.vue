@@ -20,6 +20,7 @@ import { useAppStore } from './common/stores/appStore';
 
 const userStore = useUserStore();
 const appStore = useAppStore();
+
 const isLoading = computed(() => appStore.isLoading);
 onMounted(async () => {
   const token = localStorage.getItem('token');
