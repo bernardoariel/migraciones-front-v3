@@ -38,7 +38,7 @@
     </div>
 
     <div class="flex-none">
-      <div class="text-xl mr-5 uppercase text-gray-500">Ariel Bernardo</div>
+      <div class="text-xl mr-5 uppercase text-gray-500">{{ userStore.fullName }}</div>
       <div class="dropdown dropdown-bottom dropdown-end">
         <div tabindex="0" role="button" class="btn btn-sm rounded-box m-1">
           <svg
@@ -71,9 +71,13 @@
 import { useRoute, useRouter } from 'vue-router';
 import { watch, ref } from 'vue';
 import { useAuth } from '../../auth/composables/useAuth';
+import { useUserStore } from '../stores/userStore';
+
 const route = useRoute();
 const router = useRouter();
 const { logout } = useAuth();
+const userStore = useUserStore();
+
 const title = ref('');
 const isButtonVisible = ref<boolean>(false);
 const handleLogout = () => {
