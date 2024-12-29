@@ -2,8 +2,8 @@
   <div class="entry-list-container">
     <div class="px-2 py-2 flex items-center justify-between">
       <label class="input input-bordered flex items-center gap-2 input-primary w-full">
-        <!-- <input type="text" class="grow" placeholder="Buscar" v-model="searchQuery" />
-          <SearchIcon /> -->
+        <input type="text" class="grow" placeholder="Buscar" v-model="searchQuery" />
+        <SearchIcon />
       </label>
     </div>
 
@@ -38,6 +38,7 @@ import { storeToRefs } from 'pinia';
 import useOrdenes from '../composables/useOrdenes';
 import ItemsOrden from './ItemsOrden.vue';
 import { useOrdenStore } from '../store/ordenStore';
+import SearchIcon from '@/common/components/iconos/SearchIcon.vue';
 
 defineEmits(['showSolicitudCard']);
 const ordenStore = useOrdenStore();

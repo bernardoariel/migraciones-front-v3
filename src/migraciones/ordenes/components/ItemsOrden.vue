@@ -4,24 +4,26 @@
     <div class="entry-title flex items-center justify-between gap-2">
       <!-- Información del usuario -->
       <div class="flex items-center gap-2">
-        <span class="text-primary font-semibold text-lg">{{ orden.notary_id }}</span>
-        <span class="ml-3 text-lg uppercase text-gray-800 font-semibold">
-          {{ orden.apellido }} {{ orden.segundo_apellido }}
-        </span>
-        <span class="font-light capitalize text-gray-600">
-          ,{{ orden.nombre }} {{ orden.otros_nombres }}
+        <span v-if="orden.notary_id! <= 2" class="text-primary font-semibold text-lg">{{
+          orden.notary_id
+        }}</span>
+        <span class="text-primary font-semibold text-lg">MENOR:</span>
+        <span class="text-lg uppercase text-gray-800 font-semibold">
+          {{ orden.apellido }} {{ orden.segundo_apellido }},
+          <span>{{ orden.nombre }} {{ orden.otros_nombres }}</span>
         </span>
       </div>
 
       <!-- Botón -->
-      <button class="btn btn-primary btn-sm px-4 py-2" @click="seleccionarordenId(orden.id)">
+      <button class="btn btn-primary btn-sm px-4 py-2" @click="seleccionarordenId(orden.id!)">
         {{ nameButton }}
       </button>
     </div>
     <!-- Contenido centrado -->
     <div class="entry-content flex items-center text-gray-500 text-sm">
       <div v-if="orden.fecha_del_instrumento">
-        Fecha del Instrumento {{ orden.fecha_del_instrumento }}
+        <span class="text-primary">Fecha del Instrumento:</span
+        ><span class="font-semibold ml-2"> {{ orden.fecha_del_instrumento }}</span>
       </div>
       <div class="ml-10">
         <span v-if="orden.fecha_del_instrumento">
@@ -47,7 +49,7 @@ import { usePersonStore } from '@/migraciones/persons/store/personStore';
 import useOrdenItem from '@/migraciones/ordenes/composables/useOrdenItem';
 import { getById } from '@/migraciones/persons/composables/usePerson';
 import { storeToRefs } from 'pinia';
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import { useOrdenStore } from '@/migraciones/ordenes/store/ordenStore';
 
 interface Props {
@@ -65,17 +67,6 @@ const { cargarOrdenItem } = useOrdenItem();
 // Usamos ref para hacer que 'items' sea reactivo
 const items = ref<any[]>([]); // Inicialización de items como un arreglo vacío
 
-const isDisabled = computed(() => {
-  const id = props.orden.id;
-
-  if (!id) return false;
-
-  return (
-    menor.value?.id === id ||
-    autorizantes.value.some((autorizante) => autorizante.id === id) ||
-    acompaneantes.value.some((acompaneante) => acompaneante.id === id)
-  );
-});
 const seleccionarordenId = async (id: number) => {
   // Cargamos los items de la orden
   ordenStore.resetOrden();
