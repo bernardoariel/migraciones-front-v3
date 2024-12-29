@@ -65,7 +65,12 @@ const filteredOrdensByCategory = computed(() => {
     return categoryOrdens.filter((orden) => {
       const fullName = `${orden.nombre || ''} ${orden.apellido || ''}`.toLowerCase();
       const documento = String(orden.documento || '').toLowerCase();
-      return fullName.includes(query) || documento.includes(query);
+      const numeroActuacion = String(
+        orden.numero_actuacion_notarial_cert_firma || '',
+      ).toLowerCase();
+      return (
+        fullName.includes(query) || documento.includes(query) || numeroActuacion.includes(query)
+      );
     });
   }
 
