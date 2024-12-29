@@ -78,22 +78,15 @@ const seleccionarordenId = async (id: number) => {
     items.value.forEach(async (item) => {
       const { tipo, id_detalle } = item;
 
-      // Llamamos a getById y almacenamos el resultado en el ordenStore
       switch (tipo) {
         case 'menor':
-          const menorData = await getById(id_detalle);
-          ordenStore.setMenor(menorData); // Suponiendo que tienes un setter en el store
-          console.log('Menor id', id_detalle);
+          ordenStore.setMenor(await getById(id_detalle));
           break;
         case 'autorizante':
-          const autorizanteData = await getById(id_detalle);
-          ordenStore.addAutorizante(autorizanteData); // Suponiendo que tienes un setter en el store
-          console.log('Autorizante id', id_detalle);
+          ordenStore.addAutorizante(await getById(id_detalle)); // Suponiendo que tienes un setter en el store
           break;
         case 'acompaneante':
-          const acompaneanteData = await getById(id_detalle);
-          ordenStore.addAcompaneante(acompaneanteData); // Suponiendo que tienes un setter en el store
-          console.log('Acompañante id', id_detalle);
+          ordenStore.addAcompaneante(await getById(id_detalle)); // Suponiendo que tienes un setter en el store
           break;
       }
     });
