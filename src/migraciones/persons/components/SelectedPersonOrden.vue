@@ -6,6 +6,7 @@
         {{ apellido?.toUpperCase() || '' }}
         {{ segundo_apellido?.toUpperCase() || '' }},
         <span>{{ nombre || '' }} {{ otros_nombres || '' }}</span>
+        <span class="ml-3 font-medium dark:text-white">DNI: {{ documento }}</span>
       </p>
       <p class="mt-2 text-sm text-gray-600">
         {{ tipo }} .
@@ -97,6 +98,7 @@ interface Props {
   edad?: null | number;
   tipo: string;
   category: string;
+  documento: string;
 }
 const props = defineProps<Props>();
 const ordenStore = useOrdenStore();

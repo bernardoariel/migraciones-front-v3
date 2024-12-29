@@ -39,6 +39,7 @@
           :segundo_apellido="menor.segundo_apellido"
           tipo="MENOR"
           category="menores"
+          :documento="menor.numero_de_documento"
         >
           <template #icon>
             <BabyIcon />
@@ -64,6 +65,7 @@
             :segundo_apellido="autorizante.segundo_apellido"
             tipo="AUTORIZANTE"
             category="autorizantes"
+            :documento="menor.numero_de_documento"
           >
             <template #icon>
               <AutorizanteIcon />
@@ -90,6 +92,7 @@
             :segundo_apellido="acompaneante.segundo_apellido"
             tipo="ACOMPAÑANTE"
             category="acompaneantes"
+            :documento="menor.numero_de_documento"
           >
             <template #icon>
               <AcompaneanteIcon />
@@ -123,6 +126,7 @@ const currentStep = ref('menor');
 const ordenStore = useOrdenStore();
 
 const { menor, autorizantes, acompaneantes } = storeToRefs(ordenStore);
+
 const steps = computed(() => [
   {
     key: 'menor',

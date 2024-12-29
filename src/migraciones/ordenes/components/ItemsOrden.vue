@@ -4,13 +4,17 @@
     <div class="entry-title flex items-center justify-between gap-2">
       <!-- Información del usuario -->
       <div class="flex items-center gap-2">
-        <span v-if="orden.notary_id! <= 2" class="text-primary font-semibold text-lg">{{
+        <!-- <span v-if="orden.notary_id! <= 2" class="text-primary font-semibold text-lg">{{
           orden.notary_id
-        }}</span>
+        }}</span> -->
         <span class="text-primary font-semibold text-lg">MENOR:</span>
         <span class="text-lg uppercase text-gray-800 font-semibold">
           {{ orden.apellido }} {{ orden.segundo_apellido }},
           <span>{{ orden.nombre }} {{ orden.otros_nombres }}</span>
+        </span>
+        <span class="text-primary font-semibold text-lg">DNI:</span>
+        <span class="text-lg uppercase text-gray-800 font-semibold">
+          {{ orden.documento }}
         </span>
       </div>
 
@@ -25,11 +29,11 @@
         <span class="text-primary">Fecha del Instrumento:</span
         ><span class="font-semibold ml-2"> {{ orden.fecha_del_instrumento }}</span>
       </div>
-      <div class="ml-10">
+      <!-- <div class="ml-10">
         <span v-if="orden.fecha_del_instrumento">
           Escribano {{ orden.apellidoescribano }} {{ orden.nombreescribano }}
         </span>
-      </div>
+      </div> -->
       <div class="ml-10">
         <span v-if="orden.fecha_del_instrumento">
           Nro Act Notarial {{ orden.numero_actuacion_notarial_cert_firma }}
@@ -45,10 +49,10 @@
 
 <script setup lang="ts">
 import type { OrdenSolicitud } from '../interface/orders.interface';
-import { usePersonStore } from '@/migraciones/persons/store/personStore';
+
 import useOrdenItem from '@/migraciones/ordenes/composables/useOrdenItem';
 import { getById } from '@/migraciones/persons/composables/usePerson';
-import { storeToRefs } from 'pinia';
+
 import { ref } from 'vue';
 import { useOrdenStore } from '@/migraciones/ordenes/store/ordenStore';
 
@@ -58,21 +62,17 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+console.log('props::: ', props);
 const ordenStore = useOrdenStore();
-const personStore = usePersonStore();
 
-const { menor, autorizantes, acompaneantes } = storeToRefs(ordenStore);
 const { cargarOrdenItem } = useOrdenItem();
 
-// Usamos ref para hacer que 'items' sea reactivo
-const items = ref<any[]>([]); // Inicialización de items como un arreglo vacío
+const items = ref<any[]>([]);
 
 const seleccionarordenId = async (id: number) => {
-  // Cargamos los items de la orden
   ordenStore.resetOrden();
-  items.value = await cargarOrdenItem(id); // Asignamos los datos a items
+  items.value = await cargarOrdenItem(id);
   ordenStore.setOrdenId(id);
-  console.log('Items cargados:', items.value); // Verifica lo que retorna cargarOrdenItem
 
   if (Array.isArray(items.value)) {
     items.value.forEach(async (item) => {
@@ -83,10 +83,10 @@ const seleccionarordenId = async (id: number) => {
           ordenStore.setMenor(await getById(id_detalle));
           break;
         case 'autorizante':
-          ordenStore.addAutorizante(await getById(id_detalle)); // Suponiendo que tienes un setter en el store
+          ordenStore.addAutorizante(await getById(id_detalle));
           break;
         case 'acompaneante':
-          ordenStore.addAcompaneante(await getById(id_detalle)); // Suponiendo que tienes un setter en el store
+          ordenStore.addAcompaneante(await getById(id_detalle));
           break;
       }
     });
