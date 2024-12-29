@@ -1,6 +1,6 @@
 <template>
   <div class="pagination-container flex justify-center mt-4">
-    <div class="join">
+    <div v-if="totalPages > 0" class="join">
       <input
         v-for="page in totalPages"
         :key="page"
@@ -12,6 +12,7 @@
         @change="() => goToPage(page)"
       />
     </div>
+    <p v-else class="text-gray-500">No hay más páginas</p>
   </div>
 </template>
 
@@ -22,5 +23,6 @@ interface Props {
   goToPage: (page: number) => void;
 }
 
-defineProps<Props>();
+const props = defineProps<Props>();
+console.log('PAGINACION props::: ', props);
 </script>

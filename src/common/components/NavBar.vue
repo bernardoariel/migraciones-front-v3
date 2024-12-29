@@ -33,7 +33,7 @@
 
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
-import { watch, ref } from 'vue';
+import { watch, ref, watchEffect } from 'vue';
 import { useAuth } from '../../auth/composables/useAuth';
 import { useUserStore } from '../stores/userStore';
 import BackIcon from './iconos/BackIcon.vue';
@@ -51,13 +51,11 @@ const handleLogout = () => {
   router.replace('/login');
 };
 
-watch(
-  () => route.meta.title,
-  (newValue) => {
-    newValue === 'Home' ? (isButtonVisible.value = false) : (isButtonVisible.value = true);
-    title.value = (newValue as string) || '';
-  },
-);
+watchEffect(() => {
+  const newValue = route.meta.title;
+  isButtonVisible.value = newValue !== 'Home';
+  title.value = (newValue as string) || '';
+});
 </script>
 
 <style scoped></style>
