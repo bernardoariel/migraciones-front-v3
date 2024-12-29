@@ -4,7 +4,7 @@
       <div class="flex justify-between items-center">
         <h2 class="text-xl font-semibold mb-4">Lista de Solicitudes</h2>
         <SolicitudNavBarCard typeCategory="menores" />
-        <button class="btn btn-circle" @click="showPersonForm">
+        <button class="btn btn-circle" @click="handleClick()">
           <PlusIcon color="#1C274C" height="30" width="30px" />
         </button>
       </div>
@@ -28,7 +28,7 @@
 <script setup lang="ts">
 import { watch , ref } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 import SolicitudesList from '@/migraciones/ordenes/components/SolicitudesList.vue';
 import SolicitudCard from '@/migraciones/ordenes/components/SolicitudCard.vue';
@@ -42,6 +42,7 @@ import PersonForm from '@/migraciones/persons/components/PersonForm.vue';
 type ActiveCategory = 'menores' | 'autorizantes' | 'acompaneantes';
 
 const route = useRoute();
+const router = useRouter();
 const ordenStore = useOrdenStore();
 const uiStore = useUIStore();
 const { getIdOrdenSelected } = storeToRefs(ordenStore);
@@ -68,9 +69,8 @@ const showPersonForm = () => {
 };
 
 // Update button click handler
-const handlePersonClick = (id: number) => {
-  showForm.value = true;
-  personStore.setPersonId(id);
+const handleClick = () => {
+  router.push('nuevasolicitud');
 };
 const buttonConfig = ref<ButtonConfig[]>([]);
 const personStore = usePersonStore();

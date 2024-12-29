@@ -35,6 +35,7 @@ export const useOrdenStore = defineStore('ordenStore', () => {
   // Actions for category management
   const setCategory = (newCategory: CategoryOrden = 'pendientes') => {
     activeCategory.value = newCategory;
+    console.log('getActiveCategory después de setCategory:', getActiveCategory.value);
   };
 
   // Actions for orden ID management

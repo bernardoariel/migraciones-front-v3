@@ -14,7 +14,7 @@ const useOrdenes = () => {
   const store = useOrdersStore();
   const { currentPage, orders } = storeToRefs(store);
 
-  const itemsPerPage = 10; // Número de elementos por página
+  const itemsPerPage = 5;
 
   const { isLoading, data } = useQuery({
     queryKey: ['orders'],
