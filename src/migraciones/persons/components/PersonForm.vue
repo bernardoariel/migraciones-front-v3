@@ -301,70 +301,40 @@ watch(person,async (newPerson) => {
   }
 }, { immediate: true });
 
-const onSubmit = handleSubmit(async (value) => {
+const onSubmit = handleSubmit(async (values) => {
   if (isSubmitting.value) return;
-  isSubmitting.value = true;
-
+  
   try {
-    const payload: Partial<Autorizante> = {
-      numero_de_documento: value.documentNumber,
-      type_document_id: value.documentType,
-      apellido: value.lastName,
-      segundo_apellido: value.secondLastName,
-      nombre: value.firstName,
-      ...(getActiveCategory.value !== 'acompaneantes' && {
-        nationality_id: value.nationality,
-        sex_id: value.sex,
-        domicilio: value.address,
-        fecha_de_nacimiento: value.dateOfBirht,
-      }),
-      issuer_document_id: value.documentIssuer,
+    isSubmitting.value = true;
+    const category = getActiveCategory.value;
+    
+    const payload = {
+      numero_de_documento: values.documentNumber,
+      type_document_id: values.documentType,
+      apellido: values.lastName,
+      segundo_apellido: values.secondLastName,
+      nombre: values.firstName,
+      otros_nombres: values.otherNames,
+      nationality_id: values.nationality,
+      sex_id: values.sex,
+      domicilio: values.address,
+      fecha_de_nacimiento: values.dateOfBirht,
+      issuer_document_id: values.documentIssuer
     };
 
-    if (effectiveId.value === null || effectiveId.value === 'new') {
-      const resp = await createPerson(payload);
-      const categoryMessageMap = {
-        menores: 'Menor agregado exitosamente.',
-        autorizantes: 'Autorizante agregado exitosamente.',
-        acompaneantes: 'Acompañante agregado exitosamente.',
-      };
-      const categoryMessage = categoryMessageMap[getActiveCategory.value!];
-
-      if (route.path.includes('solicitud')) {
-        if (categoryMessage) {
-          toast.success(categoryMessage);
-          ordenStore.getPerson(getActiveCategory.value!, resp.id);
-        }
-      }
+    if (effectiveId.value === 'new') {
+      await createPerson(payload);
+      toast.success('Persona creada exitosamente');
+      resetForm();
     } else {
       await updatePerson(payload);
-      toast.success('Autorizante actualizado exitosamente');
+      toast.success('Persona actualizada exitosamente');
     }
 
-    queryClient.invalidateQueries({ queryKey: ['persons'] });
-
-    /* const resp =
-      effectiveId.value === 'new' || null
-        ? await createPerson(payload)
-        : await updatePerson(payload);
-    const categoryMessageMap = {
-      menores: 'Menor agregado exitosamente.',
-      autorizantes: 'Autorizante agregado exitosamente.',
-      acompaneantes: 'Acompañante agregado exitosamente.',
-    }; */
-    // Llama al método getPerson solo si es necesario
-    /* if (route.path.includes('solicitud') && resp.id) {
-      ordenStore.getPerson(getActiveCategory.value!, resp.id);
-    } */
-    /* const categoryMessage = categoryMessageMap[getActiveCategory.value!];
-    if (categoryMessage) {
-      toast.success(categoryMessage);
-    }
-    personStore.setPersonId('new');
-    queryClient.invalidateQueries({ queryKey: ['persons'] }); */
+    queryClient.invalidateQueries({ queryKey: [category] });
   } catch (error) {
-    console.error(error);
-    toast.error('Error al procesar la acción.');
+    console.error('Error:', error);
+    toast.error('Error al procesar el formulario');
   } finally {
     isSubmitting.value = false;
   }
@@ -440,6 +410,7 @@ watch(
   { immediate: true }, // Ejecuta inmediatamente con el valor inicial
 );
 defineExpose({ resetForm, onSubmit });
+
 </script>
 
 <style scoped></style>

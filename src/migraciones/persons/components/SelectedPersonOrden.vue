@@ -89,6 +89,7 @@ import type { Acreditation } from '../interfaces/acreditations.interface';
 import useAutoritations from '../composables/useAutoritations';
 import useAcreditations from '../composables/useAcreditations';
 import { usePersonStore } from '@/migraciones/persons/store/personStore';
+import { useUIStore } from '@/common/stores/uiStore';
 
 interface Props {
   id: number;
@@ -98,16 +99,20 @@ interface Props {
   otros_nombres?: string;
   edad?: null | number;
   category: CategoryPerson;
-  
+  tipo: string; 
 }
 const props = defineProps<Props>();
 const ordenStore = useOrdenStore();
+const uiStore = useUIStore();
 const { autoritations } = useAutoritations();
 const { acreditations } = useAcreditations();
 const autorizanteSelected = ref('Relación con el menor');
 const acreditacionSelected = ref('Acreditación del parentezco');
 const isDropdownOpen = ref<string | null>(null);
 const personStore = usePersonStore();
+
+const dropdownAutoritation = ref<HTMLElement | null>(null);
+const dropdownAcreditation = ref<HTMLElement | null>(null);
 
 const selectAutoritation = (autoritation: Autoritation) => {
   autorizanteSelected.value = autoritation.descripcion;
@@ -141,11 +146,9 @@ const eliminarPerson = (idPerson: number, category: string) => {
 // SelectedPersonOrden.vue
 const seleccionarPerson = async (idPerson: number, category: CategoryPerson) => {
     console.log("seleccionarPerson", idPerson, category);
-    personStore.resetState();
-    // Set category first
-    personStore.setCategory(category);  
-   
-      personStore.setPersonId(idPerson);
+    personStore.setCategory(category);
+    personStore.setPersonId(idPerson);
+    uiStore.setShowPersonForm(true);
    
 };
 
