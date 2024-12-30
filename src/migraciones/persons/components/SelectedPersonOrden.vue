@@ -87,6 +87,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue';
+
 import EditarIcon from '../../../common/components/iconos/EditarIcon.vue';
 import EliminarIcon from '../../../common/components/iconos/EliminarIcon.vue';
 
@@ -94,6 +95,10 @@ import { useOrdenStore } from '@/migraciones/ordenes/store/ordenStore';
 
 import useAutoritations from '../composables/useAutoritations';
 import useAcreditations from '../composables/useAcreditations';
+import { usePersonStore } from '@/migraciones/persons/store/personStore';
+import { useUIStore } from '@/common/stores/uiStore';
+import type { Autoritation } from '../interfaces/autoritation.interface';
+
 interface Props {
   id: number;
   apellido: string;
@@ -107,15 +112,18 @@ interface Props {
 }
 const props = defineProps<Props>();
 const ordenStore = useOrdenStore();
+const uiStore = useUIStore();
 const { autoritations } = useAutoritations();
 const { acreditations } = useAcreditations();
 const autorizanteSelected = ref('Relación con el menor');
 const acreditacionSelected = ref('Acreditación del parentezco');
 const isDropdownOpen = ref<string | null>(null);
+const personStore = usePersonStore();
+
 const dropdownAutoritation = ref<HTMLElement | null>(null);
 const dropdownAcreditation = ref<HTMLElement | null>(null);
 
-const selectAutoritation = (autoritation: any) => {
+const selectAutoritation = (autoritation: Autoritation) => {
   autorizanteSelected.value = autoritation.descripcion;
   ordenStore.updateAutorizante(props.id, { authorizing_relatives_id: autoritation.id });
   isDropdownOpen.value = null;
@@ -134,9 +142,12 @@ const toggleDropdown = (dropdown: string) => {
 const eliminarPerson = (idPerson: number, category: string) => {
   ordenStore.removePerson(category, idPerson);
 };
-
-const seleccionarPerson = (idPerson: number, category: string) => {
-  ordenStore.getPerson(category, idPerson);
+// SelectedPersonOrden.vue
+const seleccionarPerson = async (idPerson: number, category: any) => {
+  console.log('seleccionarPerson', idPerson, category);
+  personStore.setCategory(category);
+  personStore.setPersonId(idPerson);
+  uiStore.setShowPersonForm(true);
 };
 
 const handleClickOutside = (event: MouseEvent) => {
