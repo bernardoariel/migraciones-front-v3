@@ -109,8 +109,8 @@
         <ButtonGroup :buttons="buttons!" />
       </form>
       <div v-if="Object.keys(errors).length">
-        <p class="text-red-500 font-bold">Errores de validación:</p>
-        <pre>{{ errors }}</pre>
+        <!-- <p class="text-red-500 font-bold">Errores de validación:</p>
+        <pre>{{ errors }}</pre> -->
       </div>
     </div>
   </div>
