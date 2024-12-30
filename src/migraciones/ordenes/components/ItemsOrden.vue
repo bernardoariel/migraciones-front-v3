@@ -14,16 +14,40 @@
         </span>
       </div>
 
-      <!-- Botón -->
-      <button class="btn btn-primary btn-sm px-4 py-2" @click="seleccionarordenId(orden.id!)">
-        {{ nameButton }}
-      </button>
+      <!-- Botones y badge -->
+      <div class="flex items-center gap-2">
+        <div v-if="!orden.aprobacion" class="flex items-center gap-2">
+          <div class="badge badge-warning flex items-center">Falta autorización</div>
+          <button
+            class="btn btn-circle btn-ghost flex items-center"
+            @click="handleDelete(orden.id!)"
+          >
+            <EliminarIcon />
+          </button>
+        </div>
+        <div v-else class="flex items-center gap-2">
+          <div class="badge badge-info flex items-center">Autorizado</div>
+          <button
+            class="btn btn-circle btn-ghost flex items-center"
+            @click="handleDelete(orden.id!)"
+          >
+            <EliminarIcon />
+          </button>
+        </div>
+        <button
+          class="btn btn-primary btn-sm px-4 py-2 flex items-center"
+          @click="seleccionarordenId(orden.id!)"
+        >
+          {{ nameButton }}
+        </button>
+      </div>
     </div>
 
+    <!-- Contenido centrado -->
     <div class="entry-content flex items-center text-gray-500 text-sm">
       <div v-if="orden.fecha_del_instrumento">
-        <span class="text-primary">Fecha del Instrumento:</span
-        ><span class="font-semibold ml-2"> {{ orden.fecha_del_instrumento }}</span>
+        <span class="text-primary">Fecha del Instrumento:</span>
+        <span class="font-semibold ml-2">{{ orden.fecha_del_instrumento }}</span>
       </div>
       <div class="ml-10">
         <span v-if="orden.fecha_del_instrumento">
@@ -31,9 +55,8 @@
         </span>
       </div>
       <div class="ml-10">
-        <span v-if="orden.aprobacion"> Aprobación: {{ orden.aprobacion }} </span>
+        <span v-if="orden.aprobacion">Aprobación: {{ orden.aprobacion }}</span>
       </div>
-      <div class="end"></div>
     </div>
   </div>
 </template>
@@ -47,17 +70,20 @@ import { getById } from '@/migraciones/persons/composables/usePerson';
 import { ref } from 'vue';
 import { useOrdenStore } from '@/migraciones/ordenes/store/ordenStore';
 
+import EliminarIcon from '@/common/components/iconos/EliminarIcon.vue';
+import useOrdenes from '../composables/useOrdenes';
+
 interface Props {
   orden: Partial<OrdenSolicitud>;
   nameButton: string;
 }
 
-const props = defineProps<Props>();
+defineProps<Props>();
 
 const ordenStore = useOrdenStore();
 
 const { cargarOrdenItem } = useOrdenItem();
-
+const { deleteOrder } = useOrdenes();
 const items = ref<any[]>([]);
 
 const seleccionarordenId = async (id: number) => {
@@ -83,11 +109,34 @@ const seleccionarordenId = async (id: number) => {
     }
   }
 };
+
+const handleDelete = async (id: number) => {
+  if (confirm('¿Estás seguro de que deseas eliminar esta solicitud?')) {
+    deleteOrder(id);
+  }
+};
 </script>
 
 <style scoped>
-.orden-item {
-  padding: 10px;
-  border-bottom: 1px solid #ddd;
+.entry-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* Alinea al centro verticalmente */
+}
+
+.entry-content {
+  display: flex;
+  align-items: center; /* Alinea al centro verticalmente */
+}
+
+.badge {
+  display: flex;
+  align-items: center; /* Asegura que el contenido del badge esté centrado */
+  justify-content: center;
+}
+
+.btn {
+  display: flex;
+  align-items: center; /* Centra el contenido del botón */
 }
 </style>
