@@ -1,80 +1,87 @@
 <template>
-  <div class="flex items-center">
-    <slot name="icon"></slot>
+  <div class="flex justify-between items-center">
+    <!-- Información del menor -->
     <div class="ml-4">
       <p class="text-base font-medium text-navy-700 dark:text-white">
         {{ apellido?.toUpperCase() || '' }}
         {{ segundo_apellido?.toUpperCase() || '' }},
         <span>{{ nombre || '' }} {{ otros_nombres || '' }}</span>
-        <span class="ml-3 font-medium dark:text-white">DNI: {{ documento }}</span>
+        <span class="ml-3 font-medium dark:text-white"
+          >DNI: {{ documento || 'Sin documento' }}</span
+        >
       </p>
       <p class="mt-2 text-sm text-gray-600">
         {{ tipo }} .
-        <span v-if="edad">{{ edad }} {{ edad && edad == 1 ? ' año .' : ' años .' }}</span>
+        <span v-if="edad">{{ edad }} {{ edad === 1 ? 'año .' : 'años .' }}</span>
       </p>
     </div>
-  </div>
-  <div class="mr-4 flex items-center justify-center text-gray-600 dark:text-white">
-    <div v-if="tipo === 'AUTORIZANTE'" class="dropdown" ref="dropdownAutoritation">
-      <div
-        tabindex="0"
-        role="button"
-        class="dropdown dropdown-top dropdown-end"
-        @click="toggleDropdown('autoritation')"
-      >
+
+    <!-- Botones de Acción (Iconos) -->
+    <div class="flex items-center space-x-2">
+      <!-- Dropdown de Relación -->
+      <div v-if="tipo === 'AUTORIZANTE'" class="dropdown" ref="dropdownAutoritation">
         <div
           tabindex="0"
           role="button"
-          class="btn m-1"
-          :class="autorizanteSelected !== 'Relación con el menor' ? 'btn-neutral' : ''"
+          class="dropdown dropdown-top dropdown-end"
+          @click="toggleDropdown('autoritation')"
         >
-          {{ autorizanteSelected }}
+          <div
+            tabindex="0"
+            role="button"
+            class="btn m-1"
+            :class="autorizanteSelected !== 'Relación con el menor' ? 'btn-neutral' : ''"
+          >
+            {{ autorizanteSelected }}
+          </div>
         </div>
+        <ul
+          v-show="isDropdownOpen === 'autoritation'"
+          tabindex="0"
+          class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
+        >
+          <li v-for="autoritation in autoritations" :key="autoritation.id">
+            <a @click="selectAutoritation(autoritation)">{{ autoritation.descripcion }}</a>
+          </li>
+        </ul>
       </div>
-      <ul
-        v-show="isDropdownOpen === 'autoritation'"
-        tabindex="0"
-        class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
-      >
-        <li v-for="autoritation of autoritations" :key="autoritation.id">
-          <a @click="selectAutoritation(autoritation)">{{ autoritation.descripcion }}</a>
-        </li>
-      </ul>
-    </div>
 
-    <div v-if="tipo === 'AUTORIZANTE'" class="dropdown" ref="dropdownAcreditation">
-      <div
-        tabindex="0"
-        role="button"
-        class="dropdown dropdown-top dropdown-end"
-        @click="toggleDropdown('acreditation')"
-      >
+      <!-- Dropdown de Acreditación -->
+      <div v-if="tipo === 'AUTORIZANTE'" class="dropdown" ref="dropdownAcreditation">
         <div
           tabindex="0"
           role="button"
-          class="btn m-1"
-          :class="acreditacionSelected !== 'Acreditación del parentezco' ? 'btn-neutral' : ''"
+          class="dropdown dropdown-top dropdown-end"
+          @click="toggleDropdown('acreditation')"
         >
-          {{ acreditacionSelected }}
+          <div
+            tabindex="0"
+            role="button"
+            class="btn m-1"
+            :class="acreditacionSelected !== 'Acreditación del parentezco' ? 'btn-neutral' : ''"
+          >
+            {{ acreditacionSelected }}
+          </div>
         </div>
+        <ul
+          v-show="isDropdownOpen === 'acreditation'"
+          tabindex="0"
+          class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
+        >
+          <li v-for="acreditation in acreditations" :key="acreditation.id">
+            <a @click="selectAcreditation(acreditation)">{{ acreditation.descripcion }}</a>
+          </li>
+        </ul>
       </div>
-      <ul
-        v-show="isDropdownOpen === 'acreditation'"
-        tabindex="0"
-        class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
-      >
-        <li v-for="acreditation of acreditations" :key="acreditation.id">
-          <a @click="selectAcreditation(acreditation)">{{ acreditation.descripcion }}</a>
-        </li>
-      </ul>
-    </div>
 
-    <button class="btn btn-circle btn-ghost" @click="seleccionarPerson(id, category)">
-      <EditarIcon />
-    </button>
-    <button class="btn btn-circle btn-ghost" @click="eliminarPerson(id, category)">
-      <EliminarIcon />
-    </button>
+      <!-- Botones de Editar y Eliminar -->
+      <button class="btn btn-circle btn-ghost" @click="seleccionarPerson(id, category)">
+        <EditarIcon />
+      </button>
+      <button class="btn btn-circle btn-ghost" @click="eliminarPerson(id, category)">
+        <EliminarIcon />
+      </button>
+    </div>
   </div>
 </template>
 
@@ -84,18 +91,16 @@ import EditarIcon from '../../../common/components/iconos/EditarIcon.vue';
 import EliminarIcon from '../../../common/components/iconos/EliminarIcon.vue';
 
 import { useOrdenStore } from '@/migraciones/ordenes/store/ordenStore';
-import type { Autoritation } from '../interfaces/autoritation.interface';
-import type { Acreditation } from '../interfaces/acreditations.interface';
+
 import useAutoritations from '../composables/useAutoritations';
 import useAcreditations from '../composables/useAcreditations';
-
 interface Props {
   id: number;
   apellido: string;
   nombre: string;
   segundo_apellido?: string;
   otros_nombres?: string;
-  edad?: null | number;
+  edad?: number | null;
   tipo: string;
   category: string;
   documento: string;
@@ -109,41 +114,32 @@ const acreditacionSelected = ref('Acreditación del parentezco');
 const isDropdownOpen = ref<string | null>(null);
 const dropdownAutoritation = ref<HTMLElement | null>(null);
 const dropdownAcreditation = ref<HTMLElement | null>(null);
-const selectAutoritation = (autoritation: Autoritation) => {
+
+const selectAutoritation = (autoritation: any) => {
   autorizanteSelected.value = autoritation.descripcion;
-
-  const autorizante = ordenStore.autorizantes.find((aut: any) => aut.id === props.id);
-  if (autorizante) {
-    ordenStore.updateAutorizante(props.id, {
-      authorizing_relatives_id: autoritation.id,
-    });
-  }
+  ordenStore.updateAutorizante(props.id, { authorizing_relatives_id: autoritation.id });
   isDropdownOpen.value = null;
 };
 
-const selectAcreditation = (acreditation: Acreditation) => {
+const selectAcreditation = (acreditation: any) => {
   acreditacionSelected.value = acreditation.descripcion;
-
-  const autorizante = ordenStore.autorizantes.find((aut: any) => aut.id === props.id);
-  if (autorizante) {
-    ordenStore.updateAutorizante(props.id, {
-      accreditation_links_id: acreditation.id,
-    });
-  }
+  ordenStore.updateAutorizante(props.id, { accreditation_links_id: acreditation.id });
   isDropdownOpen.value = null;
 };
+
 const toggleDropdown = (dropdown: string) => {
   isDropdownOpen.value = isDropdownOpen.value === dropdown ? null : dropdown;
 };
+
 const eliminarPerson = (idPerson: number, category: string) => {
   ordenStore.removePerson(category, idPerson);
 };
+
 const seleccionarPerson = (idPerson: number, category: string) => {
   ordenStore.getPerson(category, idPerson);
 };
 
 const handleClickOutside = (event: MouseEvent) => {
-  // Verifica si el clic ocurrió fuera de los contenedores de los dropdowns
   const target = event.target as Node;
   if (
     dropdownAutoritation.value &&

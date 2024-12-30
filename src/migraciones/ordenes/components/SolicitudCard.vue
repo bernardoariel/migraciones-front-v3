@@ -26,20 +26,15 @@
       <h4 class="text-xl font-bold text-navy-700 dark:text-white">
         ¿Quién es el menor a autorizar?
       </h4>
-      <div
-        v-if="menor"
-        class="flex w-full items-center justify-between rounded-2xl bg-white p-3 shadow-3xl shadow-shadow-500 dark:!bg-navy-700 dark:shadow-none"
-      >
+      <div v-if="menor">
         <SelectedPersonOrden
-          :id="menor.id!"
+          :id="menor.id"
           :apellido="menor.apellido"
           :edad="calculateAge(menor.fecha_de_nacimiento)"
           :nombre="menor.nombre"
-          :otros_nombres="menor.otros_nombres"
-          :segundo_apellido="menor.segundo_apellido"
+          :documento="menor.numero_de_documento || 'Sin documento'"
           tipo="MENOR"
           category="menores"
-          :documento="menor.numero_de_documento"
         >
           <template #icon>
             <BabyIcon />
@@ -57,15 +52,12 @@
           class="flex items-center justify-between"
         >
           <SelectedPersonOrden
-            :id="autorizante.id!"
+            :id="autorizante.id"
             :apellido="autorizante.apellido"
-            :edad="calculateAge(autorizante.fecha_de_nacimiento)"
             :nombre="autorizante.nombre"
-            :otros_nombres="autorizante.otros_nombres"
-            :segundo_apellido="autorizante.segundo_apellido"
+            :documento="autorizante.numero_de_documento || 'Sin documento'"
             tipo="AUTORIZANTE"
             category="autorizantes"
-            :documento="menor.numero_de_documento"
           >
             <template #icon>
               <AutorizanteIcon />
@@ -73,6 +65,7 @@
           </SelectedPersonOrden>
         </div>
       </div>
+
       <div class="divider"></div>
       <h4 class="text-xl font-bold text-navy-700 dark:text-white mb-4">
         ¿Quién son los Acompañantes?
@@ -84,15 +77,12 @@
           class="flex items-center justify-between"
         >
           <SelectedPersonOrden
-            :id="acompaneante.id!"
-            :apellido="acompaneante.apellido"
-            :edad="null"
-            :nombre="acompaneante.nombre"
-            :otros_nombres="acompaneante.otros_nombres"
-            :segundo_apellido="acompaneante.segundo_apellido"
+            :id="acompaneante.id || 0"
+            :apellido="acompaneante.apellido || 'Sin apellido'"
+            :nombre="acompaneante.nombre || 'Sin nombre'"
+            :documento="acompaneante.numero_de_documento || 'Sin documento'"
             tipo="ACOMPAÑANTE"
             category="acompaneantes"
-            :documento="menor.numero_de_documento"
           >
             <template #icon>
               <AcompaneanteIcon />
@@ -130,7 +120,7 @@ const { menor, autorizantes, acompaneantes } = storeToRefs(ordenStore);
 const steps = computed(() => [
   {
     key: 'menor',
-    icon: menor.value ? '✓' : '?',
+    icon: menor.value?.numero_de_documento ? '✓' : '?',
     title: 'Menor',
     active: !!menor.value,
   },

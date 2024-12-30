@@ -3,8 +3,8 @@ import type { Autorizante } from '../..migraciones/autorizantes/interfaces/autor
 import type { Menor } from '../..migraciones/menores/interfaces/menor.interface';
 import type { Solicitud } from '../..migraciones/ordenes/interface/solicitud.interface';
 export interface Orden {
-  menor: Menor;
+  menor: Menor | null;
   autorizantes: Autorizante[];
   acompaneantes: Acompaneante[];
-  solicitud: Solicitud;
+  solicitud: Solicitud | null;
 }

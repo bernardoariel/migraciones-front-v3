@@ -31,6 +31,11 @@ export const useOrdenStore = defineStore('ordenStore', () => {
   // Store references
   const store = usePersonStore();
   const builder = new OrdenBuilder();
+  console.log('Builder instance:', builder);
+  console.log(
+    'Methods in OrdenBuilder:',
+    Object.getOwnPropertyNames(Object.getPrototypeOf(builder)),
+  );
 
   // Actions for category management
   const setCategory = (newCategory: CategoryOrden = 'pendientes') => {
@@ -53,19 +58,23 @@ export const useOrdenStore = defineStore('ordenStore', () => {
   };
 
   const addAutorizante = (newAutorizante: Autorizante) => {
-    autorizantes.value.push({ ...newAutorizante });
-    builder.addAutorizante(newAutorizante);
+    if (!autorizantes.value.find((a) => a.id === newAutorizante.id)) {
+      autorizantes.value.push(newAutorizante);
+      builder.addAutorizante(newAutorizante);
+    }
   };
 
   const addAcompaneante = (newAcompaneante: Acompaneante) => {
-    acompaneantes.value.push(newAcompaneante);
-    builder.addAcompaneante(newAcompaneante);
+    console.log('newAcompaneante::: ', newAcompaneante);
+    if (!acompaneantes.value.find((a) => a.id === newAcompaneante.id)) {
+      acompaneantes.value.push(newAcompaneante);
+      builder.addAcompaneante(newAcompaneante);
+    }
   };
   const setSolicitud = (newSolicitud: Solicitud) => {
     solicitud.value = newSolicitud;
     builder.setSolicitud(newMenor);
   };
-
   const removePerson = (category: string, id: number) => {
     switch (category) {
       case 'menores':
@@ -76,11 +85,13 @@ export const useOrdenStore = defineStore('ordenStore', () => {
         break;
       case 'autorizantes':
         autorizantes.value = autorizantes.value.filter((person) => person.id !== id);
-        builder.setAutorizantes(autorizantes.value);
+        console.log('Autorizantes después de eliminar:', autorizantes.value);
+        builder.setAutorizantes(autorizantes.value); // Verifica si este método existe
         break;
       case 'acompaneantes':
         acompaneantes.value = acompaneantes.value.filter((person) => person.id !== id);
-        builder.setAcompaneantes(acompaneantes.value);
+        console.log('Acompaneantes después de eliminar:', acompaneantes.value);
+        builder.setAcompaneantes(acompaneantes.value); // Verifica si este método existe
         break;
       default:
         console.error('Categoría no válida para eliminar.');

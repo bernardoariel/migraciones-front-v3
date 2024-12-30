@@ -2,11 +2,7 @@
   <div class="entry-container mb-3 pointer p-1 border-b border-gray-400 transition-all">
     <!-- Título con el botón -->
     <div class="entry-title flex items-center justify-between gap-2">
-      <!-- Información del usuario -->
       <div class="flex items-center gap-2">
-        <!-- <span v-if="orden.notary_id! <= 2" class="text-primary font-semibold text-lg">{{
-          orden.notary_id
-        }}</span> -->
         <span class="text-primary font-semibold text-lg">MENOR:</span>
         <span class="text-lg uppercase text-gray-800 font-semibold">
           {{ orden.apellido }} {{ orden.segundo_apellido }},
@@ -23,17 +19,12 @@
         {{ nameButton }}
       </button>
     </div>
-    <!-- Contenido centrado -->
+
     <div class="entry-content flex items-center text-gray-500 text-sm">
       <div v-if="orden.fecha_del_instrumento">
         <span class="text-primary">Fecha del Instrumento:</span
         ><span class="font-semibold ml-2"> {{ orden.fecha_del_instrumento }}</span>
       </div>
-      <!-- <div class="ml-10">
-        <span v-if="orden.fecha_del_instrumento">
-          Escribano {{ orden.apellidoescribano }} {{ orden.nombreescribano }}
-        </span>
-      </div> -->
       <div class="ml-10">
         <span v-if="orden.fecha_del_instrumento">
           Nro Act Notarial {{ orden.numero_actuacion_notarial_cert_firma }}
@@ -75,7 +66,7 @@ const seleccionarordenId = async (id: number) => {
   ordenStore.setOrdenId(id);
 
   if (Array.isArray(items.value)) {
-    items.value.forEach(async (item) => {
+    for (const item of items.value) {
       const { tipo, id_detalle } = item;
 
       switch (tipo) {
@@ -89,9 +80,7 @@ const seleccionarordenId = async (id: number) => {
           ordenStore.addAcompaneante(await getById(id_detalle));
           break;
       }
-    });
-  } else {
-    console.error('Los datos no son un array válido', items.value);
+    }
   }
 };
 </script>
