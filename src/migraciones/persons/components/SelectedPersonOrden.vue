@@ -80,7 +80,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue';
-import type { CategoryPerson } from '@/migraciones/persons/interfaces/categoryPerson.interface';
+
 import EditarIcon from '../../../common/components/iconos/EditarIcon.vue';
 import EliminarIcon from '../../../common/components/iconos/EliminarIcon.vue';
 
@@ -146,12 +146,11 @@ const eliminarPerson = (idPerson: number, category: string) => {
   ordenStore.removePerson(category, idPerson);
 };
 // SelectedPersonOrden.vue
-const seleccionarPerson = async (idPerson: number, category: CategoryPerson) => {
-    console.log("seleccionarPerson", idPerson, category);
-    personStore.setCategory(category);
-    personStore.setPersonId(idPerson);
-    uiStore.setShowPersonForm(true);
-   
+const seleccionarPerson = async (idPerson: number, category: any) => {
+  console.log('seleccionarPerson', idPerson, category);
+  personStore.setCategory(category);
+  personStore.setPersonId(idPerson);
+  uiStore.setShowPersonForm(true);
 };
 
 const handleClickOutside = (event: MouseEvent) => {
