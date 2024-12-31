@@ -12,6 +12,12 @@
           ,{{ person.nombre }} {{ person.otros_nombres }}
         </span>
       </div>
+      <span 
+        v-if="showWarningMessage"
+        class="ml-2 text-red-600 font-medium text-xs"
+      >
+        Se requieren más datos para ser autorizante
+      </span>
 
       <!-- Botón -->
       <button
@@ -52,6 +58,7 @@ import { useOrdenStore } from '@/migraciones/ordenes/store/ordenStore';
 interface Props {
   person: Partial<Person>;
   nameButton: string;
+  currentCategory: 'menores' | 'autorizantes' | 'acompaneantes';
 }
 
 const toast = useToast();
@@ -67,6 +74,24 @@ const {
 } = usePersons();
 
 const isMaxAutorizantesReached = computed(() => autorizantes.value.length >= 2);
+const isAutorizanteAndAcompanante = computed(() => {
+  const documento = props.person.numero_de_documento; 
+
+  const isInAutorizantes = autorizantesTabla.value.some(
+    aut => aut.numero_de_documento === documento
+  );
+  
+  const isInAcompanantes = acompaneantesTabla.value.some(
+    acomp => acomp.numero_de_documento === documento
+  );
+
+  const result = isInAutorizantes && isInAcompanantes; 
+  
+  return result;
+});
+const showWarningMessage = computed(() => {
+  return props.currentCategory === 'autorizantes' && isAutorizanteAndAcompanante.value;
+});
 
 const isDisabled = computed(() => {
   const id = props.person.id;

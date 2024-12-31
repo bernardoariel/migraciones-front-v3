@@ -19,6 +19,7 @@
           :person="person"
           class="w-full"
           nameButton="Seleccionar"
+          :currentCategory="getActiveCategory"
         />
       </div>
     </div>
@@ -43,7 +44,7 @@ import usePersons from '@/migraciones/persons/composables/usePersons';
 
 const personStore = usePersonStore();
 
-const { getActiveCategory } = storeToRefs(personStore);
+const { getActiveCategory } = storeToRefs(personStore) as { getActiveCategory: Ref<'menores' | 'autorizantes' | 'acompaneantes'> };
 
 onMounted(() => {  
   personStore.setCategory('menores');  

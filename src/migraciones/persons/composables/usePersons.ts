@@ -38,13 +38,12 @@ const usePersons = () => {
     }),
   );
 
-  const autorizantes = computed(() =>
-    persons.value.filter((person) => {
-      if (!person || !person.fecha_de_nacimiento) return false;
-      const age = calculateAge(person.fecha_de_nacimiento);
-      return age >= 21;
-    }),
-  );
+  const autorizantes = computed(() => {
+    if (!persons.value) return [];
+    return persons.value.filter(person => 
+      calculateAge(person.fecha_de_nacimiento) >= 21
+    );
+  });
 
   const totalPagesByCategory = computed(() => ({
     acompaneantes: Math.ceil(acompaneantes.value.length / itemsPerPage),
