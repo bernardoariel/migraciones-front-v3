@@ -9,34 +9,27 @@
           <span>{{ orden.nombre }} {{ orden.otros_nombres }}</span>
         </span>
         <span class="text-primary font-semibold text-lg">DNI:</span>
-        <span class="text-lg uppercase text-gray-800 font-semibold">
-          {{ orden.documento }}
-        </span>
+        <span class="text-lg uppercase text-gray-800 font-semibold">{{ orden.documento }}</span>
       </div>
 
       <!-- Botones y badge -->
       <div class="flex items-center gap-2">
         <div v-if="!orden.aprobacion" class="flex items-center gap-2">
           <div class="badge badge-warning flex items-center">Falta autorización</div>
+          <!-- Mostrar botón de eliminar solo si falta la aprobación -->
           <button
             class="btn btn-circle btn-ghost flex items-center"
-            @click="handleDelete(orden.id!)"
+            @click="openDeleteModal(orden.id!)"
           >
             <EliminarIcon />
           </button>
         </div>
         <div v-else class="flex items-center gap-2">
           <div class="badge badge-info flex items-center">Autorizado</div>
-          <button
-            class="btn btn-circle btn-ghost flex items-center"
-            @click="handleDelete(orden.id!)"
-          >
-            <EliminarIcon />
-          </button>
         </div>
         <button
           class="btn btn-primary btn-sm px-4 py-2 flex items-center"
-          @click="seleccionarordenId(orden.id!)"
+          @click="seleccionarOrdenId(orden.id!)"
         >
           {{ nameButton }}
         </button>
@@ -58,6 +51,15 @@
         <span v-if="orden.aprobacion">Aprobación: {{ orden.aprobacion }}</span>
       </div>
     </div>
+
+    <!-- Modal -->
+    <ModalDialog
+      ref="deleteModal"
+      title="Confirmar Eliminación"
+      message="¿Estás seguro de que deseas eliminar esta solicitud?"
+      @confirm="confirmDelete"
+      @cancel="cancelDelete"
+    />
   </div>
 </template>
 
@@ -72,6 +74,7 @@ import { useOrdenStore } from '@/migraciones/ordenes/store/ordenStore';
 
 import EliminarIcon from '@/common/components/iconos/EliminarIcon.vue';
 import useOrdenes from '../composables/useOrdenes';
+import ModalDialog from '@/common/components/ModalDialog.vue';
 
 interface Props {
   orden: Partial<OrdenSolicitud>;
@@ -81,12 +84,13 @@ interface Props {
 defineProps<Props>();
 
 const ordenStore = useOrdenStore();
-
 const { cargarOrdenItem } = useOrdenItem();
 const { deleteOrder } = useOrdenes();
 const items = ref<any[]>([]);
+const deleteModal = ref();
+const currentOrderId = ref<number | null>(null);
 
-const seleccionarordenId = async (id: number) => {
+const seleccionarOrdenId = async (id: number) => {
   ordenStore.resetOrden();
   items.value = await cargarOrdenItem(id);
   ordenStore.setOrdenId(id);
@@ -110,10 +114,24 @@ const seleccionarordenId = async (id: number) => {
   }
 };
 
-const handleDelete = async (id: number) => {
-  if (confirm('¿Estás seguro de que deseas eliminar esta solicitud?')) {
-    deleteOrder(id);
+// Abrir el modal
+const openDeleteModal = (id: number) => {
+  currentOrderId.value = id;
+  deleteModal.value?.showModal();
+};
+
+// Confirmar eliminación
+const confirmDelete = async () => {
+  if (currentOrderId.value) {
+    await deleteOrder(currentOrderId.value);
+    console.log(`Orden con ID ${currentOrderId.value} eliminada`);
+    ordenStore.resetOrden();
   }
+};
+
+// Cancelar eliminación
+const cancelDelete = () => {
+  console.log('Eliminación cancelada');
 };
 </script>
 
