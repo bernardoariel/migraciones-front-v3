@@ -16,9 +16,10 @@
       <div class="flex items-center gap-2">
         <div v-if="!orden.aprobacion" class="flex items-center gap-2">
           <div class="badge badge-warning flex items-center">Falta autorización</div>
-          <!-- Mostrar botón de eliminar solo si falta la aprobación -->
+          <!-- Botón eliminar -->
           <button
             class="btn btn-circle btn-ghost flex items-center"
+            :disabled="selectedOrderId === orden.id"
             @click="openDeleteModal(orden.id!)"
           >
             <EliminarIcon />
@@ -27,8 +28,10 @@
         <div v-else class="flex items-center gap-2">
           <div class="badge badge-info flex items-center">Autorizado</div>
         </div>
+        <!-- Botón seleccionar -->
         <button
           class="btn btn-primary btn-sm px-4 py-2 flex items-center"
+          :disabled="selectedOrderId === orden.id"
           @click="seleccionarOrdenId(orden.id!)"
         >
           {{ nameButton }}
@@ -75,6 +78,9 @@ import { useOrdenStore } from '@/migraciones/ordenes/store/ordenStore';
 import EliminarIcon from '@/common/components/iconos/EliminarIcon.vue';
 import useOrdenes from '../composables/useOrdenes';
 import ModalDialog from '@/common/components/ModalDialog.vue';
+import { useToast } from 'vue-toastification';
+
+const toast = useToast();
 
 interface Props {
   orden: Partial<OrdenSolicitud>;
@@ -83,20 +89,31 @@ interface Props {
 
 defineProps<Props>();
 
+// Estado para rastrear el registro seleccionado
+const selectedOrderId = ref<number | null>(null);
+
+// Store para manejar las órdenes
 const ordenStore = useOrdenStore();
 const { cargarOrdenItem } = useOrdenItem();
 const { deleteOrder } = useOrdenes();
-const items = ref<any[]>([]);
 const deleteModal = ref();
-const currentOrderId = ref<number | null>(null);
 
 const seleccionarOrdenId = async (id: number) => {
+  if (selectedOrderId.value === id) {
+    // Si ya está seleccionado, deseleccionarlo
+    selectedOrderId.value = null;
+    ordenStore.resetOrden();
+    return;
+  }
+
+  // Seleccionar una nueva orden
+  selectedOrderId.value = id;
   ordenStore.resetOrden();
-  items.value = await cargarOrdenItem(id);
+  const items = await cargarOrdenItem(id);
   ordenStore.setOrdenId(id);
 
-  if (Array.isArray(items.value)) {
-    for (const item of items.value) {
+  if (Array.isArray(items)) {
+    for (const item of items) {
       const { tipo, id_detalle } = item;
 
       switch (tipo) {
@@ -114,24 +131,35 @@ const seleccionarOrdenId = async (id: number) => {
   }
 };
 
-// Abrir el modal
 const openDeleteModal = (id: number) => {
-  currentOrderId.value = id;
+  // Evitar eliminar un registro seleccionado
+  if (selectedOrderId.value === id) {
+    toast.error('No puedes eliminar un registro seleccionado.');
+    return;
+  }
   deleteModal.value?.showModal();
 };
 
 // Confirmar eliminación
 const confirmDelete = async () => {
-  if (currentOrderId.value) {
-    await deleteOrder(currentOrderId.value);
-    console.log(`Orden con ID ${currentOrderId.value} eliminada`);
-    ordenStore.resetOrden();
+  if (selectedOrderId.value) {
+    try {
+      await deleteOrder(selectedOrderId.value);
+      toast.success(`Orden con ID ${selectedOrderId.value} eliminada exitosamente`);
+      ordenStore.resetOrden();
+
+      // Si la orden eliminada estaba seleccionada, deseleccionarla
+      selectedOrderId.value = null;
+    } catch (error) {
+      toast.error('Hubo un problema al eliminar la orden');
+      console.error(error);
+    }
   }
 };
 
 // Cancelar eliminación
 const cancelDelete = () => {
-  console.log('Eliminación cancelada');
+  toast.info('Eliminación cancelada');
 };
 </script>
 
@@ -139,22 +167,22 @@ const cancelDelete = () => {
 .entry-title {
   display: flex;
   justify-content: space-between;
-  align-items: center; /* Alinea al centro verticalmente */
+  align-items: center;
 }
 
 .entry-content {
   display: flex;
-  align-items: center; /* Alinea al centro verticalmente */
+  align-items: center;
 }
 
 .badge {
   display: flex;
-  align-items: center; /* Asegura que el contenido del badge esté centrado */
+  align-items: center;
   justify-content: center;
 }
 
 .btn {
   display: flex;
-  align-items: center; /* Centra el contenido del botón */
+  align-items: center;
 }
 </style>
