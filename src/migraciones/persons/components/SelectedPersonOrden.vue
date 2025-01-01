@@ -86,7 +86,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ref, onMounted, onBeforeUnmount , computed} from 'vue';
 
 import EditarIcon from '../../../common/components/iconos/EditarIcon.vue';
 import EliminarIcon from '../../../common/components/iconos/EliminarIcon.vue';
@@ -161,11 +161,38 @@ const handleClickOutside = (event: MouseEvent) => {
     isDropdownOpen.value = null;
   }
 };
+const storedAutorizanteData = computed(() => {
+  const autorizante = ordenStore.autorizantes.find(a => a.id === props.id);
+  return {
+    authorizing_relatives_id: autorizante?.authorizing_relatives_id,
+    accreditation_links_id: autorizante?.accreditation_links_id
+  };
+});
 
 onMounted(() => {
   document.addEventListener('click', handleClickOutside);
 });
+onMounted(async () => {
+  // Get stored autoritation
+  if (storedAutorizanteData.value.authorizing_relatives_id) {
+    const autoritation = autoritations.value.find(
+      a => a.id === storedAutorizanteData.value.authorizing_relatives_id
+    );
+    if (autoritation) {
+      autorizanteSelected.value = autoritation.descripcion;
+    }
+  }
 
+  // Get stored acreditation
+  if (storedAutorizanteData.value.accreditation_links_id) {
+    const acreditation = acreditations.value.find(
+      a => a.id === storedAutorizanteData.value.accreditation_links_id
+    );
+    if (acreditation) {
+      acreditacionSelected.value = acreditation.descripcion;
+    }
+  }
+});
 onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside);
 });
