@@ -1,25 +1,35 @@
 <template>
-  <div class="flex justify-between items-center">
-    <!-- Información del menor -->
-    <div class="ml-4">
-      <p class="text-base font-medium text-navy-700 dark:text-white">
-        {{ apellido?.toUpperCase() || '' }}
-        {{ segundo_apellido?.toUpperCase() || '' }},
-        <span>{{ nombre || '' }} {{ otros_nombres || '' }}</span>
-        <span class="ml-3 font-medium dark:text-white"
-          >DNI: {{ documento || 'Sin documento' }}</span
-        >
-      </p>
-      <p class="mt-2 text-sm text-gray-600">
-        {{ tipo }} .
-        <span v-if="edad">{{ edad }} {{ edad === 1 ? 'año .' : 'años .' }}</span>
-      </p>
+  <div class="flex justify-between items-center w-full">
+    <div class="flex items-center space-x-4">
+      <!-- iCONO -->
+      <div class="flex mr-4">
+        <slot name="icon"></slot>
+      </div>
+      <!-- DATOS -->
+      <div>
+        <p class="text-base font-medium text-navy-700 dark:text-white">
+          {{ apellido?.toUpperCase() || '' }}
+          {{ segundo_apellido?.toUpperCase() || '' }},
+          <span>{{ nombre || '' }} {{ otros_nombres || '' }}</span>
+          <span class="ml-3 font-medium dark:text-white"
+            >DNI: {{ documento || 'Sin documento' }}</span
+          >
+        </p>
+        <p class="mt-2 text-sm text-gray-600">
+          {{ tipo }} .
+          <span v-if="edad">{{ edad }} {{ edad === 1 ? 'año .' : 'años .' }}</span>
+        </p>
+      </div>
+      <!-- FIN -->
     </div>
 
-    <!-- Botones de Acción (Iconos) -->
-    <div class="flex items-center space-x-2">
-      <!-- Dropdown de Relación -->
-      <div v-if="tipo === 'AUTORIZANTE'" class="dropdown" ref="dropdownAutoritation">
+    <!-- Dropdown de Relación -->
+    <div class="flex items-center space-x-4">
+      <div
+        v-if="tipo === 'AUTORIZANTE'"
+        class="justify-between items-center dropdown"
+        ref="dropdownAutoritation"
+      >
         <div
           tabindex="0"
           role="button"
@@ -47,7 +57,7 @@
       </div>
 
       <!-- Dropdown de Acreditación -->
-      <div v-if="tipo === 'AUTORIZANTE'" class="dropdown" ref="dropdownAcreditation">
+      <div v-if="tipo === 'AUTORIZANTE'" class="flex dropdown" ref="dropdownAcreditation">
         <div
           tabindex="0"
           role="button"
@@ -75,18 +85,20 @@
       </div>
 
       <!-- Botones de Editar y Eliminar -->
-      <button class="btn btn-circle btn-ghost" @click="seleccionarPerson(id, category)">
-        <EditarIcon />
-      </button>
-      <button class="btn btn-circle btn-ghost" @click="eliminarPerson(id, category)">
-        <EliminarIcon />
-      </button>
+      <div>
+        <button class="btn btn-circle btn-ghost" @click="seleccionarPerson(id, category)">
+          <EditarIcon />
+        </button>
+        <button class="btn btn-circle btn-ghost" @click="eliminarPerson(id, category)">
+          <EliminarIcon />
+        </button>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount , computed} from 'vue';
+import { ref, onMounted, onBeforeUnmount, computed } from 'vue';
 
 import EditarIcon from '../../../common/components/iconos/EditarIcon.vue';
 import EliminarIcon from '../../../common/components/iconos/EliminarIcon.vue';
@@ -98,6 +110,7 @@ import useAcreditations from '../composables/useAcreditations';
 import { usePersonStore } from '@/migraciones/persons/store/personStore';
 import { useUIStore } from '@/common/stores/uiStore';
 import type { Autoritation } from '../interfaces/autoritation.interface';
+import type { Autorizante } from '../../autorizantes/interfaces/autorizante.interface';
 
 interface Props {
   id: number;
@@ -162,10 +175,10 @@ const handleClickOutside = (event: MouseEvent) => {
   }
 };
 const storedAutorizanteData = computed(() => {
-  const autorizante = ordenStore.autorizantes.find(a => a.id === props.id);
+  const autorizante = ordenStore.autorizantes.find((a: Autorizante) => a.id === props.id);
   return {
     authorizing_relatives_id: autorizante?.authorizing_relatives_id,
-    accreditation_links_id: autorizante?.accreditation_links_id
+    accreditation_links_id: autorizante?.accreditation_links_id,
   };
 });
 
@@ -176,7 +189,7 @@ onMounted(async () => {
   // Get stored autoritation
   if (storedAutorizanteData.value.authorizing_relatives_id) {
     const autoritation = autoritations.value.find(
-      a => a.id === storedAutorizanteData.value.authorizing_relatives_id
+      (a) => a.id === storedAutorizanteData.value.authorizing_relatives_id,
     );
     if (autoritation) {
       autorizanteSelected.value = autoritation.descripcion;
@@ -186,7 +199,7 @@ onMounted(async () => {
   // Get stored acreditation
   if (storedAutorizanteData.value.accreditation_links_id) {
     const acreditation = acreditations.value.find(
-      a => a.id === storedAutorizanteData.value.accreditation_links_id
+      (a) => a.id === storedAutorizanteData.value.accreditation_links_id,
     );
     if (acreditation) {
       acreditacionSelected.value = acreditation.descripcion;

@@ -15,16 +15,16 @@
     </div>
 
     <div
-      class="flex-[2] bg-white p-4 rounded-lg shadow-md max-h-[85vh] overflow-auto flex justify-center"
+      class="flex-[3] bg-white p-4 rounded-lg shadow-md max-h-[85vh] overflow-auto flex justify-center"
     >
       <SolicitudCard v-if="!idPersonSelected && hasItems" />
 
       <PersonForm v-else :buttons="buttonConfig" />
     </div>
 
-    <div class="flex-[1] max-h-[85vh] overflow-auto">
+    <!--  <div class="flex-[1] max-h-[85vh] overflow-auto">
       <CardValidation />
-    </div>
+    </div> -->
   </div>
 </template>
 

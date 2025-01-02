@@ -49,7 +49,7 @@ const onCancel = () => {
 };
 
 // Exponer funciones
-defineExpose({ showModal });
+defineExpose({ showModal, closeModal, onConfirm, onCancel });
 </script>
 
 <style scoped>

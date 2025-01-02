@@ -1,9 +1,9 @@
 <template>
   <div class="flex flex-col">
-    <div class="text-2xl font-semibold mb-6 text-center">
+    <!-- <div class="text-2xl font-semibold mb-6 text-center">
       {{ idPersonSelected == 'new' || idPersonSelected === null ? 'Agregando ' : 'Editando' }} un
       {{ nombreForm }}
-    </div>
+    </div> -->
 
     <form @submit="onSubmit" class="space-y-4">
       <label class="input input-bordered flex items-center gap-2">
