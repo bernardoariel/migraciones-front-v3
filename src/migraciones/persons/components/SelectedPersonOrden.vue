@@ -98,7 +98,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, computed } from 'vue';
+import { ref, onMounted, onBeforeUnmount, computed, watch } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useRoute } from 'vue-router';
 
 import EditarIcon from '../../../common/components/iconos/EditarIcon.vue';
 import EliminarIcon from '../../../common/components/iconos/EliminarIcon.vue';
@@ -109,6 +111,7 @@ import useAutoritations from '../composables/useAutoritations';
 import useAcreditations from '../composables/useAcreditations';
 import { usePersonStore } from '@/migraciones/persons/store/personStore';
 import { useUIStore } from '@/common/stores/uiStore';
+import useOrdenItem from '@/migraciones/ordenes/composables/useOrdenItem';
 import type { Autoritation } from '../interfaces/autoritation.interface';
 import type { Autorizante } from '../../autorizantes/interfaces/autorizante.interface';
 
@@ -182,6 +185,69 @@ const storedAutorizanteData = computed(() => {
   };
 });
 
+const route = useRoute();
+const { getAutorizanteRelations } = useOrdenItem();
+const { getIdOrdenSelected } = storeToRefs(ordenStore);
+const idOrdenSelected = getIdOrdenSelected;
+
+// Initialize orderId from route or store
+const orderId = ref(route.params.id ? Number(route.params.id) : null);
+
+// Add watch for orden selection
+watch(idOrdenSelected, async (newId) => {
+  if (newId) {
+    orderId.value = Number(newId);
+    await loadAutorizanteData();
+  }
+});
+
+// Update loadAutorizanteData to not depend on orderId
+const loadAutorizanteData = async () => {
+  console.log('loadAutorizanteData called', {
+    tipo: props.tipo,
+    id: props.id
+  });
+
+  if (props.tipo !== 'AUTORIZANTE') return;
+
+  try {
+    const relations = ref<{ authorizing_relatives_id: any; accreditation_links_id: any } | null>(null);
+    if (orderId.value !== null) {
+      relations.value = await getAutorizanteRelations(props.id, orderId.value);
+    }
+    console.log('Relations loaded:', relations);
+
+    if (relations) {
+      // Set autoritation value
+      if (relations.authorizing_relatives_id) {
+        const autoritation = autoritations.value.find(
+          a => a.id === relations.authorizing_relatives_id
+        );
+        if (autoritation) {
+          autorizanteSelected.value = autoritation.descripcion;
+        }
+      }
+
+      // Set acreditation value  
+      if (relations.accreditation_links_id) {
+        const acreditation = acreditations.value.find(
+          a => a.id === relations.accreditation_links_id
+        );
+        if (acreditation) {
+          acreditacionSelected.value = acreditation.descripcion;
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Error loading autorizante data:', error);
+  }
+};
+
+onMounted(async () => {
+  console.log('Component mounted');
+  await loadAutorizanteData();
+});
+
 onMounted(() => {
   document.addEventListener('click', handleClickOutside);
 });
@@ -208,6 +274,12 @@ onMounted(async () => {
 });
 onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside);
+});
+
+// Watch for props changes
+watch(() => props.id, async (newId) => {
+  console.log('Props id changed:', newId);
+  await loadAutorizanteData();
 });
 </script>
 
