@@ -17,6 +17,7 @@ interface OrderItemAutorizante {
   id_detalle: number;
   authorizing_relatives_id: number | null;
   accreditation_links_id: number | null;
+  person_id?: number;
 }
 
 const useOrdenItem = () => {
@@ -43,19 +44,22 @@ const useOrdenItem = () => {
   };
 
   // Add new function to get autorizante relations
-  const getAutorizanteRelations = async (autorizanteId: number, orderId: number) => {
+  const getAutorizanteRelations = async (personId: number, orderId: number) => {
     try {
       const response = await apiMigrationsData.post('/ordenesitems/bsq', {
         order_id: orderId,
-        tipo: 'autorizante'
+        tipo: 'autorizante',
+        person_id: personId // Add person_id to query
       });
 
-      // Find matching order_item for this autorizante
+      console.log('API Response:', response.data);
+
+      // Find order_item where id_detalle matches person_id
       const autorizanteItem = response.data.find(
-        (item: OrderItemAutorizante) => item.id_detalle === autorizanteId
+        (item: OrderItemAutorizante) => Number(item.id_detalle) === personId
       );
 
-      console.log('Found order item:', autorizanteItem);
+      console.log('Matching order item:', autorizanteItem);
 
       if (autorizanteItem) {
         return {

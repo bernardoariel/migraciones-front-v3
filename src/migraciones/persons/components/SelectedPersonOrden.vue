@@ -201,48 +201,6 @@ watch(idOrdenSelected, async (newId) => {
   }
 });
 
-// Update loadAutorizanteData to not depend on orderId
-const loadAutorizanteData = async () => {
-  console.log('loadAutorizanteData called', {
-    tipo: props.tipo,
-    id: props.id
-  });
-
-  if (props.tipo !== 'AUTORIZANTE') return;
-
-  try {
-    const relations = ref<{ authorizing_relatives_id: any; accreditation_links_id: any } | null>(null);
-    if (orderId.value !== null) {
-      relations.value = await getAutorizanteRelations(props.id, orderId.value);
-    }
-    console.log('Relations loaded:', relations);
-
-    if (relations) {
-      // Set autoritation value
-      if (relations.authorizing_relatives_id) {
-        const autoritation = autoritations.value.find(
-          a => a.id === relations.authorizing_relatives_id
-        );
-        if (autoritation) {
-          autorizanteSelected.value = autoritation.descripcion;
-        }
-      }
-
-      // Set acreditation value  
-      if (relations.accreditation_links_id) {
-        const acreditation = acreditations.value.find(
-          a => a.id === relations.accreditation_links_id
-        );
-        if (acreditation) {
-          acreditacionSelected.value = acreditation.descripcion;
-        }
-      }
-    }
-  } catch (error) {
-    console.error('Error loading autorizante data:', error);
-  }
-};
-
 onMounted(async () => {
   console.log('Component mounted');
   await loadAutorizanteData();
@@ -275,11 +233,68 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside);
 });
+// Update loadAutorizanteData to use current orderId
+const loadAutorizanteData = async () => {
+  console.log('loadAutorizanteData called', {
+    tipo: props.tipo,
+    personId: props.id,
+    orderId: idOrdenSelected.value
+  });
+
+  if (props.tipo !== 'AUTORIZANTE' || !idOrdenSelected.value) return;
+
+  try {
+    const relations = await getAutorizanteRelations(props.id, idOrdenSelected.value);
+    console.log('Raw relations response:', relations);
+
+    // Set autoritation dropdown value
+    if (relations?.authorizing_relatives_id) {
+      const foundAutoritation = autoritations.value.find(
+        a => a.id === relations.authorizing_relatives_id
+      );
+      console.log('Found autoritation:', foundAutoritation);
+      if (foundAutoritation) {
+        autorizanteSelected.value = foundAutoritation.descripcion;
+      }
+    }
+
+    // Set acreditation dropdown value
+    if (relations?.accreditation_links_id) {
+      const foundAcreditation = acreditations.value.find(
+        a => a.id === relations.accreditation_links_id
+      );
+      console.log('Found acreditation:', foundAcreditation);
+      if (foundAcreditation) {
+        acreditacionSelected.value = foundAcreditation.descripcion;
+      }
+    }
+  } catch (error) {
+    console.error('Error in loadAutorizanteData:', error);
+  }
+};
 
 // Watch for props changes
 watch(() => props.id, async (newId) => {
   console.log('Props id changed:', newId);
   await loadAutorizanteData();
+});
+
+
+
+// Add watch for orden selection changes
+watch(idOrdenSelected, async (newId) => {
+  if (newId && props.tipo === 'AUTORIZANTE') {
+    orderId.value = Number(newId);
+    await loadAutorizanteData();
+  }
+}, { immediate: true });
+
+
+
+onMounted(async () => {
+  if (idOrdenSelected.value) {
+    await loadAutorizanteData();
+  }
 });
 </script>
 
