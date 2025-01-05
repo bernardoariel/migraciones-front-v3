@@ -17,7 +17,7 @@
     <div
       class="flex-[3] bg-white p-4 rounded-lg shadow-md max-h-[85vh] overflow-auto flex justify-center"
     >
-      <SolicitudCard v-if="!idPersonSelected && hasItems" />
+      <SolicitudCard v-if="!idPersonSelected" />
 
       <PersonForm v-else :buttons="buttonConfig" />
     </div>

@@ -134,13 +134,12 @@ import usePerson from '@/migraciones/persons/composables/usePerson';
 import { getPersonByDoc } from '@/migraciones/persons/composables/usePerson';
 import { usePersonStore } from '@/migraciones/persons/store/personStore';
 
-import type { Autorizante } from '../../autorizantes/interfaces/autorizante.interface';
 import { useOrdenStore } from '@/migraciones/ordenes/store/ordenStore';
 
 const toast = useToast();
 const { documentTypeOptions, nationalityOptions, issuerDocsOptions, loadOptions } =
   useDropdownOptions();
-const ordenStore = useOrdenStore();
+
 interface ButtonConfig {
   label: string;
   type?: 'button' | 'submit' | 'reset';
@@ -158,7 +157,7 @@ interface Props {
 const props = defineProps<Props>();
 
 const errorDoc = ref('');
-const route = useRoute();
+
 const isFormValid = ref(false);
 const validationSchema = computed(() => {
   return yup.object({
@@ -272,42 +271,46 @@ const checkDniExistence = async () => {
     }
   }
 };
-watch(person,async (newPerson) => {
-  if (newPerson) {
-    // await loadAllOptions();
-    
-    console.log('Person data:', {
-      nationality: newPerson.nationality_id,
-      sex: newPerson.sex_id
-    })
-    const formData = {
-      documentNumber: String(newPerson.numero_de_documento),
-      documentType: Number(newPerson.type_document_id),
-      lastName: String(newPerson.apellido),
-      secondLastName: String(newPerson.segundo_apellido || ''),
-      firstName: String(newPerson.nombre),
-      otherNames: String(newPerson.otros_nombres || ''),
-      nationality: Number(newPerson.nationality_id),
-      sex: String(newPerson.sex_id),
-      address: String(newPerson.domicilio),
-      dateOfBirht: String(newPerson.fecha_de_nacimiento),
-      documentIssuer: Number(newPerson.issuer_document_id)
-    };
+watch(
+  person,
+  async (newPerson) => {
+    if (newPerson) {
+      // await loadAllOptions();
 
-    console.log('Setting values:', formData);
-    setValues(formData);
-    
-    console.log('After setValues - new form values:', meta.value);
-  }
-}, { immediate: true });
+      console.log('Person data:', {
+        nationality: newPerson.nationality_id,
+        sex: newPerson.sex_id,
+      });
+      const formData = {
+        documentNumber: String(newPerson.numero_de_documento),
+        documentType: Number(newPerson.type_document_id),
+        lastName: String(newPerson.apellido),
+        secondLastName: String(newPerson.segundo_apellido || ''),
+        firstName: String(newPerson.nombre),
+        otherNames: String(newPerson.otros_nombres || ''),
+        nationality: Number(newPerson.nationality_id),
+        sex: String(newPerson.sex_id),
+        address: String(newPerson.domicilio),
+        dateOfBirht: String(newPerson.fecha_de_nacimiento),
+        documentIssuer: Number(newPerson.issuer_document_id),
+      };
+
+      console.log('Setting values:', formData);
+      setValues(formData);
+
+      console.log('After setValues - new form values:', meta.value);
+    }
+  },
+  { immediate: true },
+);
 
 const onSubmit = handleSubmit(async (values) => {
   if (isSubmitting.value) return;
-  
+
   try {
     isSubmitting.value = true;
     const category = getActiveCategory.value;
-    
+
     const payload = {
       numero_de_documento: values.documentNumber,
       type_document_id: values.documentType,
@@ -319,7 +322,7 @@ const onSubmit = handleSubmit(async (values) => {
       sex_id: values.sex,
       domicilio: values.address,
       fecha_de_nacimiento: values.dateOfBirht,
-      issuer_document_id: values.documentIssuer
+      issuer_document_id: values.documentIssuer,
     };
 
     if (effectiveId.value === 'new') {
@@ -410,7 +413,6 @@ watch(
   { immediate: true }, // Ejecuta inmediatamente con el valor inicial
 );
 defineExpose({ resetForm, onSubmit });
-
 </script>
 
 <style scoped></style>

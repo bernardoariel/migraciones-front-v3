@@ -19,9 +19,10 @@
       <MyInput
         v-model="numeroActuacion"
         v-bind="numeroActuacionAttrs"
-        :error="errors.numeroActuacion"
+        :error="meta.touched ? errors.numeroActuacion : undefined"
         label="Nro. Actuacion Certificación de Firma"
         placeholder="Nro. Actuación Certificación de Firma"
+        type="number"
       />
 
       <MySelect
@@ -111,7 +112,7 @@ interface Props {
 }
 
 const props = defineProps<Props>();
-const nombreForm = ref('SolicitudForm');
+
 const mayoriaEdadAnos = 21;
 const isDateDisabled = computed(() => mayoriaEdad.value === 'y');
 const isPaisDescripcionDisabled = computed(() => paisType.value === 'y');
@@ -119,7 +120,11 @@ const router = useRouter();
 const isFormValid = ref(false);
 const validationSchema = computed(() => {
   return yup.object({
-    numeroActuacion: yup.number().required().min(3),
+    numeroActuacion: yup
+      .string()
+      .matches(/^\d+$/, 'El número de actuación debe contener solo números')
+      .required('El número de actuación es requerido')
+      .min(3, 'El número de actuación debe tener al menos 3 caracteres'),
     instrumentoType: yup.string().required().oneOf(['P', 'D']),
     paisType: yup.string().required().oneOf(['y', 'n']),
     mayoriaEdad: yup.string().required().oneOf(['y', 'n']),
@@ -239,8 +244,14 @@ onMounted(async () => {
   }
   const today = new Date().toISOString().split('T')[0];
   setValues({
-    dateOfInstrumento: today,
-    dateOfEnd: '',
+    dateOfInstrumento: today, // Fecha de instrumento inicial
+    instrumentoType: 'P', // Valor inicial de instrumento
+    paisType: 'n', // Valor inicial de paisType
+    mayoriaEdad: 'n', // Valor inicial de mayoriaEdad
+    dateOfInit: today, // Fecha de inicio inicial
+    dateOfEnd: '', // Fecha de fin vacía
+    paisDescripcion: '', // Descripción vacía
+    numeroActuacion: '', // Número de actuación vacío
   });
   dateOfInit.value = dateOfInstrumento.value;
 });

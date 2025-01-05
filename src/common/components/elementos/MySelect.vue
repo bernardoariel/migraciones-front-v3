@@ -1,25 +1,24 @@
 <template>
-  <div>
+  <div class="flex flex-col gap-1">
+    <label class="text-sm font-medium">{{ label }}</label>
     <select
       :value="modelValue || ''"
       @input="onInput"
       @blur="$emit('blur')"
       :class="[
-        'select',
-        'select-bordered',
-        'w-full',
+        'select select-bordered w-full',
         {
-          'border-red-500': error,
+          'border-red-500 focus:outline-none focus:ring focus:ring-red-300': error,
+          'focus:outline-none focus:ring focus:ring-blue-300': !error,
         },
       ]"
     >
-      <option disabled value="">{{ label }}</option>
-      <!-- Renderizamos dinámicamente las opciones -->
+      <option disabled value="">{{ placeholder }}</option>
       <option v-for="option in options" :key="option.value" :value="option.value">
         {{ option.label }}
       </option>
     </select>
-    <span class="text-red-400" v-if="error">{{ error }}</span>
+    <span class="text-red-400 text-sm" v-if="error">{{ error }}</span>
   </div>
 </template>
 
@@ -28,18 +27,25 @@ interface Option {
   label: string;
   value: string | number;
 }
+
 interface Props {
   label?: string;
-  modelValue?: string | null | number; // Cambiado a `string` para que coincida con el tipo de las opciones
+  placeholder?: string;
+  modelValue?: string | null | number;
   error?: string;
   options?: Option[];
 }
 
 defineProps<Props>();
+
 const emit = defineEmits(['update:modelValue', 'blur', 'input', 'change']);
 
 function onInput(event: Event) {
-  const value = (event.target as HTMLSelectElement).value; // Usar el valor como string
-  emit('update:modelValue', value); // No convertimos a número
+  const value = (event.target as HTMLSelectElement).value;
+  emit('update:modelValue', value);
 }
 </script>
+
+<style scoped>
+/* Si necesitas agregar bordes o colores personalizados, puedes hacerlo aquí */
+</style>
