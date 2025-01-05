@@ -241,35 +241,42 @@ const loadAutorizanteData = async () => {
     orderId: idOrdenSelected.value
   });
 
-  if (props.tipo !== 'AUTORIZANTE' || !idOrdenSelected.value) return;
+  if (props.tipo !== 'AUTORIZANTE') return;
 
-  try {
-    const relations = await getAutorizanteRelations(props.id, idOrdenSelected.value);
-    console.log('Raw relations response:', relations);
+  // Check if it's a new solicitud
+  if (idOrdenSelected.value === 'new') {
+    // Reset dropdowns for new solicitud
+    autorizanteSelected.value = 'Relación con el menor';
+    acreditacionSelected.value = 'Acreditación del parentezco';
+    return;
+  }
 
-    // Set autoritation dropdown value
-    if (relations?.authorizing_relatives_id) {
-      const foundAutoritation = autoritations.value.find(
-        a => a.id === relations.authorizing_relatives_id
-      );
-      console.log('Found autoritation:', foundAutoritation);
-      if (foundAutoritation) {
-        autorizanteSelected.value = foundAutoritation.descripcion;
+  // Load saved relations only for existing solicitudes
+  if (idOrdenSelected.value) {
+    try {
+      const relations = await getAutorizanteRelations(props.id, idOrdenSelected.value);
+      console.log('Raw relations response:', relations);
+
+      if (relations?.authorizing_relatives_id) {
+        const foundAutoritation = autoritations.value.find(
+          a => a.id === relations.authorizing_relatives_id
+        );
+        if (foundAutoritation) {
+          autorizanteSelected.value = foundAutoritation.descripcion;
+        }
       }
-    }
 
-    // Set acreditation dropdown value
-    if (relations?.accreditation_links_id) {
-      const foundAcreditation = acreditations.value.find(
-        a => a.id === relations.accreditation_links_id
-      );
-      console.log('Found acreditation:', foundAcreditation);
-      if (foundAcreditation) {
-        acreditacionSelected.value = foundAcreditation.descripcion;
+      if (relations?.accreditation_links_id) {
+        const foundAcreditation = acreditations.value.find(
+          a => a.id === relations.accreditation_links_id
+        );
+        if (foundAcreditation) {
+          acreditacionSelected.value = foundAcreditation.descripcion;
+        }
       }
+    } catch (error) {
+      console.error('Error in loadAutorizanteData:', error);
     }
-  } catch (error) {
-    console.error('Error in loadAutorizanteData:', error);
   }
 };
 
