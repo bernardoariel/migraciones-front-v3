@@ -98,7 +98,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, computed } from 'vue';
+import { ref, onMounted, onBeforeUnmount, computed, watch } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useRoute } from 'vue-router';
 
 import EditarIcon from '../../../common/components/iconos/EditarIcon.vue';
 import EliminarIcon from '../../../common/components/iconos/EliminarIcon.vue';
@@ -109,6 +111,7 @@ import useAutoritations from '../composables/useAutoritations';
 import useAcreditations from '../composables/useAcreditations';
 import { usePersonStore } from '@/migraciones/persons/store/personStore';
 import { useUIStore } from '@/common/stores/uiStore';
+import useOrdenItem from '@/migraciones/ordenes/composables/useOrdenItem';
 import type { Autoritation } from '../interfaces/autoritation.interface';
 import type { Autorizante } from '../../autorizantes/interfaces/autorizante.interface';
 
@@ -182,6 +185,27 @@ const storedAutorizanteData = computed(() => {
   };
 });
 
+const route = useRoute();
+const { getAutorizanteRelations } = useOrdenItem();
+const { getIdOrdenSelected } = storeToRefs(ordenStore);
+const idOrdenSelected = getIdOrdenSelected;
+
+// Initialize orderId from route or store
+const orderId = ref(route.params.id ? Number(route.params.id) : null);
+
+// Add watch for orden selection
+watch(idOrdenSelected, async (newId) => {
+  if (newId) {
+    orderId.value = Number(newId);
+    await loadAutorizanteData();
+  }
+});
+
+onMounted(async () => {
+  console.log('Component mounted');
+  await loadAutorizanteData();
+});
+
 onMounted(() => {
   document.addEventListener('click', handleClickOutside);
 });
@@ -208,6 +232,76 @@ onMounted(async () => {
 });
 onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside);
+});
+// Update loadAutorizanteData to use current orderId
+const loadAutorizanteData = async () => {
+  console.log('loadAutorizanteData called', {
+    tipo: props.tipo,
+    personId: props.id,
+    orderId: idOrdenSelected.value
+  });
+
+  if (props.tipo !== 'AUTORIZANTE') return;
+
+  // Check if it's a new solicitud
+  if (idOrdenSelected.value === 'new') {
+    // Reset dropdowns for new solicitud
+    autorizanteSelected.value = 'Relación con el menor';
+    acreditacionSelected.value = 'Acreditación del parentezco';
+    return;
+  }
+
+  // Load saved relations only for existing solicitudes
+  if (idOrdenSelected.value) {
+    try {
+      const relations = await getAutorizanteRelations(props.id, idOrdenSelected.value);
+      console.log('Raw relations response:', relations);
+
+      if (relations?.authorizing_relatives_id) {
+        const foundAutoritation = autoritations.value.find(
+          a => a.id === relations.authorizing_relatives_id
+        );
+        if (foundAutoritation) {
+          autorizanteSelected.value = foundAutoritation.descripcion;
+        }
+      }
+
+      if (relations?.accreditation_links_id) {
+        const foundAcreditation = acreditations.value.find(
+          a => a.id === relations.accreditation_links_id
+        );
+        if (foundAcreditation) {
+          acreditacionSelected.value = foundAcreditation.descripcion;
+        }
+      }
+    } catch (error) {
+      console.error('Error in loadAutorizanteData:', error);
+    }
+  }
+};
+
+// Watch for props changes
+watch(() => props.id, async (newId) => {
+  console.log('Props id changed:', newId);
+  await loadAutorizanteData();
+});
+
+
+
+// Add watch for orden selection changes
+watch(idOrdenSelected, async (newId) => {
+  if (newId && props.tipo === 'AUTORIZANTE') {
+    orderId.value = Number(newId);
+    await loadAutorizanteData();
+  }
+}, { immediate: true });
+
+
+
+onMounted(async () => {
+  if (idOrdenSelected.value) {
+    await loadAutorizanteData();
+  }
 });
 </script>
 
