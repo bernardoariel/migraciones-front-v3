@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col gap-1">
-    <label class="text-sm font-medium">{{ label }}</label>
+    <label class="text-sm font-medium text-gray-700">{{ label }}</label>
     <select
       :value="modelValue || ''"
       @input="onInput"
@@ -8,8 +8,8 @@
       :class="[
         'select select-bordered w-full',
         {
-          'border-red-500 focus:outline-none focus:ring focus:ring-red-300': error,
-          'focus:outline-none focus:ring focus:ring-blue-300': !error,
+          'border-red-500 focus:ring-red-500': error,
+          'focus:ring-blue-500': !error,
         },
       ]"
     >
@@ -45,7 +45,3 @@ function onInput(event: Event) {
   emit('update:modelValue', value);
 }
 </script>
-
-<style scoped>
-/* Si necesitas agregar bordes o colores personalizados, puedes hacerlo aquí */
-</style>

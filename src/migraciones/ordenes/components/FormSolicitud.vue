@@ -1,86 +1,148 @@
 <template>
   <div class="flex flex-col">
-    <!-- <div class="text-2xl font-semibold mb-6 text-center">
-      {{ idPersonSelected == 'new' || idPersonSelected === null ? 'Agregando ' : 'Editando' }} un
-      {{ nombreForm }}
-    </div> -->
-
     <form @submit="onSubmit" class="space-y-4">
-      <label class="input input-bordered flex items-center gap-2">
-        <span>Fecha de Instrumento </span>
-        <input
-          type="date"
-          v-model="dateOfInstrumento"
-          :class="['form-control', errors.dateOfInstrumento ? 'border-red-500' : '']"
-          placeholder="Fecha de Instrumento"
-          v-bind="dateOfInstrumentoAttrs"
-        />
-      </label>
-      <MyInput
-        v-model="numeroActuacion"
-        v-bind="numeroActuacionAttrs"
-        :error="meta.touched ? errors.numeroActuacion : undefined"
-        label="Nro. Actuacion Certificación de Firma"
-        placeholder="Nro. Actuación Certificación de Firma"
-        type="number"
-      />
+      <!-- Primera Fila -->
+      <div class="grid grid-cols-3 gap-4">
+        <label class="flex flex-col gap-1 w-full">
+          <span class="text-sm font-medium text-gray-700">Fecha de Instrumento</span>
+          <input
+            type="date"
+            v-model="dateOfInstrumento"
+            :class="[
+              'input input-bordered w-full',
+              errors.dateOfInstrumento
+                ? 'border-red-500 focus:ring-red-500'
+                : 'focus:ring-blue-500',
+            ]"
+            placeholder="Fecha de Instrumento"
+            v-bind="dateOfInstrumentoAttrs"
+          />
+          <span class="text-red-400 text-sm" v-if="errors.dateOfInstrumento">{{
+            errors.dateOfInstrumento
+          }}</span>
+        </label>
 
-      <MySelect
-        v-model="instrumentoType"
-        v-bind="instrumentoTypeAttrs"
-        :error="errors.instrumentoType"
-        label="Tipo de Instrumento"
-        :options="instrumentoTypeOptions"
-      />
-      <MySelect
-        v-model="paisType"
-        v-bind="paisTypeAttrs"
-        :error="errors.paisType"
-        label="Cualquier Pais"
-        :options="paisOptions"
-      />
-      <MyInput
-        v-model="paisDescripcion"
-        v-bind="paisDescripcionAttrs"
-        :error="errors.paisDescripcion"
-        label="Paises descripcion"
-        placeholder="Paises descripcion"
-        :disabled="isPaisDescripcionDisabled"
-      />
-
-      <MySelect
-        v-model="mayoriaEdad"
-        v-bind="mayoriaEdadAttrs"
-        :error="errors.mayoriaEdad"
-        label="¿ Hasta mayoria de edad ?"
-        :options="mayoriaEdadOptions"
-        @update:modelValue="handleMayoriaEdadChange"
-      />
-
-      <label class="input input-bordered flex items-center gap-2">
-        <span>Fecha desde </span>
-        <input
-          type="date"
-          v-model="dateOfInit"
-          :class="['form-control', errors.dateOfInit ? 'border-red-500' : '']"
-          placeholder="Fecha desde"
-          v-bind="dateOfInitAttrs"
+        <MyInput
+          v-model="numeroActuacion"
+          v-bind="numeroActuacionAttrs"
+          :error="meta.touched ? errors.numeroActuacion : undefined"
+          label="Nro. Actuacion Certificación de Firma"
+          placeholder="Nro. Actuación Certificación de Firma"
+          type="number"
         />
-      </label>
-      <label class="input input-bordered flex items-center gap-2">
-        <span>Fecha hasta </span>
-        <input
-          type="date"
-          v-model="dateOfEnd"
-          :class="['form-control', errors.dateOfBirht ? 'border-red-500' : '']"
-          placeholder="Fecha hasta"
-          v-bind="dateOfEndAttrs"
-          :disabled="isDateDisabled"
+
+        <label class="flex flex-col gap-1 w-full">
+          <span class="text-sm font-medium text-gray-700">Tipo de Instrumento</span>
+          <select
+            v-model="instrumentoType"
+            :class="[
+              'select select-bordered w-full',
+              errors.instrumentoType ? 'border-red-500 focus:ring-red-500' : 'focus:ring-blue-500',
+            ]"
+          >
+            <option disabled value="">Seleccione</option>
+            <option
+              v-for="option in instrumentoTypeOptions"
+              :key="option.value"
+              :value="option.value"
+            >
+              {{ option.label }}
+            </option>
+          </select>
+          <span class="text-red-400 text-sm" v-if="errors.instrumentoType">{{
+            errors.instrumentoType
+          }}</span>
+        </label>
+      </div>
+
+      <!-- Segunda Fila -->
+      <div class="grid grid-cols-3 gap-4">
+        <label class="flex flex-col gap-1 w-full">
+          <span class="text-sm font-medium text-gray-700">Cualquier Pais</span>
+          <select
+            v-model="paisType"
+            :class="[
+              'select select-bordered w-full',
+              errors.paisType ? 'border-red-500 focus:ring-red-500' : 'focus:ring-blue-500',
+            ]"
+          >
+            <option disabled value="">Seleccione</option>
+            <option v-for="option in paisOptions" :key="option.value" :value="option.value">
+              {{ option.label }}
+            </option>
+          </select>
+          <span class="text-red-400 text-sm" v-if="errors.paisType">{{ errors.paisType }}</span>
+        </label>
+
+        <MyInput
+          v-model="paisDescripcion"
+          v-bind="paisDescripcionAttrs"
+          :error="errors.paisDescripcion"
+          label="Paises descripcion"
+          placeholder="Paises descripcion"
+          :disabled="isPaisDescripcionDisabled"
         />
-      </label>
-      <button type="submit" class="btn btn-primary" :disabled="!isFormValid">
-        Generar solicitud
-      </button>
+      </div>
+
+      <!-- Tercera Fila -->
+      <div class="grid grid-cols-3 gap-4">
+        <label class="flex flex-col gap-1 w-full">
+          <span class="text-sm font-medium text-gray-700">¿Hasta mayoría de edad?</span>
+          <select
+            v-model="mayoriaEdad"
+            :class="[
+              'select select-bordered w-full',
+              errors.mayoriaEdad ? 'border-red-500 focus:ring-red-500' : 'focus:ring-blue-500',
+            ]"
+          >
+            <option disabled value="">Seleccione</option>
+            <option v-for="option in mayoriaEdadOptions" :key="option.value" :value="option.value">
+              {{ option.label }}
+            </option>
+          </select>
+          <span class="text-red-400 text-sm" v-if="errors.mayoriaEdad">{{
+            errors.mayoriaEdad
+          }}</span>
+        </label>
+
+        <label class="flex flex-col gap-1">
+          <span class="text-sm font-medium text-gray-700">Fecha desde</span>
+          <input
+            type="date"
+            v-model="dateOfInit"
+            :class="[
+              'input input-bordered w-full',
+              errors.dateOfInit ? 'border-red-500 focus:ring-red-500' : 'focus:ring-blue-500',
+            ]"
+            placeholder="Fecha desde"
+            v-bind="dateOfInitAttrs"
+          />
+          <span class="text-red-400 text-sm" v-if="errors.dateOfInit">{{ errors.dateOfInit }}</span>
+        </label>
+
+        <label class="flex flex-col gap-1">
+          <span class="text-sm font-medium text-gray-700">Fecha hasta</span>
+          <input
+            type="date"
+            v-model="dateOfEnd"
+            :class="[
+              'input input-bordered w-full',
+              errors.dateOfEnd ? 'border-red-500 focus:ring-red-500' : 'focus:ring-blue-500',
+            ]"
+            placeholder="Fecha hasta"
+            v-bind="dateOfEndAttrs"
+            :disabled="isDateDisabled"
+          />
+          <span class="text-red-400 text-sm" v-if="errors.dateOfEnd">{{ errors.dateOfEnd }}</span>
+        </label>
+      </div>
+
+      <!-- Botón -->
+      <div class="flex justify-end">
+        <button type="submit" class="btn btn-primary" :disabled="!isFormValid">
+          Generar solicitud
+        </button>
+      </div>
     </form>
   </div>
 </template>
@@ -165,7 +227,7 @@ const effectiveId = computed(() => props.nroSolicitud ?? idPersonSelected.value)
 
 const isSubmitting = ref(false);
 
-const { orden, createOrden, updateOrden } = useOrden(effectiveId);
+const { orden, createOrden } = useOrden(effectiveId);
 
 watch(orden, (newOrden) => {
   if (newOrden) {
@@ -243,16 +305,19 @@ onMounted(async () => {
     resetForm();
   }
   const today = new Date().toISOString().split('T')[0];
-  setValues({
-    dateOfInstrumento: today, // Fecha de instrumento inicial
-    instrumentoType: 'P', // Valor inicial de instrumento
-    paisType: 'n', // Valor inicial de paisType
-    mayoriaEdad: 'n', // Valor inicial de mayoriaEdad
-    dateOfInit: today, // Fecha de inicio inicial
-    dateOfEnd: '', // Fecha de fin vacía
-    paisDescripcion: '', // Descripción vacía
-    numeroActuacion: '', // Número de actuación vacío
+  resetForm({
+    values: {
+      dateOfInstrumento: today, // Inicializa vacío
+      instrumentoType: 'P',
+      numeroActuacion: '',
+      paisType: 'n',
+      paisDescripcion: '',
+      mayoriaEdad: 'n',
+      dateOfInit: today,
+      dateOfEnd: '',
+    },
   });
+
   dateOfInit.value = dateOfInstrumento.value;
 });
 
