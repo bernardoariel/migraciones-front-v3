@@ -156,14 +156,28 @@ const ordenStore = useOrdenStore();
 
 const { menor, autorizantes, acompaneantes } = storeToRefs(ordenStore);
 
-const menorClass = computed(() => (ordenStore.menor ? 'success' : 'error'));
-const autorizantesClass = computed(() => {
-  const count = ordenStore.autorizantes.length;
-  return count === 0 ? 'error' : count === 1 ? 'warning' : 'success';
+const menorClass = computed(() => {
+  if (!ordenStore.menor) {
+    return 'neutral'; // Clase inicial
+  }
+  return 'success'; // Cambia a success si hay datos
 });
-const acompaneantesClass = computed(() =>
-  ordenStore.acompaneantes.length >= 1 ? 'success' : 'warning',
-);
+
+const autorizantesClass = computed(() => {
+  if (!ordenStore.autorizantes || ordenStore.autorizantes.length === 0) {
+    return 'neutral'; // Clase inicial
+  }
+  const count = ordenStore.autorizantes.length;
+  return count === 1 ? 'warning' : 'success';
+});
+
+const acompaneantesClass = computed(() => {
+  if (!ordenStore.acompaneantes || ordenStore.acompaneantes.length === 0) {
+    return 'neutral'; // Clase inicial
+  }
+  return 'success';
+});
+
 const handleConfirm = () => {
   console.log('Confirmación recibida');
   modalRef.value?.closeModal(); // Cerrar el modal después de confirmar, si es necesario

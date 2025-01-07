@@ -35,7 +35,6 @@ import { storeToRefs } from 'pinia';
 import { usePersonStore } from '@/migraciones/persons/store/personStore';
 
 import PersonList from '@/migraciones/persons/components/PersonList.vue';
-import CardValidation from '@/migraciones/ordenes/components/CardValidation.vue';
 import NavBarCard from '@/migraciones/persons/components/NavBarCard.vue';
 import SolicitudCard from '@/migraciones/ordenes/components/SolicitudCard.vue';
 import PlusIcon from '@/common/components/iconos/PlusIcon.vue';
