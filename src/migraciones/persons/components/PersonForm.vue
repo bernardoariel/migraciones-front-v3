@@ -28,6 +28,7 @@
             v-bind="documentTypeAttrs"
             :error="errors.documentType"
             label="Tipo de Documento"
+            placeholder="Seleccione Tipo de Documento"
             :options="documentTypeOptions"
           />
           <MySelect
@@ -35,69 +36,87 @@
             v-bind="documentIssuerAttrs"
             :error="errors.documentType"
             label="Emisor del Documento"
+            placeholder="Seleccione el Emisor"
             :options="issuerDocsOptions"
           />
         </div>
 
         <!-- Apellido -->
-        <MyInput
-          v-model="lastName"
-          v-bind="lastNameAttrs"
-          :error="errors.lastName"
-          label="Apellido"
-          placeholder="Ingrese el Apellido"
-        />
-        <!-- Segundo Apellido -->
-        <MyInput
-          v-model="secondLastName"
-          v-bind="secondLastNameAttrs"
-          :error="errors.secondLastName"
-          label="Segundo Apellido"
-          placeholder="Ingrese el Segundo Apellido"
-        />
-        <!-- Nombre -->
-        <MyInput
-          v-model="firstName"
-          v-bind="firstNameAttrs"
-          :error="errors.firstName"
-          label="Nombre"
-          placeholder="Ingrese el Nombre"
-        />
-        <!-- Otros Nombres -->
-        <MyInput
-          v-model="otherNames"
-          v-bind="otherNamesAttrs"
-          :error="errors.otherNames"
-          label="Otros Nombres"
-          placeholder="Ingrese Otros Nombres"
-        />
+        <div class="grid grid-cols-2 gap-4">
+          <MyInput
+            v-model="lastName"
+            v-bind="lastNameAttrs"
+            :error="errors.lastName"
+            label="Apellido"
+            placeholder="Ingrese el Apellido"
+          />
+          <!-- Segundo Apellido -->
+          <MyInput
+            v-model="secondLastName"
+            v-bind="secondLastNameAttrs"
+            :error="errors.secondLastName"
+            label="Segundo Apellido"
+            placeholder="Ingrese el Segundo Apellido"
+          />
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <!-- Nombre -->
+          <MyInput
+            v-model="firstName"
+            v-bind="firstNameAttrs"
+            :error="errors.firstName"
+            label="Nombre"
+            placeholder="Ingrese el Nombre"
+          />
+          <!-- Otros Nombres -->
+          <MyInput
+            v-model="otherNames"
+            v-bind="otherNamesAttrs"
+            :error="errors.otherNames"
+            label="Otros Nombres"
+            placeholder="Ingrese Otros Nombres"
+          />
+        </div>
         <template v-if="!isAcompaneante">
-          <!-- Nacionalidad -->
-          <MySelect
-            v-model="nationality"
-            :options="nationalityOptions"
-            :error="errors.nationality"
-            v-bind="nationalityAttrs"
-            label="Nacionalidad"
-          />
-          <!-- Sexo -->
-          <MySelect
-            v-model="sex"
-            :options="sexType"
-            :error="errors.sex"
-            v-bind="sexAttrs"
-            label="Sexo"
-          />
-          <label class="input input-bordered flex items-center gap-2">
-            <span>Fecha de Nacimiento </span>
-            <input
-              type="date"
-              v-model="dateOfBirht"
-              :class="['form-control', errors.dateOfBirht ? 'border-red-500' : '']"
-              placeholder="Fecha de Nacimiento"
-              v-bind="dateOfBirhtAttrs"
+          <div class="grid grid-cols-3 gap-4">
+            <!-- Nacionalidad -->
+            <MySelect
+              v-model="nationality"
+              :options="nationalityOptions"
+              :error="errors.nationality"
+              v-bind="nationalityAttrs"
+              placeholder="Seleccione Nacionalidad"
+              label="Nacionalidad"
             />
-          </label>
+            <!-- Sexo -->
+            <MySelect
+              v-model="sex"
+              :options="sexType"
+              :error="errors.sex"
+              placeholder="Seleccione Sexo"
+              v-bind="sexAttrs"
+              label="Sexo"
+            />
+            <div class="flex flex-col gap-1 w-full">
+              <label for="dateOfBirht" class="text-sm font-medium text-gray-700"
+                >Fecha de Nacimiento</label
+              >
+              <input
+                id="dateOfBirht"
+                type="date"
+                v-model="dateOfBirht"
+                :class="[
+                  'input input-bordered w-full',
+                  errors.dateOfBirht ? 'border-red-500 focus:ring-red-500' : 'focus:ring-blue-500',
+                ]"
+                placeholder="Fecha de Nacimiento"
+                v-bind="dateOfBirhtAttrs"
+              />
+              <span class="text-red-400 text-sm" v-if="errors.dateOfBirht">
+                {{ errors.dateOfBirht }}
+              </span>
+            </div>
+          </div>
           <!-- Domicilio -->
           <MyInput
             v-model="address"
