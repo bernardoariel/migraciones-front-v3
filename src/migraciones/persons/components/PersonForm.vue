@@ -11,31 +11,34 @@
         {{ nombreForm }}
       </div>
       <form @submit="onSubmit" class="space-y-4">
-        <!-- Número de Documento -->
-        <MyInput
-          v-model.number="documentNumber"
-          v-bind="documentNumberAttrs"
-          :error="errors.documentNumber"
-          label="Documento"
-          placeholder="Ingrese el Documento"
-          type="number"
-          @blur="checkDniExistence"
-        />
-        <span class="text-red-400" v-if="errorDoc">{{ errorDoc }}</span>
-        <MySelect
-          v-model="documentType"
-          v-bind="documentTypeAttrs"
-          :error="errors.documentType"
-          label="Tipo de Documento"
-          :options="documentTypeOptions"
-        />
-        <MySelect
-          v-model="documentIssuer"
-          v-bind="documentIssuerAttrs"
-          :error="errors.documentType"
-          label="Emisor del Documento"
-          :options="issuerDocsOptions"
-        />
+        <div class="grid grid-cols-3 gap-4">
+          <MyInput
+            v-model.number="documentNumber"
+            v-bind="documentNumberAttrs"
+            :error="errors.documentNumber"
+            label="Documento"
+            placeholder="Ingrese el Documento"
+            type="number"
+            @blur="checkDniExistence"
+          />
+          <span class="text-red-400" v-if="errorDoc">{{ errorDoc }}</span>
+
+          <MySelect
+            v-model="documentType"
+            v-bind="documentTypeAttrs"
+            :error="errors.documentType"
+            label="Tipo de Documento"
+            :options="documentTypeOptions"
+          />
+          <MySelect
+            v-model="documentIssuer"
+            v-bind="documentIssuerAttrs"
+            :error="errors.documentType"
+            label="Emisor del Documento"
+            :options="issuerDocsOptions"
+          />
+        </div>
+
         <!-- Apellido -->
         <MyInput
           v-model="lastName"
@@ -121,7 +124,6 @@ import { onMounted, ref, watch, computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useToast } from 'vue-toastification';
 import { useQueryClient } from '@tanstack/vue-query';
-import { useRoute } from 'vue-router';
 import * as yup from 'yup';
 import { useForm } from 'vee-validate';
 
@@ -133,8 +135,6 @@ import useDropdownOptions from '@/migraciones/persons/composables/useDropdownOpt
 import usePerson from '@/migraciones/persons/composables/usePerson';
 import { getPersonByDoc } from '@/migraciones/persons/composables/usePerson';
 import { usePersonStore } from '@/migraciones/persons/store/personStore';
-
-import { useOrdenStore } from '@/migraciones/ordenes/store/ordenStore';
 
 const toast = useToast();
 const { documentTypeOptions, nationalityOptions, issuerDocsOptions, loadOptions } =

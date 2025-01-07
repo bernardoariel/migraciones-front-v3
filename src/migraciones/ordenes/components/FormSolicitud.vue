@@ -31,79 +31,48 @@
           type="number"
         />
 
-        <label class="flex flex-col gap-1 w-full">
-          <span class="text-sm font-medium text-gray-700">Tipo de Instrumento</span>
-          <select
-            v-model="instrumentoType"
-            :class="[
-              'select select-bordered w-full',
-              errors.instrumentoType ? 'border-red-500 focus:ring-red-500' : 'focus:ring-blue-500',
-            ]"
-          >
-            <option disabled value="">Seleccione</option>
-            <option
-              v-for="option in instrumentoTypeOptions"
-              :key="option.value"
-              :value="option.value"
-            >
-              {{ option.label }}
-            </option>
-          </select>
-          <span class="text-red-400 text-sm" v-if="errors.instrumentoType">{{
-            errors.instrumentoType
-          }}</span>
-        </label>
+        <MySelect
+          v-model="instrumentoType"
+          v-bind="instrumentoTypeAttrs"
+          :error="errors.instrumentoType"
+          label="Tipo de Instrumento"
+          placeholder="Seleccione un tipo"
+          :options="instrumentoTypeOptions"
+        />
       </div>
 
       <!-- Segunda Fila -->
       <div class="grid grid-cols-3 gap-4">
-        <label class="flex flex-col gap-1 w-full">
-          <span class="text-sm font-medium text-gray-700">Cualquier Pais</span>
-          <select
-            v-model="paisType"
-            :class="[
-              'select select-bordered w-full',
-              errors.paisType ? 'border-red-500 focus:ring-red-500' : 'focus:ring-blue-500',
-            ]"
-          >
-            <option disabled value="">Seleccione</option>
-            <option v-for="option in paisOptions" :key="option.value" :value="option.value">
-              {{ option.label }}
-            </option>
-          </select>
-          <span class="text-red-400 text-sm" v-if="errors.paisType">{{ errors.paisType }}</span>
-        </label>
+        <MySelect
+          v-model="paisType"
+          v-bind="paisTypeAttrs"
+          :error="errors.paisType"
+          label="Cualquier País"
+          placeholder="Seleccione un país"
+          :options="paisOptions"
+        />
 
         <MyInput
           v-model="paisDescripcion"
           v-bind="paisDescripcionAttrs"
           :error="errors.paisDescripcion"
-          label="Paises descripcion"
-          placeholder="Paises descripcion"
+          label="Paises Descripción"
+          placeholder="Paises Descripción"
           :disabled="isPaisDescripcionDisabled"
         />
       </div>
 
       <!-- Tercera Fila -->
       <div class="grid grid-cols-3 gap-4">
-        <label class="flex flex-col gap-1 w-full">
-          <span class="text-sm font-medium text-gray-700">¿Hasta mayoría de edad?</span>
-          <select
-            v-model="mayoriaEdad"
-            :class="[
-              'select select-bordered w-full',
-              errors.mayoriaEdad ? 'border-red-500 focus:ring-red-500' : 'focus:ring-blue-500',
-            ]"
-          >
-            <option disabled value="">Seleccione</option>
-            <option v-for="option in mayoriaEdadOptions" :key="option.value" :value="option.value">
-              {{ option.label }}
-            </option>
-          </select>
-          <span class="text-red-400 text-sm" v-if="errors.mayoriaEdad">{{
-            errors.mayoriaEdad
-          }}</span>
-        </label>
+        <MySelect
+          v-model="mayoriaEdad"
+          v-bind="mayoriaEdadAttrs"
+          :error="errors.mayoriaEdad"
+          label="¿Hasta mayoría de edad?"
+          placeholder="Seleccione una opción"
+          :options="mayoriaEdadOptions"
+          @update:modelValue="handleMayoriaEdadChange"
+        />
 
         <label class="flex flex-col gap-1">
           <span class="text-sm font-medium text-gray-700">Fecha desde</span>
@@ -191,7 +160,11 @@ const validationSchema = computed(() => {
     paisType: yup.string().required().oneOf(['y', 'n']),
     mayoriaEdad: yup.string().required().oneOf(['y', 'n']),
     dateOfInit: yup.string().required('La fecha desde es requerida.'),
-    dateOfEnd: yup.string().required('La fecha hasta es requerida.'),
+    dateOfEnd: yup.string().when('mayoriaEdad', {
+      is: (value: string) => value !== 'y', // Solo es requerido si no está deshabilitado
+      then: (schema) => schema.required('La fecha hasta es requerida.'),
+      otherwise: (schema) => schema.optional(), // No requiere validación si está deshabilitado
+    }),
   });
 });
 
