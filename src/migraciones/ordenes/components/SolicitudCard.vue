@@ -158,14 +158,14 @@ const { menor, autorizantes, acompaneantes } = storeToRefs(ordenStore);
 
 const menorClass = computed(() => {
   if (!ordenStore.menor) {
-    return 'neutral'; // Clase inicial
+    return 'error'; // Clase inicial
   }
   return 'success'; // Cambia a success si hay datos
 });
 
 const autorizantesClass = computed(() => {
   if (!ordenStore.autorizantes || ordenStore.autorizantes.length === 0) {
-    return 'neutral'; // Clase inicial
+    return 'error'; // Clase inicial
   }
   const count = ordenStore.autorizantes.length;
   return count === 1 ? 'warning' : 'success';
@@ -173,7 +173,7 @@ const autorizantesClass = computed(() => {
 
 const acompaneantesClass = computed(() => {
   if (!ordenStore.acompaneantes || ordenStore.acompaneantes.length === 0) {
-    return 'neutral'; // Clase inicial
+    return 'error'; // Clase inicial
   }
   return 'success';
 });
