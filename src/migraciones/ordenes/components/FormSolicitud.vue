@@ -132,7 +132,8 @@ import { useRouter } from 'vue-router';
 
 import useOrden from '@/migraciones/ordenes/composables/useOrden';
 import { useOrdenStore } from '../store/ordenStore';
-
+import { useUserStore } from '../../../common/stores/userStore';
+const userStore = useUserStore();
 const toast = useToast();
 
 const ordenStore = useOrdenStore();
@@ -234,7 +235,7 @@ const onSubmit = handleSubmit(async (values) => {
     fecha_del_instrumento: values.dateOfInstrumento,
     fecha_vigencia_desde: values.dateOfInit,
     fecha_vigencia_hasta: values.dateOfEnd,
-    notary_id: 2,
+    notary_id: userStore.user!.id || 2,
     minor_id: menorSelected,
     autorizante1_id: autorizante1,
     autorizante2_id: autorizante2,

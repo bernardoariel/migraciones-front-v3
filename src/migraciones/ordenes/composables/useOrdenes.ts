@@ -1,4 +1,4 @@
-import { computed, watch, ref } from 'vue';
+import { computed, watch } from 'vue';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query';
 import { storeToRefs } from 'pinia';
 import { useOrdersStore } from '../store/ordersStore';
@@ -26,7 +26,7 @@ const useOrdenes = () => {
 
   const itemsPerPage = 5;
   const queryClient = useQueryClient();
-  const notaryId = computed(() => userStore.user?.notary_id);
+  const notaryId = computed(() => userStore.user?.id);
 
   // Reactive para habilitar la consulta solo cuando el notaryId esté disponible
   const isReadyToQuery = computed(() => notaryId.value !== null);
