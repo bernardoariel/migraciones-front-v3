@@ -15,17 +15,16 @@
 
     <div class="flex-none">
       <!-- Dropdown de escribanos -->
-      <div class="form-control w-full max-w-xs mr-5">
-        <label class="label">
-          <span class="label-text">Selecciona un escribano</span>
-        </label>
-        <select class="select select-bordered" v-model="selectedNotario">
+      <div class="form-control flex flex-row items-center w-full max-w-xs mr-16 gap-4">
+        <span class="label-text whitespace-nowrap">Representando a</span>
+        <select class="select select-bordered flex-grow ml-4" v-model="selectedNotario">
           <option disabled value="">Seleccione un escribano</option>
           <option v-for="notario in notarios" :key="notario.id!" :value="notario.id">
             {{ notario.nombre }}
           </option>
         </select>
       </div>
+
       <div class="text-xl mr-5 uppercase text-gray-500">{{ userStore.fullName }}</div>
       <div class="dropdown dropdown-bottom dropdown-end">
         <div tabindex="0" role="button" class="btn btn-sm rounded-box m-1">
@@ -75,14 +74,14 @@ watch(selectedNotario, (newValue) => {
   if (newValue) {
     const selectedNotarioData = notarios.value.find((notario) => notario.id === Number(newValue));
     if (selectedNotarioData) {
-      const userPayload = {
+      const representadoPayload = {
         id: selectedNotarioData.id,
         nombre: selectedNotarioData.nombre,
         apellido: selectedNotarioData.apellido,
         matricula: selectedNotarioData.matricula,
       };
 
-      userStore.setUser(userPayload);
+      userStore.setRepresentado(representadoPayload); // Cambia únicamente el representado
     }
   }
 });

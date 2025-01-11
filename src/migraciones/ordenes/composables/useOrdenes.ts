@@ -11,8 +11,10 @@ const fetchOrders = async (): Promise<OrdenSolicitud[]> => {
   const { data } = await apiMigrationsData.get<OrdenSolicitud[]>('/v2/ordenestodos');
   return data;
 };
-const getOrdersByNotary = async (notaryId: number): Promise<OrdenSolicitud[]> => {
-  const { data } = await apiMigrationsData.get<OrdenSolicitud[]>(`/v2/ordenes/notary/${notaryId}`);
+const getOrdersByNotary = async (representadoId: number): Promise<OrdenSolicitud[]> => {
+  const { data } = await apiMigrationsData.get<OrdenSolicitud[]>(
+    `/v2/ordenes/notary/${representadoId}`,
+  );
   return data;
 };
 const deleteOrder = async (id: number): Promise<void> => {
@@ -26,16 +28,16 @@ const useOrdenes = () => {
 
   const itemsPerPage = 5;
   const queryClient = useQueryClient();
-  const notaryId = computed(() => userStore.user?.id);
+  const representadoId = computed(() => userStore.representado?.id);
 
-  // Reactive para habilitar la consulta solo cuando el notaryId esté disponible
-  const isReadyToQuery = computed(() => notaryId.value !== null);
+  // Reactive para habilitar la consulta solo cuando el representadoId esté disponible
+  const isReadyToQuery = computed(() => representadoId.value !== null);
 
   const { isLoading, data } = useQuery({
-    queryKey: ['orders', notaryId],
+    queryKey: ['orders', representadoId],
     queryFn: async () => {
-      if (notaryId.value > 2) {
-        return getOrdersByNotary(notaryId.value);
+      if (representadoId.value > 2) {
+        return getOrdersByNotary(representadoId.value);
       } else {
         return fetchOrders();
       }
