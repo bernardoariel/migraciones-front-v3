@@ -8,7 +8,7 @@
         :type="button.type || 'button'"
         :class="button.class"
         :disabled="button.disabled || false"
-        @click="button.action"
+        @click="handleClick(button)"
       >
         {{ button.label }}
       </button>
@@ -25,7 +25,7 @@
         :type="button.type || 'button'"
         :class="button.class"
         :disabled="button.disabled || false"
-        @click="button.action"
+        @click="handleClick(button)"
       >
         {{ button.label }}
       </button>
@@ -42,13 +42,14 @@
         :type="button.type || 'button'"
         :class="button.class"
         :disabled="button.disabled || false"
-        @click="button.action"
+        @click="handleClick(button)"
       >
         {{ button.label }}
       </button>
     </div>
   </div>
 </template>
+
 <script lang="ts" setup>
 import { type PropType } from 'vue';
 
@@ -67,4 +68,10 @@ defineProps({
     required: true,
   },
 });
+
+// Función para hacer seguimiento del botón presionado
+const handleClick = (button: ButtonConfig) => {
+  console.log(`🔘 Botón presionado: ${button.label}`);
+  button.action();
+};
 </script>

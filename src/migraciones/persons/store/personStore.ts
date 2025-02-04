@@ -18,12 +18,14 @@ export const usePersonStore = defineStore('personStore', () => {
     activeCategory.value = newCategory;
   };
 
-  const resetState = (category: null | string = null) => {
-    if (activeCategory.value === category) return;
+  const resetState = (category: CategoryPerson = 'menores') => {
     console.log('category::: ', category);
-    console.trace();
+
     setPersonId(null);
-    setCategory(category as CategoryPerson);
+
+    if (activeCategory.value !== category) {
+      setCategory(category);
+    }
   };
 
   return {

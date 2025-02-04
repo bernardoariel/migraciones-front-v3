@@ -33,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, type Ref } from 'vue';
+import { ref, computed, type Ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { usePersonStore } from '../store/personStore';
 
@@ -57,8 +57,10 @@ const filteredPersonsByCategory = computed(() => {
     switch (getActiveCategory.value) {
       case 'acompaneantes':
         return acompaneantes.value;
-      case 'menores':
+      case 'menores': {
+        console.log('menores.value::: ', menores.value);
         return menores.value;
+      }
       case 'autorizantes':
         return autorizantes.value;
       default:
@@ -83,6 +85,9 @@ const paginatedPersons = computed(() => {
   const start = (currentPage.value - 1) * 10;
   const end = start + 10;
   return filteredPersonsByCategory.value.slice(start, end);
+});
+watch(getActiveCategory, () => {
+  currentPage.value = 1;
 });
 </script>
 

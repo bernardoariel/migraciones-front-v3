@@ -12,10 +12,8 @@
           ,{{ person.nombre }} {{ person.otros_nombres }}
         </span>
       </div>
-      <span 
-        v-if="showWarningMessage"
-        class="ml-2 text-red-600 font-medium text-xs"
-      >
+
+      <span v-if="showWarningMessage" class="ml-2 text-red-600 font-medium text-xs">
         Se requieren más datos para ser autorizante
       </span>
 
@@ -28,6 +26,7 @@
         {{ nameButton }}
       </button>
     </div>
+
     <!-- Contenido centrado -->
     <div class="entry-content flex items-center text-gray-500 text-sm">
       <div v-if="person.domicilio">
@@ -39,10 +38,10 @@
         </span>
         <span v-if="person.fecha_de_nacimiento" class="ml-10">Edad: {{ age }}</span>
       </div>
-      <div class="end"></div>
     </div>
   </div>
 </template>
+
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
@@ -51,10 +50,10 @@ import { useToast } from 'vue-toastification';
 import type { Person } from '../interfaces/person.interface';
 import { calculateAge } from '../../../common/helpers/calculateAge';
 import { usePersonStore } from '@/migraciones/persons/store/personStore';
-
 import usePersons from '@/migraciones/persons/composables/usePersons';
 import { useOrdenStore } from '@/migraciones/ordenes/store/ordenStore';
 
+// Definición de props
 interface Props {
   person: Partial<Person>;
   nameButton: string;
@@ -73,56 +72,54 @@ const {
   acompaneantes: acompaneantesTabla,
 } = usePersons();
 
-const isMaxAutorizantesReached = computed(() => autorizantes.value.length >= 2);
-const isAutorizanteAndAcompanante = computed(() => {
-  const documento = props.person.numero_de_documento; 
+// 🟢 Lógica de validaciones y cómputos
+const hasMaxAutorizantes = computed(() => autorizantes.value.length >= 2);
 
-  const isInAutorizantes = autorizantesTabla.value.some(
-    aut => aut.numero_de_documento === documento
+const isNotMenor = computed(() => {
+  const documento = props.person.numero_de_documento;
+  return (
+    autorizantesTabla.value.some((aut: Partial<Person>) => aut.numero_de_documento === documento) &&
+    acompaneantesTabla.value.some(
+      (acomp: Partial<Person>) => acomp.numero_de_documento === documento,
+    )
   );
-  
-  const isInAcompanantes = acompaneantesTabla.value.some(
-    acomp => acomp.numero_de_documento === documento
-  );
+});
 
-  const result = isInAutorizantes && isInAcompanantes; 
-  
-  return result;
-});
-const showWarningMessage = computed(() => {
-  return props.currentCategory === 'autorizantes' && isAutorizanteAndAcompanante.value;
-});
+const showWarningMessage = computed(
+  () => props.currentCategory === 'autorizantes' && isNotMenor.value,
+);
 
 const isDisabled = computed(() => {
   const id = props.person.id;
-
   if (!id) return false;
 
   return (
     menor.value?.id === id ||
-    autorizantes.value.some((autorizante: any) => autorizante.id === id) ||
-    acompaneantes.value.some((acompaneante: any) => acompaneante.id === id)
+    autorizantes.value.some((aut: Partial<Person>) => aut.id === id) ||
+    acompaneantes.value.some((acomp: Partial<Person>) => acomp.id === id)
   );
 });
 
+// 🟢 Función para manejar selección de persona
 const seleccionarPersonId = (id: number) => {
-  if (isMaxAutorizantesReached.value) {
-    if (!isPersonMenorOrAcompañante(id)) {
+  if (hasMaxAutorizantes.value) {
+    if (!isPersonInMenoresOrAcompanantes(id)) {
       toast.error('Ya se han seleccionado 2 autorizantes');
       return;
     }
   }
-
   personStore.setPersonId(id);
 };
 
-const isPersonMenorOrAcompañante = (id: number) => {
+// 🟢 Función auxiliar para validar si una persona está en menores o acompañantes
+const isPersonInMenoresOrAcompanantes = (id: number) => {
   return (
-    acompaneantesTabla.value.some((acompaneanteItem: any) => acompaneanteItem.id === id) ||
-    menoresTabla.value.some((menorItem: any) => menorItem.id === id)
+    acompaneantesTabla.value.some((acomp: Partial<Person>) => acomp.id === id) ||
+    menoresTabla.value.some((menor: Partial<Person>) => menor.id === id)
   );
 };
 
+// 🟢 Cálculo de edad
 const age = props.person.fecha_de_nacimiento
   ? calculateAge(props.person.fecha_de_nacimiento)
   : null;

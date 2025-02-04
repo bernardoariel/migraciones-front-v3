@@ -38,10 +38,11 @@ import { computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import { usePersonStore } from '../store/personStore';
 import usePersons from '@/migraciones/persons/composables/usePersons';
+import type { CategoryPerson } from '../interfaces/category.interface';
 
 const { acompaneantes, menores, autorizantes } = usePersons();
 interface Props {
-  typeCategory?: string;
+  typeCategory: CategoryPerson;
 }
 const props = defineProps<Props>();
 
