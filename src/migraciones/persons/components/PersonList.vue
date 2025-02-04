@@ -33,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, type Ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import { usePersonStore } from '../store/personStore';
 
@@ -41,14 +41,13 @@ import ItemsPerson from './ItemsPerson.vue';
 import PaginationComponent from '../../../common/components/PaginationComponent.vue';
 import SearchIcon from '../../../common/components/iconos/SearchIcon.vue';
 import usePersons from '@/migraciones/persons/composables/usePersons';
+import type { CategoryPerson } from '../interfaces/category.interface';
 
 const personStore = usePersonStore();
 
-const { getActiveCategory } = storeToRefs(personStore) as { getActiveCategory: Ref<'menores' | 'autorizantes' | 'acompaneantes'> };
-
-onMounted(() => {  
-  personStore.setCategory('menores');  
-});
+const { getActiveCategory } = storeToRefs(personStore) as {
+  getActiveCategory: Ref<CategoryPerson>;
+};
 
 const { isLoading, currentPage, totalPagesByCategory, acompaneantes, menores, autorizantes } =
   usePersons();
