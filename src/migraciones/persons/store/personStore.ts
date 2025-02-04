@@ -9,13 +9,19 @@ export const usePersonStore = defineStore('personStore', () => {
 
   const getActiveCategory = computed(() => activeCategory.value);
   const getIdPersonSelected = computed(() => idPersonSelected.value);
+
   const setPersonId = (id: number | null | 'new') => {
     idPersonSelected.value = id;
   };
+
   const setCategory = (newCategory: CategoryPerson = 'menores') => {
     activeCategory.value = newCategory;
   };
+
   const resetState = (category: null | string = null) => {
+    if (activeCategory.value === category) return;
+    console.log('category::: ', category);
+    console.trace();
     setPersonId(null);
     setCategory(category as CategoryPerson);
   };

@@ -62,8 +62,7 @@ const categoryPersons = computed(() => {
   }
 });
 
-// Ensure state is updated properly when typeCategory is passed as a prop
-if (props.typeCategory) {
+if (props.typeCategory && props.typeCategory !== personStore.getActiveCategory) {
   personStore.resetState(props.typeCategory);
 }
 </script>

@@ -160,7 +160,7 @@ watch(
   { immediate: true },
 );
 onMounted(() => {
-  personStore.resetState();
+  personStore.resetState('menores');
   ordenStore.resetOrden();
 });
 </script>

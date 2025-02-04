@@ -48,6 +48,7 @@ export const useOrdenStore = defineStore('ordenStore', () => {
     idOrdenSelected.value = id;
   };
   const resetState = (category: null | string = null) => {
+    console.log('category2::: ', category);
     setOrdenId(null);
     setCategory(category as CategoryOrden);
   };
