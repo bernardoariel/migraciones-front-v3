@@ -19,8 +19,6 @@ export const usePersonStore = defineStore('personStore', () => {
   };
 
   const resetState = (category: CategoryPerson = 'menores') => {
-    console.log('category::: ', category);
-
     setPersonId(null);
 
     if (activeCategory.value !== category) {

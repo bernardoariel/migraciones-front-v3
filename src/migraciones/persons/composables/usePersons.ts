@@ -40,9 +40,7 @@ const usePersons = () => {
 
   const autorizantes = computed(() => {
     if (!persons.value) return [];
-    return persons.value.filter(person => 
-      calculateAge(person.fecha_de_nacimiento) >= 21
-    );
+    return persons.value.filter((person) => calculateAge(person.fecha_de_nacimiento) >= 21);
   });
 
   const totalPagesByCategory = computed(() => ({

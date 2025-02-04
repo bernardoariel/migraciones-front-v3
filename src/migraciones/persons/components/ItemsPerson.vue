@@ -12,10 +12,9 @@
           ,{{ person.nombre }} {{ person.otros_nombres }}
         </span>
       </div>
-
-      <span v-if="showWarningMessage" class="ml-2 text-red-600 font-medium text-xs">
-        Se requieren más datos para ser autorizante
-      </span>
+      <div v-if="showWarningMessage" class="tooltip tooltip-bottom" data-tip="primary">
+        <div class="ml-2 badge badge-accent">+ Faltan datos</div>
+      </div>
 
       <!-- Botón -->
       <button
