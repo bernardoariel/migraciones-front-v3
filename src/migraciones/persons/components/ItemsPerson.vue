@@ -1,5 +1,5 @@
 <template>
-  <div class="entry-container mb-3 pointer p-1 border-b border-gray-400 transition-all">
+  <div class="entry-container mb-1 pointer p-1 border-b border-gray-400 transition-all">
     <!-- Título con el botón -->
     <div class="entry-title flex items-center justify-between gap-2">
       <!-- Información del usuario -->

@@ -235,7 +235,7 @@ const onSubmit = handleSubmit(async (values) => {
     fecha_del_instrumento: values.dateOfInstrumento,
     fecha_vigencia_desde: values.dateOfInit,
     fecha_vigencia_hasta: values.dateOfEnd,
-    notary_id: userStore.user!.id || 2,
+    notary_id: userStore.representado?.id || 2,
     minor_id: menorSelected,
     autorizante1_id: autorizante1,
     autorizante2_id: autorizante2,
@@ -247,6 +247,7 @@ const onSubmit = handleSubmit(async (values) => {
   try {
     await createOrden(payload);
 
+    console.log('userStore.user!.id::: ', userStore.representado?.id);
     toast.success('Solicitud enviada con éxito');
     ordenStore.resetOrden();
     router.push('/solicitudes');
